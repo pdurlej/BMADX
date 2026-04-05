@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">BMADX architecture overview</title>
+  <desc id="desc">BMADX sits between a Codex task and BMAD-driven execution, classifies work into gears X1 to X4, applies a compact gate, and optionally renders an X4 FUBAR scaffold bundle.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f3f7fb" />
+      <stop offset="100%" stop-color="#e8efe8" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#17324d" flood-opacity="0.12" />
+    </filter>
+    <style>
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #12263a; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #34506b; }
+      .box-title { font: 700 20px Arial, Helvetica, sans-serif; fill: #0f2740; }
+      .box-text { font: 400 15px Arial, Helvetica, sans-serif; fill: #294865; }
+      .label { font: 700 14px Arial, Helvetica, sans-serif; fill: #2d4a67; letter-spacing: 0.06em; }
+      .chip { font: 700 15px Arial, Helvetica, sans-serif; fill: #6e4b00; }
+      .arrow { stroke: #54728e; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { stroke-width: 2.2; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="640" rx="28" fill="url(#bg)" />
+
+  <text x="64" y="72" class="title">BMADX: BMAD-first tactical overlay for Codex</text>
+  <text x="64" y="105" class="subtitle">Classify first, gate second. Stay lightweight on X1/X2. Escalate into BMAD on X3/X4.</text>
+
+  <rect x="64" y="156" width="208" height="104" rx="18" fill="#ffffff" filter="url(#shadow)" />
+  <text x="88" y="194" class="label">INPUT</text>
+  <text x="88" y="224" class="box-title">User task in Codex</text>
+  <text x="88" y="246" class="box-text">A real coding task arrives in-session.</text>
+
+  <rect x="332" y="136" width="264" height="144" rx="20" fill="#ffffff" filter="url(#shadow)" />
+  <text x="356" y="174" class="label">ROUTING</text>
+  <text x="356" y="206" class="box-title">BMADX gear classifier</text>
+  <text x="356" y="230" class="box-text">Pick the right operating mode:</text>
+  <text x="356" y="254" class="box-text">X1 one-shot, X2 regular,</text>
+  <text x="356" y="276" class="box-text">X3 BMAD flow, X4 FUBAR.</text>
+
+  <rect x="656" y="126" width="260" height="164" rx="20" fill="#ffffff" filter="url(#shadow)" />
+  <text x="680" y="164" class="label">GATE</text>
+  <text x="680" y="196" class="box-title">Compact dependency check</text>
+  <text x="680" y="220" class="box-text">Fast path for X1/X2.</text>
+  <text x="680" y="242" class="box-text">Hard execution gate for X3/X4.</text>
+  <text x="680" y="264" class="box-text">Classification stays separate</text>
+  <text x="680" y="286" class="box-text">from execution permission.</text>
+
+  <rect x="962" y="152" width="170" height="84" rx="18" fill="#fff5d8" filter="url(#shadow)" />
+  <text x="987" y="202" class="chip">BMAD &gt; BMADX</text>
+
+  <rect x="116" y="380" width="244" height="144" rx="20" fill="#ffffff" filter="url(#shadow)" />
+  <text x="140" y="418" class="label">LIGHT PATH</text>
+  <text x="140" y="450" class="box-title">Execute with lightweight verify</text>
+  <text x="140" y="474" class="box-text">X1/X2 stay practical:</text>
+  <text x="140" y="496" class="box-text">short answers, compact gate,</text>
+  <text x="140" y="518" class="box-text">verify-before-done.</text>
+
+  <rect x="474" y="362" width="252" height="180" rx="20" fill="#ffffff" filter="url(#shadow)" />
+  <text x="498" y="400" class="label">BMAD FLOW</text>
+  <text x="498" y="432" class="box-title">Enter BMAD-driven workflow</text>
+  <text x="498" y="456" class="box-text">X3/X4 escalate into BMAD.</text>
+  <text x="498" y="478" class="box-text">Use BMAD artifacts and</text>
+  <text x="498" y="500" class="box-text">_bmad-output/project-context.md</text>
+  <text x="498" y="522" class="box-text">as upstream technical memory.</text>
+
+  <rect x="800" y="380" width="260" height="144" rx="20" fill="#ffffff" filter="url(#shadow)" />
+  <text x="824" y="418" class="label">X4 ONLY</text>
+  <text x="824" y="450" class="box-title">Render FUBAR scaffold bundle</text>
+  <text x="824" y="474" class="box-text">Generate AGENTS, matrices,</text>
+  <text x="824" y="496" class="box-text">rollout checklist, and snippets.</text>
+
+  <path class="arrow" d="M272 208 H332" />
+  <path class="arrow" d="M596 208 H656" />
+  <path class="arrow thin" d="M916 208 H962" />
+  <path class="arrow" d="M786 290 V326 H238 V380" />
+  <path class="arrow" d="M786 290 V336 H600 V362" />
+  <path class="arrow" d="M786 290 V326 H930 V380" />
+  <path class="arrow thin" d="M726 452 H800" />
+
+  <text x="68" y="592" class="subtitle">Best current public framing: lighter than OMX, less manual than raw BMAD for many day-to-day Codex sessions, but always downstream of BMAD.</text>
+</svg>

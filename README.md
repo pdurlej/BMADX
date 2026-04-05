@@ -1,10 +1,18 @@
 # BMADX
 
+[![Release](https://img.shields.io/github/v/release/pdurlej/BMADX?display_name=tag)](https://github.com/pdurlej/BMADX/releases/tag/v0.2.2)
+[![License](https://img.shields.io/github/license/pdurlej/BMADX)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)](docs/getting-started.md)
+[![BMAD-first](https://img.shields.io/badge/BMAD-first-12263A)](#dependency-on-bmad)
+[![Docs](https://img.shields.io/badge/docs-English-0A7EA4)](docs/index.md)
+
 BMADX is a `BMAD-first` tactical overlay for Codex.
 
 It is a deliberately lazy solution for vibe-coding challenges: less manual than
 raw `BMAD`, much lighter than `OMX`, but still opinionated about routing,
 verification, and escalation when the work stops being trivial.
+
+![BMADX architecture overview](docs/assets/bmadx-architecture-overview.svg)
 
 Core idea:
 - `BMAD` remains the process system and source of truth,
