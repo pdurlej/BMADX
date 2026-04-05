@@ -1,116 +1,46 @@
-# Benchmark Summary — 2026-04-04
+# Benchmark Summary — 2026-04-04 (`BMAD vs BMADX vs OMX`)
 
-## Cel
+## Goal
 
-Porównać `BMAD`, `BMADX` i `OMX` na tych samych czterech scenariuszach routingowo-planistycznych:
-- `X1` — mały one-shot,
-- `X2` — średni task wieloplikowy,
-- `X3` — istniejące story BMAD,
-- `X4` — rozlany projekt z potrzebą scaffold bundle.
+Establish the first comparative baseline between:
+- raw `BMAD`
+- `BMADX`
+- `OMX`
 
-## Metodyka
+The benchmark focused on routing-style `X1..X4` scenarios.
 
-- Wszystkie odpowiedzi były generowane przez `codex exec`.
-- `BMAD` i `OMX` pozostają wynikami z wcześniejszego przebiegu bazowego.
-- `BMADX` został uruchomiony ponownie po wdrożeniu zmian `v0.2` w dependency gate.
-- `BMADX healthy` został uruchomiony osobnym runnerem po wdrożeniu `v0.2.1`.
-- `BMAD` i `BMADX` działały na `gpt-5.4` z `reasoning effort = medium`.
-- `OMX` działał na `gpt-5.4` z `reasoning effort = high` i aktywnymi MCP:
-  - `omx_state`
-  - `omx_memory`
-  - `omx_trace`
-  - `omx_team_run`
-  - `omx_code_intel`
-- To nie jest benchmark czysto „promptowy”. To benchmark realnych domyślnych setupów.
+## Main result
 
-Osobny dataset `healthy`:
-- [`benchmark/summary-2026-04-04-healthy-bmad.json`](../benchmark/summary-2026-04-04-healthy-bmad.json)
-- [`docs/benchmark-summary-2026-04-04-healthy-bmad.md`](benchmark-summary-2026-04-04-healthy-bmad.md)
+The first comparison showed:
+- `BMAD` as the cheapest raw baseline
+- `BMADX` as materially lighter than `OMX`
+- `OMX` as the heaviest runtime in this sample
 
-## Wyniki skrócone
-
-| Scenariusz | BMAD | BMADX | OMX | Werdykt |
-| --- | --- | --- | --- | --- |
-| `X1` | `quick-dev` | `X1` + soft warning | `solo execute` | `BMAD` lub `OMX` |
-| `X2` | `quick-spec` | `X2` + soft warning | `ralplan` | `BMADX` |
-| `X3` | `dev-story` | `X3`, klasyfikacja poprawna; execution zablokowany | `ralplan -> ralph` | `BMAD` |
-| `X4` | `create-prd` | `X4/FUBAR`, klasyfikacja poprawna; execution zablokowany | `ralplan` | `BMADX` |
-
-## Koszt
-
-Średni koszt tokenowy:
+Historical averages:
 - `BMAD`: `7237.5`
 - `BMADX`: `10954.75`
 - `OMX`: `25540.5`
 
-Wniosek kosztowy:
-- `BMADX` po rerunie `v0.2` jest wyraźnie droższy od `BMAD`, ale nadal dużo tańszy od `OMX`.
-- `OMX` płaci za cięższy setup i większą orkiestrację.
+## What this implied at the time
 
-## Co wygrało gdzie
+The repo's initial reading was:
+- BMADX was not yet cheap enough in the simple cases
+- the real problem was not the gear model itself, but the dependency gate
+- `X4/FUBAR` was already a strong differentiator
+- BMADX needed to get quieter and cheaper on `X1/X2`
 
-### BMAD
+## Why this benchmark still matters
 
-Najmocniejszy tam, gdzie zadanie jest po prostu natywnym flow BMAD.
+This benchmark remains important because it captures the original public
+positioning:
+- BMADX should not try to out-BMAD BMAD
+- BMADX should be lighter than OMX
+- BMADX needs to justify itself on operator friction, not just process purity
 
-Najlepszy przykład:
-- `X3`: istniejące story BMAD do wdrożenia.
+## Follow-up
 
-### BMADX
-
-Najmocniejszy tam, gdzie chcesz nadal żyć w `BMAD`, ale potrzebujesz:
-- lepszego routingu,
-- prostszej skrzyni biegów,
-- verify discipline,
-- gotowego scaffoldu ponad BMAD.
-
-Najlepsze przykłady:
-- `X2`
-- `X4`
-
-### OMX
-
-Najmocniejszy jako cięższa, ogólna warstwa orkiestracji Codex.
-
-Przewagi:
-- silne reguły wykonawcze,
-- konsekwentne routingowanie do `solo execute`, `ralplan`, `ralph`,
-- gotowość do szerszej orkiestracji i subagentów.
-
-Koszt:
-- wyraźnie większy narzut operacyjny,
-- własny świat `.omx` i runtime'u.
-
-## Najważniejsza obserwacja po rerunie `BMADX v0.2`
-
-Rerun potwierdził, że główna zmiana w `v0.2` zadziałała semantycznie:
-- `X1/X2` nie są już blokowane przez czerwony stan BMAD; odpowiedź komunikuje soft warning zamiast twardego `stop`,
-- `X3/X4` zachowują poprawną klasyfikację nawet wtedy, gdy execution gate jest czerwony,
-- cache ostatniego zdrowego stanu BMAD działa jako miękki sygnał dla `X1/X2`,
-- `X4` nadal pozostaje najmocniejszym wyróżnikiem `BMADX`.
-
-Jednocześnie rerun nie poprawił kosztu:
-- odpowiedzi `BMADX` są teraz bardziej poprawne procesowo,
-- ale średni koszt tokenowy wzrósł względem wcześniejszego benchmarku `v0.1`,
-- więc kolejny etap optymalizacji powinien dotyczyć zwięzłości komunikacji, a nie samego modelu gate.
-
-## Co wniósł osobny dataset `healthy`
-
-Osobny rerun `BMADX healthy` potwierdził, że:
-- infrastruktura `v0.2.1` działa: compact gate, warmup cache i osobny runner są poprawnie spięte,
-- średnia `BMADX` spadła do `9909.0` tokenów,
-- największy zysk pojawia się w `X3`,
-- cel `-20%` dla `X1/X2` nadal nie został dowieziony.
-
-To oznacza, że kolejna optymalizacja musi uderzyć w kontrakt odpowiedzi skilla, nie tylko w dependency gate.
-
-## Artefakt przewagi `BMADX`
-
-`BMADX` ma realną przewagę funkcjonalną w `X4`, bo poza rekomendacją potrafi wygenerować scaffold bundle.
-
-Dowód:
-- [`samples/fubar-bundle/AGENTS.md`](../samples/fubar-bundle/AGENTS.md)
-- [`samples/fubar-bundle/bmadx-trigger-matrix.md`](../samples/fubar-bundle/bmadx-trigger-matrix.md)
-- [`samples/fubar-bundle/bmadx-verify-matrix.md`](../samples/fubar-bundle/bmadx-verify-matrix.md)
-
-`BMAD` i `OMX` w tym benchmarku kończyły `X4` na rekomendacji workflowu i kolejnego kroku. `BMADX` dowiózł pakiet wyjściowy.
+The current repo state supersedes this first result with `v0.2.1` and `v0.2.2`
+reruns, but this file remains the historical baseline for:
+- the first `BMAD vs BMADX vs OMX` comparison
+- the original justification for softening the dependency gate
+- the first evidence that BMADX's strongest differentiator was `X4/FUBAR`

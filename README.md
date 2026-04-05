@@ -82,6 +82,7 @@ This is a real working repo, not just a concept note:
 - the skill lives in [`skill/bmadx`](skill/bmadx),
 - the benchmark runner lives in
   [`benchmark/scripts/run_bmadx_benchmark.py`](benchmark/scripts/run_bmadx_benchmark.py),
+- the installer lives in [`scripts/install_bmadx.py`](scripts/install_bmadx.py),
 - benchmark artifacts are committed,
 - a sample `X4/FUBAR` bundle is included in
   [`samples/fubar-bundle`](samples/fubar-bundle).
@@ -89,38 +90,56 @@ This is a real working repo, not just a concept note:
 ## Repo layout
 
 - [`AGENTS.md`](AGENTS.md) - working contract for the repo
+- [`LICENSE`](LICENSE) - MIT license
+- [`CHANGELOG.md`](CHANGELOG.md) - lightweight release surface
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) - contribution rules and verify steps
 - [`skill/bmadx`](skill/bmadx) - current `BMADX v0.2.2` skill snapshot
+- [`scripts/install_bmadx.py`](scripts/install_bmadx.py) - installer for the BMADX skill
 - [`benchmark/raw`](benchmark/raw) - raw benchmark outputs
 - [`benchmark/scenarios`](benchmark/scenarios) - `X1..X4` and boundary scenarios
 - [`benchmark/summary-2026-04-04.json`](benchmark/summary-2026-04-04.json) - historical `BMAD vs BMADX vs OMX` comparison
 - [`benchmark/summary-2026-04-05-healthy-bmad.json`](benchmark/summary-2026-04-05-healthy-bmad.json) - `healthy` rerun after `v0.2.2`
 - [`benchmark/summary-2026-04-05-degraded-bmad.json`](benchmark/summary-2026-04-05-degraded-bmad.json) - `degraded` rerun after `v0.2.2`
+- [`docs/index.md`](docs/index.md) - English docs index
+- [`docs/getting-started.md`](docs/getting-started.md) - install and first-use guide
+- [`docs/architecture.md`](docs/architecture.md) - architecture and boundaries
+- [`docs/benchmark-overview.md`](docs/benchmark-overview.md) - public benchmark reading guide
+- [`docs/roadmap.md`](docs/roadmap.md) - lightweight public roadmap
 - [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md) - historical benchmark interpretation
 - [`docs/benchmark-summary-2026-04-05.md`](docs/benchmark-summary-2026-04-05.md) - mixed-metric summary for `v0.2.2`
-- [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md) - the original `v0.2` plan
 - [`_bmad-output/project-context.md`](_bmad-output/project-context.md) - active BMAD-side technical memory for the current program
 
 Note:
 - some historical working docs are still in Polish,
-- the public-facing README, code, and benchmark artifacts are the best place to
-  start if you do not read Polish.
+- the public onboarding path is now in English through
+  [`docs/index.md`](docs/index.md),
+- the README, installer, architecture doc, benchmark overview, changelog, and
+  contributing guide are the recommended public entry points.
 
 ## Quick start
 
-This repo is currently repo-first rather than installer-first.
+Install from this repo:
 
-Minimal local setup:
+```bash
+git clone https://github.com/pdurlej/BMADX.git
+cd BMADX
+python3 scripts/install_bmadx.py --force
+```
 
-1. Install or sync `bmad-method-codex` into `~/.codex/skills/bmad-method-codex`.
-2. Copy this skill into `~/.codex/skills/bmadx`.
-3. Run the sync check:
+The installer:
+- checks that `bmad-method-codex` is present,
+- copies `skill/bmadx` into `~/.codex/skills/bmadx`,
+- refuses to install if BMAD is missing.
+
+Then verify:
 
 ```bash
 python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py sync --json
 python3 ~/.codex/skills/bmadx/scripts/test_sync_bmadx.py
+python3 scripts/test_install_bmadx.py
 ```
 
-4. For a compact gate check after classification:
+For a compact gate check after classification:
 
 ```bash
 python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X1 --compact
@@ -129,7 +148,7 @@ python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X3 --compact
 python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X4 --compact
 ```
 
-5. To render the `X4/FUBAR` scaffold bundle:
+To render the `X4/FUBAR` scaffold bundle:
 
 ```bash
 python3 ~/.codex/skills/bmadx/scripts/render_fubar_bundle.py \
@@ -137,6 +156,26 @@ python3 ~/.codex/skills/bmadx/scripts/render_fubar_bundle.py \
   --project-path "$PWD" \
   --output-dir /tmp/bmadx-fubar
 ```
+
+More detail:
+- [Getting Started](docs/getting-started.md)
+
+## Architecture
+
+```mermaid
+flowchart TD
+    U["User task in Codex"] --> C["BMADX classify: X1 / X2 / X3 / X4"]
+    C --> G["Compact gear gate via sync_bmadx.py"]
+    G -->|X1 or X2 green / warning| E["Execute with lightweight verify"]
+    G -->|X3 or X4 green| B["Enter BMAD-driven workflow"]
+    G -->|X3 or X4 blocked| R["Remediate BMAD dependency"]
+    B --> P["_bmad-output/project-context.md"]
+    C -->|X4 only| F["Render FUBAR scaffold bundle"]
+    F --> A["AGENTS.md, matrices, rollout checklist, snippets"]
+```
+
+More detail:
+- [Architecture](docs/architecture.md)
 
 ## The gear model
 
@@ -168,6 +207,7 @@ Current `v0.2.2` reruns:
 
 Latest mixed-metric summary:
 - [`docs/benchmark-summary-2026-04-05.md`](docs/benchmark-summary-2026-04-05.md)
+- [`docs/benchmark-overview.md`](docs/benchmark-overview.md)
 
 ## Where BMADX looks better than OMX
 
@@ -239,8 +279,8 @@ That is the pitch:
 ## Fast onboarding for a new Codex thread
 
 1. Read [`AGENTS.md`](AGENTS.md).
-2. Read [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md).
-3. Read [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md).
+2. Read [`docs/getting-started.md`](docs/getting-started.md).
+3. Read [`docs/benchmark-overview.md`](docs/benchmark-overview.md).
 4. Work in [`skill/bmadx`](skill/bmadx).
 
 ## Current best use cases
@@ -252,18 +292,15 @@ That is the pitch:
 | `X3` process-first implementation | `BMAD` | this is BMAD-native territory |
 | `X4` messy project with rollout/ownership needs | `BMADX` | BMADX adds a scaffold bundle on top of BMAD |
 
-## What would improve the public repo next
+## Public repo support surfaces
 
-The most obvious next improvements are:
-- add a license,
-- add GitHub topics and a small release/changelog surface,
-- translate or summarize the key Polish docs,
-- make installation less repo-native and more one-command friendly,
-- add one architecture diagram showing `BMAD -> BMADX -> task execution`.
+If you want to use, evaluate, or extend the project, start here:
+- [`docs/index.md`](docs/index.md)
+- [`docs/getting-started.md`](docs/getting-started.md)
+- [`docs/architecture.md`](docs/architecture.md)
+- [`docs/benchmark-overview.md`](docs/benchmark-overview.md)
+- [`CHANGELOG.md`](CHANGELOG.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-Until then, the repo is already useful as a working public artifact:
-- it has a clear position,
-- it has code,
-- it has benchmarks,
-- it has artifacts,
-- and it is explicit about what it does not claim.
+The repo is still intentionally lean, but it now has the minimum public surfaces
+needed to be useful to someone outside the original working thread.
