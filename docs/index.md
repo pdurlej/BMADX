@@ -5,9 +5,10 @@ This directory now contains the main public-facing English docs for BMADX.
 Recommended reading order:
 
 1. [Getting Started](getting-started.md)
-2. [Architecture](architecture.md)
-3. [Benchmark Overview](benchmark-overview.md)
-4. [Historical benchmark summary, April 5 2026](benchmark-summary-2026-04-05.md)
+2. [Install for Vibe Coders](install-for-vibe-coders.md)
+3. [Architecture](architecture.md)
+4. [Benchmark Overview](benchmark-overview.md)
+5. [Historical benchmark summary, April 5 2026](benchmark-summary-2026-04-05.md)
 
 Historical notes:
 - some older working documents in this repo are still in Polish,

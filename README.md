@@ -159,6 +159,35 @@ python3 ~/.codex/skills/bmadx/scripts/render_fubar_bundle.py \
 
 More detail:
 - [Getting Started](docs/getting-started.md)
+- [Install for Vibe Coders](docs/install-for-vibe-coders.md)
+
+## Install in Codex for vibe coders
+
+If you just want BMADX in your own Codex without reading the whole repo first:
+
+```bash
+git clone https://github.com/pdurlej/BMADX.git
+cd BMADX
+python3 scripts/install_bmadx.py --force
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py sync --json
+```
+
+If you prefer to let Codex do it for you, give it this repo URL:
+
+```text
+https://github.com/pdurlej/BMADX
+```
+
+Then say:
+
+```text
+Install BMADX from this repository into my Codex skills.
+First verify that ~/.codex/skills/bmad-method-codex exists.
+If BMAD is missing, stop and tell me to install it first.
+If it exists, clone the repo, run `python3 scripts/install_bmadx.py --force`,
+then verify with `python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py sync --json`
+and `python3 ~/.codex/skills/bmadx/scripts/test_sync_bmadx.py`.
+```
 
 ## Architecture
 
@@ -297,6 +326,7 @@ That is the pitch:
 If you want to use, evaluate, or extend the project, start here:
 - [`docs/index.md`](docs/index.md)
 - [`docs/getting-started.md`](docs/getting-started.md)
+- [`docs/install-for-vibe-coders.md`](docs/install-for-vibe-coders.md)
 - [`docs/architecture.md`](docs/architecture.md)
 - [`docs/benchmark-overview.md`](docs/benchmark-overview.md)
 - [`CHANGELOG.md`](CHANGELOG.md)

@@ -38,6 +38,9 @@ What the installer does:
 - copies `skill/bmadx` into `~/.codex/skills/bmadx`,
 - stops with a clear error if BMAD is missing.
 
+If you want the shortest copy-paste path for a casual Codex user:
+- [Install for Vibe Coders](install-for-vibe-coders.md)
+
 ## Verify the install
 
 Run:
@@ -104,4 +107,5 @@ Profiles:
 
 - [Architecture](architecture.md)
 - [Benchmark Overview](benchmark-overview.md)
+- [Install for Vibe Coders](install-for-vibe-coders.md)
 - [BMADX skill contract](../skill/bmadx/SKILL.md)

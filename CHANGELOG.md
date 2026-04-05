@@ -11,6 +11,8 @@ All notable changes to this repository will be documented here.
   `reference_budget_pass`, and `routing_pass`
 - `healthy` and `degraded` benchmark profiles
 - boundary scenario for `X2/X3`
+- MIT license, English public docs, architecture diagram, and lightweight public repo surfaces
+- installer for BMADX and a vibe-coder-oriented install path
 
 ### Changed
 
