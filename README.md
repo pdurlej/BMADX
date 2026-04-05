@@ -1,156 +1,269 @@
 # BMADX
 
-BMADX to `BMAD-first` overlay dla Codex.
+BMADX is a `BMAD-first` tactical overlay for Codex.
 
-To projekt dla osób, które chcą robić rzeczy w stylu vibe coding, ale bez
-wchodzenia od razu w cięższy runtime albo ręczne wybieranie procesu przy każdym
-tasku. W praktyce: bardziej leniwy niż czysty `BMAD`, dużo lżejszy niż `OMX`,
-ale nadal z procesową dyscypliną tam, gdzie to potrzebne.
+It is a deliberately lazy solution for vibe-coding challenges: less manual than
+raw `BMAD`, much lighter than `OMX`, but still opinionated about routing,
+verification, and escalation when the work stops being trivial.
 
-Założenie projektu:
-- `BMAD` zostaje systemem działania i architekturą procesu,
-- `BMADX` dokłada warstwę operacyjno-taktyczną,
-- inspiracje z `OMX` są selektywne, bez portowania całego runtime'u `.omx`.
+Core idea:
+- `BMAD` remains the process system and source of truth,
+- `BMADX` adds an operational layer for Codex,
+- `OMX` is a source of selected inspiration, not the runtime target.
 
-Ten repo powstał jako osobny punkt startowy pod dedykowany wątek Codexa dla `BMADX v0.2`, a bieżący zakres roboczy dopina `v0.2.2`.
-
-## Dlaczego to istnieje
-
-`BMADX` jest celowo „leniwym” rozwiązaniem dla wyzwań vibe coderskich:
-- nie chcesz za każdym razem ręcznie rozstrzygać, czy to `X1`, `X2`, `X3` czy `X4`,
-- nie chcesz budować pełnego runtime'u orkiestracyjnego,
-- chcesz zachować `verify-before-done`,
-- chcesz móc wejść w mocniejsze `X4/FUBAR`, ale nie płacić tej ceny na co dzień.
-
-Krótko:
-- `BMAD` jest najlepszy, gdy już żyjesz natywnym flow BMAD,
-- `OMX` jest mocny jako cięższa orkiestracja,
-- `BMADX` jest środkiem: mniej ceremonii, prostszy routing, scaffold bundle tylko wtedy, gdy naprawdę trzeba.
-
-## Zależności i inspiracje
-
-### Twarda zależność od BMAD
-
-`BMADX` nie jest samodzielnym systemem procesu. Zależy od [`bmad-method-codex`](skill/bmadx/references/skill-manifest.json), który dostarcza synchronizację z BMAD i jest wymagany przez dependency gate.
-
-Zasada projektu jest nienegocjowalna:
+Non-negotiable rule:
 - `BMAD > BMADX`
 
-To znaczy:
-- artefakty procesu i workflow map pozostają po stronie BMAD,
-- `BMADX` odpowiada za routing, poziom dyscypliny i `X4/FUBAR` scaffold bundle,
-- `BMADX` nie próbuje zastąpić BMAD drugim source-of-truth.
+This repository currently tracks `BMADX v0.2.2`.
 
-### Podziękowanie dla OMX
+## Why this exists
 
-Dziękuję `OMX` za inspirację. To właśnie z `OMX` pochodzą wybrane intuicje, które okazały się warte zachowania:
-- prosty routing do kilku trybów pracy,
+BMADX exists for a very specific gap:
+- you do not want to manually decide every time whether a task should be a tiny one-shot, a regular local change, a full BMAD flow, or a full escalation,
+- you do not want the weight of a full orchestration runtime,
+- you still want `verify-before-done`,
+- you want a stronger fallback mode for messy projects without paying that cost on every task.
+
+In short:
+- `BMAD` is best when you are already working natively inside BMAD,
+- `OMX` is strong as a heavier Codex workflow layer,
+- `BMADX` sits in the middle: less ceremony, simpler routing, and a scaffold bundle only when needed.
+
+## What BMADX is and is not
+
+BMADX is:
+- a gear-based routing layer for Codex: `X1`, `X2`, `X3`, `X4`,
+- a verification and escalation discipline on top of BMAD,
+- an `X4/FUBAR` bundle generator for chaotic or high-entropy projects,
+- a benchmarked attempt to stay practical for real coding sessions.
+
+BMADX is not:
+- a replacement for BMAD,
+- a second process source of truth,
+- a port of the `.omx` runtime,
+- a claim that BMADX beats BMAD at being BMAD.
+
+## Dependency on BMAD
+
+BMADX is not a standalone process system. It depends on
+[`bmad-method-codex`](skill/bmadx/references/skill-manifest.json), which is
+used by the dependency gate and treated as the upstream owner of process
+artifacts and workflow semantics.
+
+That means:
+- BMAD owns phases, workflow maps, and process artifacts,
+- BMADX owns task routing, operational discipline, verification gates, and the
+  `X4/FUBAR` scaffold bundle,
+- BMADX must never become a second plan store over BMAD.
+
+## Thanks to OMX
+
+Thanks to `OMX` for the inspiration.
+
+BMADX borrows a few ideas that were worth keeping:
+- simple routing into a small number of work modes,
 - verify discipline,
-- myślenie capability-based o użyciu subagentów,
-- nacisk na praktyczną orkiestrację zamiast „ładnej teorii”.
+- capability-based subagent usage,
+- a bias toward practical orchestration instead of pretty theory.
 
-Jednocześnie `BMADX` świadomie nie portuje `.omx`, team runtime ani pełnego świata `OMX`.
+What BMADX does not do is port `.omx`, the team runtime, or the full OMX
+ecosystem into this project.
 
-## Co tu jest
+## Public status
 
-- [`AGENTS.md`](AGENTS.md) — kontrakt roboczy dla repo.
-- [`skill/bmadx`](skill/bmadx) — aktualny snapshot skilla `BMADX v0.2.2`.
-- [`benchmark/raw`](benchmark/raw) — surowe wyniki benchmarku `BMAD vs BMADX vs OMX`.
-- [`benchmark/scenarios`](benchmark/scenarios) — scenariusze testowe `X1..X4` i boundary cases.
-- [`benchmark/summary-2026-04-04.json`](benchmark/summary-2026-04-04.json) — starsze porównanie `BMAD vs BMADX vs OMX`.
-- [`benchmark/summary-2026-04-05-healthy-bmad.json`](benchmark/summary-2026-04-05-healthy-bmad.json) — mixed-metric rerun `healthy` po `v0.2.2`.
-- [`benchmark/summary-2026-04-05-degraded-bmad.json`](benchmark/summary-2026-04-05-degraded-bmad.json) — mixed-metric rerun `degraded` po `v0.2.2`.
-- [`benchmark/scripts/run_bmadx_benchmark.py`](benchmark/scripts/run_bmadx_benchmark.py) — runner dla profili `healthy` i `degraded`.
-- [`samples/fubar-bundle`](samples/fubar-bundle) — przykładowy bundle wygenerowany przez `X4/FUBAR`.
-- [`_bmad-output/project-context.md`](_bmad-output/project-context.md) — aktywny technical memory dla programu `v0.2.2`.
-- [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md) — interpretacja benchmarku `BMAD vs BMADX vs OMX`.
-- [`docs/benchmark-summary-2026-04-05.md`](docs/benchmark-summary-2026-04-05.md) — mixed-metric summary dla `v0.2.2`.
-- [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md) — plan prac dla `v0.2`.
+Current public state:
+- `v0.2.2` ships the shorter `X1/X2` response contract,
+- the skill uses `classify first, gate second`,
+- `X1/X2` use a compact fast path,
+- `X3/X4` keep a BMAD-first hard execution gate,
+- the benchmark runner now tracks mixed metrics, not just tokens.
 
-## Aktualny stan
+This is a real working repo, not just a concept note:
+- the skill lives in [`skill/bmadx`](skill/bmadx),
+- the benchmark runner lives in
+  [`benchmark/scripts/run_bmadx_benchmark.py`](benchmark/scripts/run_bmadx_benchmark.py),
+- benchmark artifacts are committed,
+- a sample `X4/FUBAR` bundle is included in
+  [`samples/fubar-bundle`](samples/fubar-bundle).
 
-- `v0.2.2` dopina krótszy response contract dla `X1/X2`, mixed-metric benchmark guardrails i boundary scenario `X2/X3`.
-- Benchmark routingowy `X1..X4` został wykonany dla `BMAD`, `BMADX` i `OMX`.
-- Najmocniejsza przewaga `BMADX` jest w `X4/FUBAR`, gdzie poza routingiem potrafi wygenerować scaffold bundle.
-- `v0.2` rozdziela klasyfikację biegu od execution gate, `v0.2.1` przenosi routing na compact gate po klasyfikacji, a `v0.2.2` skraca happy path `X1/X2` bez regresji `X3/X4`.
+## Repo layout
 
-## Najkrótszy onboarding dla nowego wątku
+- [`AGENTS.md`](AGENTS.md) - working contract for the repo
+- [`skill/bmadx`](skill/bmadx) - current `BMADX v0.2.2` skill snapshot
+- [`benchmark/raw`](benchmark/raw) - raw benchmark outputs
+- [`benchmark/scenarios`](benchmark/scenarios) - `X1..X4` and boundary scenarios
+- [`benchmark/summary-2026-04-04.json`](benchmark/summary-2026-04-04.json) - historical `BMAD vs BMADX vs OMX` comparison
+- [`benchmark/summary-2026-04-05-healthy-bmad.json`](benchmark/summary-2026-04-05-healthy-bmad.json) - `healthy` rerun after `v0.2.2`
+- [`benchmark/summary-2026-04-05-degraded-bmad.json`](benchmark/summary-2026-04-05-degraded-bmad.json) - `degraded` rerun after `v0.2.2`
+- [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md) - historical benchmark interpretation
+- [`docs/benchmark-summary-2026-04-05.md`](docs/benchmark-summary-2026-04-05.md) - mixed-metric summary for `v0.2.2`
+- [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md) - the original `v0.2` plan
+- [`_bmad-output/project-context.md`](_bmad-output/project-context.md) - active BMAD-side technical memory for the current program
 
-1. Otwórz [`AGENTS.md`](AGENTS.md).
-2. Przeczytaj [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md).
-3. Wejdź w [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md).
-4. Edytuj skill w [`skill/bmadx`](skill/bmadx).
+Note:
+- some historical working docs are still in Polish,
+- the public-facing README, code, and benchmark artifacts are the best place to
+  start if you do not read Polish.
 
-## Gdzie działa lepiej niż OMX, a gdzie niż BMAD
+## Quick start
 
-### Lepsze od OMX
+This repo is currently repo-first rather than installer-first.
 
-- dużo niższy koszt i mniejsza ceremonia operacyjna,
-- brak potrzeby pełnego runtime'u `.omx`,
-- prostszy próg wejścia dla vibe coders, którzy chcą „po prostu zacząć”, ale nadal mieć routing i verify discipline.
+Minimal local setup:
 
-Z benchmarku `2026-04-04`:
-- średni koszt `OMX`: `25540.5` tokenów
-- średni koszt `BMADX`: `10954.75` tokenów
-- po `v0.2.2` core `healthy`: `8290.5` tokenów
+1. Install or sync `bmad-method-codex` into `~/.codex/skills/bmad-method-codex`.
+2. Copy this skill into `~/.codex/skills/bmadx`.
+3. Run the sync check:
 
-### Lepsze od czystego BMAD
+```bash
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py sync --json
+python3 ~/.codex/skills/bmadx/scripts/test_sync_bmadx.py
+```
 
-- w `X2`, gdy chcesz mniej ręcznego wyboru workflow i bardziej automatyczną skrzynię biegów,
-- w `X4`, gdy poza rekomendacją chcesz od razu scaffold bundle: `AGENTS.md`, snippets `.customize.yaml`, trigger matrix, verify matrix, rollout checklist.
+4. For a compact gate check after classification:
 
-W praktyce:
-- `BMAD` wygrywa tam, gdzie zadanie jest po prostu natywnym flow BMAD, szczególnie `X3`,
-- `BMADX` wygrywa tam, gdzie chcesz nadal być w świecie BMAD, ale z lżejszą warstwą operacyjną i gotowym `X4/FUBAR`.
+```bash
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X1 --compact
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X2 --compact
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X3 --compact
+python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X4 --compact
+```
 
-## Uczciwe porównanie benchmarkowe
+5. To render the `X4/FUBAR` scaffold bundle:
 
-Poniżej są dwa różne pytania i dwa różne typy odpowiedzi:
-- kto wygrywa surowym kosztem tokenów,
-- kto wygrywa praktycznie dla danego typu pracy.
+```bash
+python3 ~/.codex/skills/bmadx/scripts/render_fubar_bundle.py \
+  --project-name "Your project" \
+  --project-path "$PWD" \
+  --output-dir /tmp/bmadx-fubar
+```
 
-### `BMADX` vs `OMX`
+## The gear model
 
-| Obszar | `BMADX` | `OMX` | Wniosek |
+- `X1` - one-shot
+- `X2` - regular local change
+- `X3` - complex BMAD flow
+- `X4` - FUBAR / BMAD+
+
+Practical rule of thumb:
+- use `X1` for tiny local changes,
+- use `X2` for bounded multi-file work with a short plan,
+- use `X3` when BMAD artifacts and phases should drive execution,
+- use `X4` when the project is messy enough to justify BMAD plus a scaffold
+  bundle and explicit ownership structure.
+
+`X4` is meant to be the ace in the sleeve, not the default mode.
+
+## Benchmark snapshot
+
+Historical baseline from
+[`benchmark/summary-2026-04-04.json`](benchmark/summary-2026-04-04.json):
+- `BMAD`: average `7237.5` tokens
+- `BMADX`: average `10954.75` tokens
+- `OMX`: average `25540.5` tokens
+
+Current `v0.2.2` reruns:
+- `BMADX healthy`: average `8290.5` tokens
+- `BMADX degraded`: average `7052.75` tokens
+
+Latest mixed-metric summary:
+- [`docs/benchmark-summary-2026-04-05.md`](docs/benchmark-summary-2026-04-05.md)
+
+## Where BMADX looks better than OMX
+
+From the benchmarked runs:
+
+| Area | `BMADX` | `OMX` | Read it as |
 | --- | --- | --- | --- |
-| średni koszt historyczny `X1..X4` | `10954.75` | `25540.5` | `BMADX` jest tańszy o `14585.75` tokena, czyli około `57.1%` |
-| `v0.2.2` core `healthy` | `8290.5` | historyczny baseline `25540.5` | `BMADX` jest tańszy o `17250.0` tokenów, czyli około `67.5%` |
-| próg wejścia | lekki overlay nad BMAD | cięższy runtime `.omx` | `BMADX` jest praktyczniejszy dla vibe coders |
+| historical average across `X1..X4` | `10954.75` | `25540.5` | `BMADX` is lower-cost by `14585.75` tokens, roughly `57.1%` |
+| `v0.2.2` healthy core average | `8290.5` | historical OMX baseline `25540.5` | `BMADX` is lower-cost by `17250.0` tokens, roughly `67.5%` |
+| runtime weight | light overlay on top of BMAD | heavier `.omx` runtime | BMADX is easier to justify for pragmatic, low-friction Codex sessions |
 
-Wniosek:
-- jeśli celem jest lekki routing, verify discipline i brak pełnego runtime'u orkiestracyjnego, `BMADX` wypada lepiej niż `OMX`,
-- `OMX` pozostaje ważną inspiracją, ale nie jest target runtime tego projektu.
+Practical conclusion:
+- if you want lightweight routing, verify discipline, and no full orchestration
+  runtime, BMADX presents well against OMX,
+- OMX remains a serious reference point, but not the target runtime for this repo.
 
-### `BMADX` vs `BMAD`
+## Where BMAD still wins, and where BMADX adds value
 
-| Obszar | `BMAD` | `BMADX` | Uczciwy wniosek |
+This repo should be read honestly:
+- BMADX is not trying to prove it beats BMAD everywhere,
+- BMADX is trying to make BMAD easier to operate inside Codex.
+
+| Area | `BMAD` | `BMADX` | Honest reading |
 | --- | --- | --- | --- |
-| średni koszt historyczny `X1..X4` | `7237.5` | `10954.75` | surowo tokenowo wygrywa `BMAD` |
-| `X1` tiny task | `4179` | `8630` (`v0.2.2 healthy`) | surowo wygrywa `BMAD`, ale `BMADX` daje automatyczny wybór biegu |
-| `X2` regular multi-file | `5686` | `8770` (`v0.2.2 healthy`) | surowo wygrywa `BMAD`, praktycznie `BMADX` wygrywa mniejszą liczbą decyzji ręcznych |
-| `X3` story/process-first | `11044` | `5385` (`v0.2.2 healthy`) | w tej próbce taniej wyszedł `BMADX`, ale semantycznie to nadal obszar natywny dla `BMAD` |
-| `X4` chaos + scaffold | `8041` | `10377` (`v0.2.2 healthy`) | tokenowo wygrywa `BMAD`, funkcjonalnie `BMADX` dokłada bundle i warstwę operacyjną |
+| historical average across `X1..X4` | `7237.5` | `10954.75` | BMAD wins on raw token cost |
+| `X1` tiny task | `4179` | `8630` in `v0.2.2 healthy` | BMAD is cheaper; BMADX adds automatic gear choice |
+| `X2` regular bounded change | `5686` | `8770` in `v0.2.2 healthy` | BMAD is cheaper; BMADX reduces process-selection friction |
+| `X3` story/process-first | `11044` | `5385` in `v0.2.2 healthy` | this sample favored BMADX on tokens, but semantically BMAD still owns this territory |
+| `X4` chaos plus scaffold | `8041` | `10377` in `v0.2.2 healthy` | BMAD is cheaper; BMADX adds the bundle and the tactical overlay |
 
-Najważniejszy wniosek:
-- `BMADX` nie jest projektem pod tezę „BMADX jest lepszy od BMAD we wszystkim”,
-- `BMADX` jest projektem pod tezę „BMAD jest source-of-truth, a BMADX jest leniwą warstwą operacyjną dla Codexa”.
+Practical conclusion:
+- if you are already fully native to BMAD, BMAD is often the cleaner answer,
+- if you want BMAD to stay upstream but need lighter in-session routing, BMADX
+  becomes useful,
+- BMADX is strongest in `X2` and `X4`, not because it beats BMAD on every token
+  metric, but because it reduces operator friction and adds bundle generation.
 
-## Snapshot benchmarku
+## Honest reading of the benchmark
 
-- `BMAD`: średnio `7237.5` tokenów
-- `BMADX`: średnio `10954.75` tokenów
-- `BMADX healthy`: średnio `9909.0` tokenów
-- `BMADX healthy v0.2.2`: średnio `8290.5` tokenów
-- `BMADX degraded v0.2.2`: średnio `7052.75` tokenów
-- `OMX`: średnio `25540.5` tokenów
+The benchmark is useful, but it is not perfectly symmetric:
+- the `BMAD` and `OMX` comparison numbers come from the historical
+  `2026-04-04` run,
+- the `BMADX v0.2.2` numbers come from `2026-04-05` reruns,
+- the repo explicitly keeps `healthy` and `degraded` profiles separate,
+- the newer runner validates formatting, routing, and reference-read budget in
+  addition to tokens.
 
-### Szybki werdykt
+So the right reading is:
+- BMADX clearly beats OMX on operational weight and measured cost in these runs,
+- BMAD still beats BMADX as the native process system in many cases,
+- BMADX is valuable precisely because it does not try to replace BMAD.
 
-| Obszar | Najmocniejszy wybór | Dlaczego |
+## Why this may appeal to vibe coders
+
+BMADX is intentionally built for people who want to stay productive without
+turning every task into a process ceremony.
+
+That means:
+- you can be lazy about route selection without being sloppy about verification,
+- you can stay lightweight on `X1/X2`,
+- you can escalate into real BMAD when the work actually needs it,
+- you can pull out `X4/FUBAR` only when the project is messy enough to deserve it.
+
+That is the pitch:
+- less friction than `OMX`,
+- less manual process choice than raw `BMAD`,
+- more discipline than ad hoc one-shot prompting.
+
+## Fast onboarding for a new Codex thread
+
+1. Read [`AGENTS.md`](AGENTS.md).
+2. Read [`docs/benchmark-summary-2026-04-04.md`](docs/benchmark-summary-2026-04-04.md).
+3. Read [`docs/bmadx-v0.2-plan.md`](docs/bmadx-v0.2-plan.md).
+4. Work in [`skill/bmadx`](skill/bmadx).
+
+## Current best use cases
+
+| Situation | Best fit | Why |
 | --- | --- | --- |
-| `X1` tiny task | `BMAD` lub `BMADX v0.2.2` | oba są lekkie; `BMADX` daje gotowy routing bez ręcznego zastanawiania się |
-| `X2` lokalna zmiana wieloplikowa | `BMADX` | mniej ręcznego wyboru procesu niż w czystym BMAD, dużo lżej niż OMX |
-| `X3` story/process-first | `BMAD` | to natywne środowisko BMAD |
-| `X4` chaos + scaffold | `BMADX` | daje bundle ponad BMAD, bez wejścia w pełny świat OMX |
+| `X1` tiny local task | `BMAD` or `BMADX v0.2.2` | both stay relatively light; BMADX adds automatic routing |
+| `X2` bounded multi-file change | `BMADX` | lighter operator burden than raw BMAD, much lighter than OMX |
+| `X3` process-first implementation | `BMAD` | this is BMAD-native territory |
+| `X4` messy project with rollout/ownership needs | `BMADX` | BMADX adds a scaffold bundle on top of BMAD |
 
-Wniosek: `BMADX` nie zastępuje ani `BMAD`, ani `OMX`. To celowo leniwe, praktyczne rozwiązanie dla vibe coders, którzy chcą mniej tarcia niż w `OMX`, ale więcej dyscypliny niż w czystym one-shot workflow.
+## What would improve the public repo next
+
+The most obvious next improvements are:
+- add a license,
+- add GitHub topics and a small release/changelog surface,
+- translate or summarize the key Polish docs,
+- make installation less repo-native and more one-command friendly,
+- add one architecture diagram showing `BMAD -> BMADX -> task execution`.
+
+Until then, the repo is already useful as a working public artifact:
+- it has a clear position,
+- it has code,
+- it has benchmarks,
+- it has artifacts,
+- and it is explicit about what it does not claim.
