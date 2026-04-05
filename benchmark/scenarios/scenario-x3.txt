@@ -1,0 +1,2 @@
+Use the requested skill to decide the right workflow for this task and answer briefly in Polish.
+Task: Mamy istniejące story BMAD do wdrożenia i trzeba wejść w właściwy flow oraz pilnować artefaktów procesu.

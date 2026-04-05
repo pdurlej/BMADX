@@ -1,0 +1,5 @@
+Wybór: `$ralplan` jako wejście do flow, a dopiero po zamknięciu bramki artefaktów przejście do `$ralph`.
+
+Uzasadnienie: z aktywnego `AGENTS.md` wynika, że dla wdrożenia istniejącego story najpierw trzeba mieć uziemiony kontekst i komplet planistycznych artefaktów, a `ralph` nie powinien startować bez `.omx/plans/prd-*.md` i `.omx/plans/test-spec-*.md`. `team` ma sens dopiero po zatwierdzonym planie i przy realnie równoległych torach. W obecnym repo widzę `.omx/plans/`, ale bez tych plików, więc poprawny start to nie execution, tylko consensus/planning gate.
+
+Następny krok: uruchomić `$ralplan` dla tego konkretnego BMAD story, zbudować albo potwierdzić snapshot kontekstu w `.omx/context/...`, a następnie dopilnować powstania lub aktualizacji `prd-*` i `test-spec-*` w `.omx/plans/`. Gdy te artefakty będą gotowe i plan będzie zaakceptowany, właściwy bieg wykonawczy to `$ralph`, który przejmie implementację, weryfikację i domknięcie procesu.

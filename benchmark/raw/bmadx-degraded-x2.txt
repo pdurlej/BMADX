@@ -1,0 +1,13 @@
+Wybór: `X2 — Regular`.
+
+Uzasadnienie: To mały/średni backendowy change request z lokalnym blast radiusem (`4` pliki, nowe pole `status`, bez sygnału o potrzebie pełnego artefaktu BMAD), więc wystarczy krótki plan i verify; compact gate dla `X2` jest zielony.
+
+Plan:
+1. Zmapować `4` pliki i ustalić kontrakt pola `status`: wejście, model/dto, walidacja, serializacja/persistencja.
+2. Rozpisać minimalny diff per plik, żeby `status` było spójne na całej ścieżce request -> domain -> response/store.
+3. Określić test touchpoints i kryteria akceptacji dla nowego pola.
+
+Verify:
+1. Testy jednostkowe/integracyjne dla przyjęcia, zapisu i odczytu `status`.
+2. Sprawdzenie regresji kontraktu API/schema, jeśli `status` wychodzi na zewnątrz.
+3. Krótki review diffu pod spójność nazw, nullability/default i backward compatibility.

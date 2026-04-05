@@ -1,0 +1,19 @@
+FAZA:
+- Faza 4: Implementacja.
+- Właściwy workflow: `bmad-bmm-dev-story`.
+
+WYKONANE:
+- Sprawdziłem lokalny skill `bmad-method-codex` i mapę komend BMAD.
+- Potwierdziłem, że dla istniejącego story komenda wdrożeniowa należy do fazy implementacji: `bmad-bmm-dev-story`.
+- Zweryfikowałem lokalne artefakty referencyjne skilla; zdalny `check --json` nie domknął się przez brak dostępu do GitHub API, więc decyzję opieram na lokalnym snapshotcie i mapie komend.
+
+KRÓTKIE UZASADNIENIE:
+- Skoro story już istnieje i celem jest jego wdrożenie, nie wchodzimy ponownie w PRD, architekturę ani generowanie stories.
+- Najwłaściwszy flow to bezpośrednio implementacyjny `bmad-bmm-dev-story`, z pilnowaniem artefaktów wejściowych i wyjściowych procesu.
+
+KROK_BIEŻĄCY:
+- Wejście w flow implementacyjny dla konkretnego story, ale dopiero po potwierdzeniu kompletności artefaktów wejściowych.
+
+KROK_NASTĘPNY:
+- Sprawdzić gotowość artefaktów procesu przed uruchomieniem pracy nad story: samo story, powiązany sprint/backlog, zależności z architektury lub PRD oraz ewentualny stan `check-implementation-readiness`.
+- Jeśli te artefakty są kompletne, kolejnym ruchem jest uruchomienie `bmad-bmm-dev-story`; jeśli nie, najpierw domknąć brakujące artefakty zamiast zaczynać implementację.

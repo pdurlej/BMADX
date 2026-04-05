@@ -1,0 +1,9 @@
+Wybór: `X4 — FUBAR (BMAD+)`
+
+Uzasadnienie: zadanie jest wyraźnie ponad `X3`, bo łączy rozlany zakres, potrzebę planu oraz komplet scaffold bundle (`AGENTS.md`, `.customize.yaml`, verify matrix), czyli dokładnie przypadek dla `X4`. Klasyfikacja `X4` jest poprawna, ale execution jest obecnie zablokowany: `classification_allowed = true`, `execution_allowed = false`.
+
+Następny krok: najpierw odblokować gate BMAD zdrowym checkiem, a potem wejść w flow `X4` od `/bmad-bmm-create-prd`, następnie `/bmad-bmm-create-architecture`, i dopiero na tej bazie zrenderować FUBAR scaffold bundle oraz przygotować draft `AGENTS.md`, snippets `.customize.yaml` i verify matrix. Remediacja gate:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```

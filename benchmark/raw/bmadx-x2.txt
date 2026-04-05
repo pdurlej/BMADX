@@ -1,0 +1,21 @@
+Wybór: `X2 — Regular`.
+
+Uzasadnienie: zadanie dotyczy małej/średniej zmiany w istniejącym backendzie, ale obejmuje `4 pliki`, więc to już nie jest `X1`. Jednocześnie z samego opisu nie wynika potrzeba pełnego flow BMAD, nowych artefaktów procesu ani scaffold bundle, więc `X3/X4` byłyby nadmiarowe. Dodatkowo gate BMADX pozwala teraz na execution tylko dla `X1/X2`; `X3/X4` są obecnie zablokowane przez niezdrowy stan BMAD.
+
+Następny krok: zrobić krótki impact scan tych 4 plików i potwierdzić, gdzie `status` zmienia kontrakt: model/DTO, walidację, mapowanie oraz warstwę persistence/handler.
+
+Plan:
+1. Zidentyfikować 4 pliki i rolę każdego z nich w przepływie danych `status`.
+2. Ustalić format pola `status`: typ, dozwolone wartości, required vs optional, default.
+3. Spisać minimalny zakres zmian w kolejności przepływu: wejście -> logika -> zapis/odczyt -> odpowiedź.
+4. Sprawdzić miejsca zależne: serializacja, walidacja, testy, ewentualne query/filter, jeśli `status` wpływa na zachowanie.
+5. Dopiero po tym wejść w implementację i verify.
+
+Verify:
+- Test jednostkowy lub integracyjny dla przyjęcia `status` na wejściu.
+- Test mapowania/persistence potwierdzający, że `status` jest zapisywany i odczytywany poprawnie.
+- Test odpowiedzi API/DTO potwierdzający obecność i poprawną wartość `status`.
+- Negatywny check dla nieprawidłowej wartości `status`, jeśli pole ma ograniczony zbiór wartości.
+- Krótki `/review`, jeśli diff dotknie kontraktu API albo walidacji w kilku miejscach.
+
+Założenie: `status` to zmiana lokalna w backendzie bez migracji, bez szerokiego rolloutu i bez nowych artefaktów BMAD. Jeśli okaże się, że pole zmienia publiczny kontrakt API lub wymaga migracji danych, warto podnieść ocenę ryzyka, ale nadal najpewniej zostanie to w `X2`, nie `X3`.

@@ -1,0 +1,8 @@
+# BMADX snippet for _bmad/_config/agents/bmm-dev.customize.yaml
+memories:
+  - "_bmad-output/project-context.md"
+critical_actions:
+  - "Traktuj verify-before-done jako warunek zamknięcia."
+  - "Dla małych zmian wybieraj X1 lub X2 zamiast eskalować bez potrzeby."
+  - "Dla zmian wymagających artefaktów procesu pracuj w X3."
+  - "Gdy zakres jest rozlany, rozważ X4 i scaffold bundle."

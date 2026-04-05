@@ -1,0 +1,46 @@
+FAZA:
+- Dobór workflowu BMAD dla małej zmiany backendowej, bez implementacji.
+
+WYKONANE:
+- Użyłem skilla `bmad-method-codex`.
+- Sprawdziłem lokalną mapę komend BMAD i snapshot release.
+- `sync_bmad_method.py check --json` nie domknął się przez brak dostępu do GitHub API w tym środowisku, więc oparłem wybór na lokalnych referencjach skilla.
+
+KROK_BIEŻĄCY:
+- Właściwy wybór to `bmad-bmm-quick-spec`.
+
+Uzasadnienie:
+- Zadanie jest małe i dobrze ograniczone: jedno nowe pole `status`, backend, 4 pliki, bez potrzeby pełnego PRD, architektury ani sprint planningu.
+- Potrzebny jest krótki, techniczny spec zmiany i plan verify przed właściwym wejściem w implementację.
+- Gdyby po analizie okazało się, że `status` zmienia kontrakt API, walidację, persistence i migracje szerzej niż wygląda z opisu, następnym biegiem byłoby `bmad-bmm-create-story`, ale na wejściu to byłoby za ciężkie.
+
+PLAN:
+1. Zidentyfikować 4 pliki i rolę każdego z nich: model/schema, DTO/serializer, service/use case, endpoint/controller/repository.
+2. Ustalić źródło prawdy dla `status`: typ, dozwolone wartości, domyślna wartość, czy pole jest wymagane.
+3. Opisać przepływ danych end-to-end:
+   - wejście requestu,
+   - walidacja,
+   - mapowanie do modelu domenowego/persistencji,
+   - zwrot w response.
+4. Rozpisać wpływ zmiany per plik:
+   - gdzie pole jest dodawane,
+   - gdzie walidowane,
+   - gdzie zapisywane/odczytywane,
+   - gdzie eksponowane na zewnątrz.
+5. Ująć zgodność wsteczną:
+   - co dzieje się dla starych rekordów bez `status`,
+   - czy potrzebna wartość domyślna lub migracja danych,
+   - czy klienci bez pola nadal działają.
+6. Zdefiniować testy i kryteria akceptacji przed implementacją.
+7. Po specu przejść do `bmad-bmm-quick-dev` albo, jeśli repo pracuje na story, do `bmad-bmm-create-story` + `bmad-bmm-dev-story`.
+
+VERIFY:
+- Test jednostkowy walidacji `status`: poprawne wartości przechodzą, niepoprawne są odrzucane.
+- Test request/response na endpointach: `status` jest przyjmowany i zwracany zgodnie z kontraktem.
+- Test warstwy persistence/repository: `status` zapisuje się i odczytuje bez utraty wartości.
+- Test kompatybilności wstecznej: rekord lub request bez `status` zachowuje się zgodnie z ustaloną regułą domyślną.
+- Jeśli istnieje OpenAPI/JSON schema: verify, że spec kontraktu zawiera nowe pole i typ.
+- Jeśli istnieją integracyjne testy backendu: verify scenariusz create/update/read z `status`.
+
+KROK_NASTĘPNY:
+- Uruchomić `bmad-bmm-quick-spec` dla tej zmiany i na jego podstawie rozpisać finalny zakres dla 4 plików oraz checklistę testów.

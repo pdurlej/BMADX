@@ -1,0 +1,27 @@
+Wybrany workflow: `$ralplan` w trybie krótkim, bez `--deliberate`, bez wejścia w execution.
+
+Krótko dlaczego: zadanie jest już dość konkretne, ale nadal wymaga uzgodnienia kontraktu pola `status`, touchpointów w 4 plikach i verify przed kodowaniem. Nie wybierałbym `$ralph` ani `$team`, bo to tryby wykonawcze, a tu było wprost: nie implementować. `$deep-interview` też nie jako główny bieg, chyba że na starcie okaże się, że nie wiadomo czym dokładnie jest `status` i jakie ma reguły.
+
+**Plan**
+1. Zrobić krótki brownfield intake: ustalić typ `status` (`string` vs enum), dozwolone wartości, czy pole jest wymagane, default, czy dotyczy `create`, `update`, `read`, oraz czy ma wpływ na DB.
+2. Zmapować dokładnie 4 pliki i przypisać im role. Typowy układ backendowy:
+   - plik kontraktu wejścia (`DTO` / schema / validator),
+   - plik modelu lub persystencji (`entity` / `model` / migration),
+   - plik logiki (`service` / use-case),
+   - plik wyjścia (`controller` / mapper / serializer).
+3. W pliku kontraktu doplanować dodanie `status` wraz z walidacją, required/optional i ewentualnym defaultem.
+4. W pliku modelu/persystencji doplanować pole `status`, mapowanie do storage i ewentualną migrację/backfill.
+5. W pliku serwisowym doplanować propagację `status` przez create/update/read oraz zasady biznesowe.
+6. W pliku kontrolera/mapera doplanować przyjęcie i zwracanie `status` bez regresji dla dotychczasowych klientów.
+7. Dopisać plan testów regresyjnych przed cleanupem/editem: walidacja, round-trip, odpowiedzi API, zgodność wsteczna.
+
+**Verify**
+- Test walidacji: poprawne i niepoprawne wartości `status`.
+- Test logiki: `status` przechodzi przez create/update bez gubienia i bez niejawnych zmian.
+- Test persystencji/integracyjny: zapis -> odczyt zwraca ten sam `status`.
+- Test API: pole jest akceptowane na wejściu i widoczne na wyjściu tam, gdzie powinno.
+- Test kompatybilności: stare payloady bez `status` nadal działają zgodnie z założeniem.
+- Jeśli jest migracja: verify `up/down`, defaultów i backfillu.
+- Na końcu standardowe bramki: lint, typecheck/build, testy targetowane dla 4 plików i ścieżki end-to-end jeśli istnieje.
+
+Jeśli później przejść pełnym biegiem OMX, oczekiwanym artefaktem z tego etapu byłyby plan i test-spec w `.omx/plans/`, a dopiero potem execution.

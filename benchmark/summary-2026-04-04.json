@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-04-04",
+  "cases": [
+    {
+      "case": "bmad-x1",
+      "framework": "bmad",
+      "tokens": 4179,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Użyłem skilla `bmad-method-codex`, bo zadanie dotyczy wyboru właściwego workflowu BMAD dla małej zmiany implementacyjnej.",
+      "response_chars": 1139,
+      "response_lines": 16
+    },
+    {
+      "case": "bmad-x2",
+      "framework": "bmad",
+      "tokens": 5686,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "FAZA:",
+      "response_chars": 2551,
+      "response_lines": 46
+    },
+    {
+      "case": "bmad-x3",
+      "framework": "bmad",
+      "tokens": 11044,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "FAZA:",
+      "response_chars": 1266,
+      "response_lines": 19
+    },
+    {
+      "case": "bmad-x4",
+      "framework": "bmad",
+      "tokens": 8041,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "FAZA:",
+      "response_chars": 1425,
+      "response_lines": 15
+    },
+    {
+      "case": "bmadx-x1",
+      "framework": "bmadx",
+      "tokens": 10492,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Użyłem `bmadx`, bo zadanie polega dokładnie na doborze właściwego biegu przed wykonaniem.",
+      "response_chars": 690,
+      "response_lines": 7
+    },
+    {
+      "case": "bmadx-x2",
+      "framework": "bmadx",
+      "tokens": 10334,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Wybór: `X2 — Regular`.",
+      "response_chars": 1772,
+      "response_lines": 21
+    },
+    {
+      "case": "bmadx-x3",
+      "framework": "bmadx",
+      "tokens": 12366,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Użyłem `bmadx`, bo zadanie dotyczy wejścia w właściwy flow dla istniejącego story BMAD i pilnowania artefaktów procesu, czyli klasycznego routingu `BMAD + discipline overlay`.",
+      "response_chars": 1378,
+      "response_lines": 11
+    },
+    {
+      "case": "bmadx-x4",
+      "framework": "bmadx",
+      "tokens": 10627,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Użyłem `bmadx`.",
+      "response_chars": 1356,
+      "response_lines": 11
+    },
+    {
+      "case": "omx-x1",
+      "framework": "omx",
+      "tokens": 15555,
+      "reasoning": "high",
+      "mcp_startup": "ready: omx_trace, omx_code_intel, omx_memory, omx_team_run, omx_state",
+      "response_first_line": "Wybór: `solo execute` bez `$deep-interview`, `$ralplan` i `$team`.",
+      "response_chars": 621,
+      "response_lines": 5
+    },
+    {
+      "case": "omx-x2",
+      "framework": "omx",
+      "tokens": 41003,
+      "reasoning": "high",
+      "mcp_startup": "ready: omx_code_intel, omx_memory, omx_trace, omx_team_run, omx_state",
+      "response_first_line": "Wybrany workflow: `$ralplan` w trybie krótkim, bez `--deliberate`, bez wejścia w execution.",
+      "response_chars": 2290,
+      "response_lines": 27
+    },
+    {
+      "case": "omx-x3",
+      "framework": "omx",
+      "tokens": 23463,
+      "reasoning": "high",
+      "mcp_startup": "ready: omx_code_intel, omx_memory, omx_team_run, omx_trace, omx_state",
+      "response_first_line": "Wybór: `$ralplan` jako wejście do flow, a dopiero po zamknięciu bramki artefaktów przejście do `$ralph`.",
+      "response_chars": 951,
+      "response_lines": 5
+    },
+    {
+      "case": "omx-x4",
+      "framework": "omx",
+      "tokens": 22141,
+      "reasoning": "high",
+      "mcp_startup": "ready: omx_trace, omx_memory, omx_code_intel, omx_team_run, omx_state",
+      "response_first_line": "Wybrałbym `\\$ralplan` czyli `\\$plan --consensus`.",
+      "response_chars": 989,
+      "response_lines": 6
+    }
+  ],
+  "framework_averages": {
+    "bmad": {
+      "avg_tokens": 7237.5,
+      "min_tokens": 4179,
+      "max_tokens": 11044,
+      "case_count": 4
+    },
+    "bmadx": {
+      "avg_tokens": 10954.75,
+      "min_tokens": 10334,
+      "max_tokens": 12366,
+      "case_count": 4
+    },
+    "omx": {
+      "avg_tokens": 25540.5,
+      "min_tokens": 15555,
+      "max_tokens": 41003,
+      "case_count": 4
+    }
+  }
+}

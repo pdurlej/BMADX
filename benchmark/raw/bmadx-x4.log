@@ -1,0 +1,149 @@
+Użyłem `bmadx`.
+
+Właściwy bieg to `X4 — FUBAR (BMAD+)`. Uzasadnienie: zadanie jest rozlane, ma charakter planistyczny, wymaga scaffold bundle ponad sam BMAD i wprost obejmuje artefakty typowe dla `X4`: draft `AGENTS.md`, snippets `.customize.yaml`, verify matrix i bundle dla dalszego prowadzenia projektu. To nie jest lokalny task implementacyjny (`X1/X2`) ani samo wejście w pojedynczy artefakt BMAD (`X3`), tylko porządkowanie szerokiego projektu i ustawienie warstwy operacyjnej.
+
+Właściwy workflow: najpierw `BMAD planning/discovery`, potem dopiero `X4 scaffold bundle`. Powód jest prosty: bundle nie powinien być drugim source-of-truth, więc najpierw trzeba ustalić zakres, strumienie pracy, ownership, ryzyka i trwały kontekst projektu w BMAD, a dopiero na tym oprzeć `AGENTS.md`, snippets i verify matrix.
+
+Istotny warunek: klasyfikacja `X4` jest poprawna, ale execution dla `X4` jest obecnie zablokowany, bo BMAD health check jest czerwony. Następny krok to odblokowanie gate i dopiero potem wejście w bundle:
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json`
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync`
+
+Jeśli chcesz, w następnym kroku mogę już rozpisać sam plan `X4` w kolejności: inputs -> workflow -> scaffold bundle -> verify matrix, nadal bez implementacji.
+
+--- STDERR ---
+OpenAI Codex v0.101.0 (research preview)
+--------
+workdir: /tmp/bmadx-bench
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+session id: 019d5797-284d-7722-aeea-b0f28e735e1d
+--------
+user
+Use $bmadx. Na podstawie zadania wybierz właściwy workflow lub bieg, krótko uzasadnij wybór i opisz następny krok. Nie implementuj nic. Zadanie: Potrzebuję planu dla rozlanego projektu, scaffold bundle, draft AGENTS.md, snippets .customize.yaml i verify matrix.
+mcp startup: no servers
+
+thinking
+**Planning command execution**
+
+I need to announce my skills and make sure I've read enough files. The dependency gate indicates I should run a script check. Since the sandbox is read-only and doesn't allow approvals, I can likely execute read commands. I'll need to update my commentary before I dive into any substantial work. It seems I'll probably use exec_command in commentary. I also want to read reference files to trigger or verify. Let's plan an update and consider parallel commands!
+codex
+Użyję `bmadx`, bo prosisz o dobór biegu/workflow i pakiet scaffold dla rozlanego projektu. Najpierw sprawdzę gate BMADX/BMAD i dociągnę minimalny kontekst z referencji skilla, potem sklasyfikuję zadanie i wskażę następny krok.
+exec
+/bin/zsh -lc "sed -n '1,260p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/fubar-bundle-spec.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/verify-discipline.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/gearbox.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc 'python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --json' in /tmp/bmadx-bench succeeded in 52ms:
+# Gearbox `X1..X4`
+
+BMADX działa jak automatyczna skrzynia biegów. Najpierw klasyfikuje zadanie,
+potem dobiera poziom procesu.
+
+Od `v0.2` klasyfikacja biegu i zgoda na execution to osobne decyzje:
+- `X1/X2` mogą przejść przy czerwonym BMAD jako soft gate,
+- `X3/X4` wymagają zdrowego execution gate,
+- czerwony gate nie zmienia poprawnej klasyfikacji zadania.
+
+| Bieg | Kiedy użyć | Co robić | Co musi być na wyjściu |
+| --- | --- | --- | --- |
+| `X1` | mały, lokalny task; niski blast radius; 1–2 checki | krótki plan w głowie, implementacja, verify | zmiana + dowód |
+| `X2` | kilka plików, trochę większe ryzyko, ale bez pełnego BMAD | krótki plan, implementacja, verify, opcjonalny review | plan, zmiana, dowód |
+| `X3` | potrzeba artefaktów BMAD albo decyzji w ramach workflow map | wejście w właściwy flow BMAD i praca po artefaktach | artefakt BMAD + kod + dowód |
+| `X4` | chaos, szeroki zakres, ryzyko, trudny rollout, potrzeba scaffold bundle | BMAD flow + FUBAR bundle + verify discipline | bundle + plan działania + dowód |
+
+## Sygnały wejścia
+
+### X1
+ succeeded in 52ms:
+# FUBAR Bundle Spec
+
+`X4/FUBAR` generuje scaffold bundle dla trudnego projektu lub trudnej zmiany.
+
+## Cel
+
+Nie zastąpić BMAD, tylko szybko dołożyć brakującą warstwę operacyjno-taktyczną
+pod Codex.
+
+## Bundle zawiera
+
+- `AGENTS.md` draft dla repo,
+- snippet `core-bmad-master.customize.yaml`,
+- snippet `bmm-dev.customize.yaml`,
+- opcjonalny snippet `bmm-architect.customize.yaml`,
+- `bmadx-trigger-matrix.md`,
+- `bmadx-verify-matrix.md`,
+- `bmadx-rollout-checklist.md`,
+- `bmadx-subagent-policy.md`.
+
+ succeeded in 52ms:
+# Verify Discipline
+
+BMADX nie zamyka pracy bez dowodu.
+
+## Zasada
+
+Najpierw implementacja, potem verify, potem dopiero status `done`.
+
+Dependency gate nie znosi tej zasady:
+- `X1/X2` mogą wejść w execution przy warningu z BMAD,
+- `X3/X4` wymagają zdrowego BMAD zanim verify będzie miało sens procesowy.
+
+## Minimalny kontrakt
+
+### X1
+- 1–2 checki lub najmocniejszy dostępny oracle,
+- krótki dowód w odpowiedzi.
+
+### X2
+- plan wykonania,
+codex
+Mam już kryteria biegów i spec bundle. Dociągam jeszcze wynik health checka BMADX, bo dla `X4` klasyfikacja i zgoda na execution są rozdzielone i muszę to rozróżnić w rekomendacji.
+ succeeded in 7.25s:
+{
+  "mode": "check",
+  "requested_gear": null,
+  "first_run": false,
+  "skill": {
+    "name": "bmadx",
+    "version": "0.2.0",
+    "target_codex_profile": "codex-5.4"
+  },
+  "classification_allowed": true,
+  "execution_allowed": false,
+  "warning": "BMAD nie jest teraz w pe\u0142ni zdrowy; dla `X1/X2` to warning, a ostatni zdrowy stan zapisano 2026-04-04T08:09:05.721813+00:00.",
+  "bmad_dependency": {
+    "path": "/tmp/codex-home-bmadx-bench/skills/bmad-method-codex",
+    "available": true,
+    "healthy": false,
+    "action": "needs_attention",
+    "release_tag": "",
+    "cache": {
+      "available": true,
+codex
+Użyłem `bmadx`.
+
+Właściwy bieg to `X4 — FUBAR (BMAD+)`. Uzasadnienie: zadanie jest rozlane, ma charakter planistyczny, wymaga scaffold bundle ponad sam BMAD i wprost obejmuje artefakty typowe dla `X4`: draft `AGENTS.md`, snippets `.customize.yaml`, verify matrix i bundle dla dalszego prowadzenia projektu. To nie jest lokalny task implementacyjny (`X1/X2`) ani samo wejście w pojedynczy artefakt BMAD (`X3`), tylko porządkowanie szerokiego projektu i ustawienie warstwy operacyjnej.
+
+Właściwy workflow: najpierw `BMAD planning/discovery`, potem dopiero `X4 scaffold bundle`. Powód jest prosty: bundle nie powinien być drugim source-of-truth, więc najpierw trzeba ustalić zakres, strumienie pracy, ownership, ryzyka i trwały kontekst projektu w BMAD, a dopiero na tym oprzeć `AGENTS.md`, snippets i verify matrix.
+
+Istotny warunek: klasyfikacja `X4` jest poprawna, ale execution dla `X4` jest obecnie zablokowany, bo BMAD health check jest czerwony. Następny krok to odblokowanie gate i dopiero potem wejście w bundle:
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json`
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync`
+
+Jeśli chcesz, w następnym kroku mogę już rozpisać sam plan `X4` w kolejności: inputs -> workflow -> scaffold bundle -> verify matrix, nadal bez implementacji.
+tokens used
+10 627
+Użyłem `bmadx`.
+
+Właściwy bieg to `X4 — FUBAR (BMAD+)`. Uzasadnienie: zadanie jest rozlane, ma charakter planistyczny, wymaga scaffold bundle ponad sam BMAD i wprost obejmuje artefakty typowe dla `X4`: draft `AGENTS.md`, snippets `.customize.yaml`, verify matrix i bundle dla dalszego prowadzenia projektu. To nie jest lokalny task implementacyjny (`X1/X2`) ani samo wejście w pojedynczy artefakt BMAD (`X3`), tylko porządkowanie szerokiego projektu i ustawienie warstwy operacyjnej.
+
+Właściwy workflow: najpierw `BMAD planning/discovery`, potem dopiero `X4 scaffold bundle`. Powód jest prosty: bundle nie powinien być drugim source-of-truth, więc najpierw trzeba ustalić zakres, strumienie pracy, ownership, ryzyka i trwały kontekst projektu w BMAD, a dopiero na tym oprzeć `AGENTS.md`, snippets i verify matrix.
+
+Istotny warunek: klasyfikacja `X4` jest poprawna, ale execution dla `X4` jest obecnie zablokowany, bo BMAD health check jest czerwony. Następny krok to odblokowanie gate i dopiero potem wejście w bundle:
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json`
+`python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync`
+
+Jeśli chcesz, w następnym kroku mogę już rozpisać sam plan `X4` w kolejności: inputs -> workflow -> scaffold bundle -> verify matrix, nadal bez implementacji.

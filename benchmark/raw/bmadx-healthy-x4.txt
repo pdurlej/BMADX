@@ -1,0 +1,7 @@
+Wybór: `X4 — FUBAR (BMAD+)`, z workflowem BMAD zaczynanym od `/bmad-bmm-create-prd`, potem `/bmad-bmm-create-architecture`, a dopiero później scaffold bundle.
+
+Uzasadnienie: zakres jest rozlany i prosisz jednocześnie o plan, scaffold bundle, draft `AGENTS.md`, snippety `.customize.yaml` i `verify matrix`, więc to przekracza zwykły `X3` i wprost pasuje do `X4`, gdzie BMAD pozostaje source-of-truth, a BMADX dokłada warstwę operacyjną i bundle.
+
+Stan gate: klasyfikacja `X4` jest dozwolona, ale execution jest obecnie zablokowany, bo check BMAD zwrócił `execution_allowed: false` dla `X4`.
+
+Następny krok: najpierw domknąć health check/sync BMAD, potem wejść w PRD i architekturę jako podstawę, a na ich bazie przygotować bundle w kolejności: plan projektu, draft `AGENTS.md`, snippety `core-bmad-master` i `bmm-dev` `.customize.yaml`, oraz `bmadx-verify-matrix`.

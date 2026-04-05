@@ -1,0 +1,149 @@
+Użyłem `bmadx`, bo zadanie dotyczy wejścia w właściwy flow dla istniejącego story BMAD i pilnowania artefaktów procesu, czyli klasycznego routingu `BMAD + discipline overlay`.
+
+Właściwy bieg to `X3 — Complex (BMAD)`. Krótkie uzasadnienie: masz już istniejące story BMAD do wdrożenia, więc source-of-truth pozostają artefakty BMAD, a nie lokalny one-shot ani lekki `X2`; jednocześnie z opisu nie wynika potrzeba `X4`, bo nie prosisz o FUBAR bundle, rollout/ownership matrix ani dodatkowy scaffold ponad BMAD.
+
+Istotne z gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany, bo `sync_bmadx` zwrócił `classification_allowed = true` i `execution_allowed = false`, a dla `X3` obowiązuje hard gate. Następny krok: najpierw przywrócić zdrowy stan zależności BMAD, a potem wejść w flow implementacji istniejącego story, otwierając i traktując jako source-of-truth bieżące `story`, `project-context.md`, acceptance criteria i powiązane artefakty workflow. Remediation wskazane przez skill:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```
+
+Po odblokowaniu gate kolejny ruch procesowy jest prosty: zrobić intake artefaktów story, potwierdzić kryteria verify dla tego story i dopiero wtedy wejść w wykonanie w ramach flow BMAD.
+
+--- STDERR ---
+OpenAI Codex v0.101.0 (research preview)
+--------
+workdir: /tmp/bmadx-bench
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+session id: 019d5796-b450-7051-91b8-9ba650e06874
+--------
+user
+Use $bmadx. Na podstawie zadania wybierz właściwy workflow lub bieg, krótko uzasadnij wybór i opisz następny krok. Nie implementuj nic. Zadanie: Mamy istniejące story BMAD do wdrożenia i trzeba wejść w właściwy flow oraz pilnować artefaktów procesu.
+mcp startup: no servers
+codex
+Użyję `bmadx`, bo prosisz o dobór właściwego biegu/workflow BMAD dla istniejącego story i o pilnowanie artefaktów procesu, czyli dokładnie o routing oraz discipline overlay. Najpierw sprawdzę dependency gate `bmadx`, potem potwierdzę progi `X3/X4` w referencjach i na tej podstawie dam rekomendację bez wchodzenia w implementację.
+exec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/SKILL.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/gearbox.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc 'python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --json' in /tmp/bmadx-bench succeeded in 51ms:
+# Gearbox `X1..X4`
+
+BMADX działa jak automatyczna skrzynia biegów. Najpierw klasyfikuje zadanie,
+potem dobiera poziom procesu.
+
+Od `v0.2` klasyfikacja biegu i zgoda na execution to osobne decyzje:
+- `X1/X2` mogą przejść przy czerwonym BMAD jako soft gate,
+- `X3/X4` wymagają zdrowego execution gate,
+- czerwony gate nie zmienia poprawnej klasyfikacji zadania.
+
+| Bieg | Kiedy użyć | Co robić | Co musi być na wyjściu |
+| --- | --- | --- | --- |
+| `X1` | mały, lokalny task; niski blast radius; 1–2 checki | krótki plan w głowie, implementacja, verify | zmiana + dowód |
+| `X2` | kilka plików, trochę większe ryzyko, ale bez pełnego BMAD | krótki plan, implementacja, verify, opcjonalny review | plan, zmiana, dowód |
+| `X3` | potrzeba artefaktów BMAD albo decyzji w ramach workflow map | wejście w właściwy flow BMAD i praca po artefaktach | artefakt BMAD + kod + dowód |
+| `X4` | chaos, szeroki zakres, ryzyko, trudny rollout, potrzeba scaffold bundle | BMAD flow + FUBAR bundle + verify discipline | bundle + plan działania + dowód |
+
+## Sygnały wejścia
+
+### X1
+ succeeded in 51ms:
+---
+name: bmadx
+description: Orkiestruje BMAD w Codex przez automatyczną skrzynię biegów X1-X4, pilnuje zależności od bmad-method-codex, rekomenduje właściwy poziom planowania i verification oraz generuje FUBAR scaffold bundle dla trudnych projektów.
+---
+
+# BMADX
+
+BMADX to BMAD-first overlay dla Codex. Nie zastępuje BMAD i nie tworzy drugiego
+source-of-truth dla procesu. Dokłada operacyjno-taktyczną warstwę inspirowaną
+OMX: routing, verify-before-done, capability-based politykę użycia subagentów i
+`X4/FUBAR` scaffold bundle dla trudnych projektów.
+
+## Używaj tego skilla, gdy
+
+- użytkownik chce dobrać właściwy tryb pracy dla zadania zamiast od razu wejść
+  w przypadkowy one-shot,
+- użytkownik chce uruchomić BMAD z dodatkową dyscypliną routingu, review i
+  verification,
+- trzeba zdecydować, czy zadanie jest `X1`, `X2`, `X3` czy `X4`,
+- trzeba wygenerować pakiet wdrożeniowy ponad BMAD: draft `AGENTS.md`,
+codex
+Mam już gate i progi biegu. Jeszcze dociągam wynik `sync_bmadx` i zerknę do trigger matrix, żeby odróżnić `X3` od `X4` bez zgadywania.
+ succeeded in 7.26s:
+{
+  "mode": "check",
+  "requested_gear": null,
+  "first_run": false,
+  "skill": {
+    "name": "bmadx",
+    "version": "0.2.0",
+    "target_codex_profile": "codex-5.4"
+  },
+  "classification_allowed": true,
+  "execution_allowed": false,
+  "warning": "BMAD nie jest teraz w pe\u0142ni zdrowy; dla `X1/X2` to warning, a ostatni zdrowy stan zapisano 2026-04-04T08:09:05.721813+00:00.",
+  "bmad_dependency": {
+    "path": "/tmp/codex-home-bmadx-bench/skills/bmad-method-codex",
+    "available": true,
+    "healthy": false,
+    "action": "needs_attention",
+    "release_tag": "",
+    "cache": {
+      "available": true,
+exec
+/bin/zsh -lc "sed -n '1,240p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/trigger-matrix.md" in /tmp/bmadx-bench succeeded in 52ms:
+# Trigger Matrix
+
+Operacyjna macierz do klasyfikacji zadań bez zgadywania.
+
+| Sygnał | X1 | X2 | X3 | X4 |
+| --- | --- | --- | --- | --- |
+| 1 lokalny plik | tak | nie | nie | nie |
+| kilka plików / lokalny blast radius | nie | tak | nie | nie |
+| potrzeba nowego artefaktu BMAD | nie | nie | tak | tak |
+| `plan` w prośbie użytkownika | nie | pytania | pytania | pytania |
+| niejasny zakres | nie | pytania | pytania | pytania |
+| API/schema/auth/perf/concurrency risk | nie | czasem | tak | tak |
+| rollout i ownership do zaprojektowania | nie | nie | czasem | tak |
+| scaffold bundle ponad BMAD | nie | nie | nie | tak |
+
+## Rekomendowane progi
+
+- `X1`: prosty fix lub prosty upgrade.
+- `X2`: lokalna zmiana wieloplikowa.
+- `X3`: regularny flow BMAD.
+
+thinking
+**Considering date notes**
+
+I need to note the dates, which might seem a bit odd for 2026, even if the user hasn't specifically asked for the latest information. But including the exact timestamp seems essential for clarity. Maybe I should mention the cache date of 2026-04-04T08:09:05Z. I might also want to note that there’s no implementation needed here, just keeping it straightforward and informative for the user!
+codex
+Użyłem `bmadx`, bo zadanie dotyczy wejścia w właściwy flow dla istniejącego story BMAD i pilnowania artefaktów procesu, czyli klasycznego routingu `BMAD + discipline overlay`.
+
+Właściwy bieg to `X3 — Complex (BMAD)`. Krótkie uzasadnienie: masz już istniejące story BMAD do wdrożenia, więc source-of-truth pozostają artefakty BMAD, a nie lokalny one-shot ani lekki `X2`; jednocześnie z opisu nie wynika potrzeba `X4`, bo nie prosisz o FUBAR bundle, rollout/ownership matrix ani dodatkowy scaffold ponad BMAD.
+
+Istotne z gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany, bo `sync_bmadx` zwrócił `classification_allowed = true` i `execution_allowed = false`, a dla `X3` obowiązuje hard gate. Następny krok: najpierw przywrócić zdrowy stan zależności BMAD, a potem wejść w flow implementacji istniejącego story, otwierając i traktując jako source-of-truth bieżące `story`, `project-context.md`, acceptance criteria i powiązane artefakty workflow. Remediation wskazane przez skill:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```
+
+Po odblokowaniu gate kolejny ruch procesowy jest prosty: zrobić intake artefaktów story, potwierdzić kryteria verify dla tego story i dopiero wtedy wejść w wykonanie w ramach flow BMAD.
+tokens used
+12 366
+Użyłem `bmadx`, bo zadanie dotyczy wejścia w właściwy flow dla istniejącego story BMAD i pilnowania artefaktów procesu, czyli klasycznego routingu `BMAD + discipline overlay`.
+
+Właściwy bieg to `X3 — Complex (BMAD)`. Krótkie uzasadnienie: masz już istniejące story BMAD do wdrożenia, więc source-of-truth pozostają artefakty BMAD, a nie lokalny one-shot ani lekki `X2`; jednocześnie z opisu nie wynika potrzeba `X4`, bo nie prosisz o FUBAR bundle, rollout/ownership matrix ani dodatkowy scaffold ponad BMAD.
+
+Istotne z gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany, bo `sync_bmadx` zwrócił `classification_allowed = true` i `execution_allowed = false`, a dla `X3` obowiązuje hard gate. Następny krok: najpierw przywrócić zdrowy stan zależności BMAD, a potem wejść w flow implementacji istniejącego story, otwierając i traktując jako source-of-truth bieżące `story`, `project-context.md`, acceptance criteria i powiązane artefakty workflow. Remediation wskazane przez skill:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```
+
+Po odblokowaniu gate kolejny ruch procesowy jest prosty: zrobić intake artefaktów story, potwierdzić kryteria verify dla tego story i dopiero wtedy wejść w wykonanie w ramach flow BMAD.

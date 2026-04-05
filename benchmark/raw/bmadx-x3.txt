@@ -1,0 +1,11 @@
+Użyłem `bmadx`, bo zadanie dotyczy wejścia w właściwy flow dla istniejącego story BMAD i pilnowania artefaktów procesu, czyli klasycznego routingu `BMAD + discipline overlay`.
+
+Właściwy bieg to `X3 — Complex (BMAD)`. Krótkie uzasadnienie: masz już istniejące story BMAD do wdrożenia, więc source-of-truth pozostają artefakty BMAD, a nie lokalny one-shot ani lekki `X2`; jednocześnie z opisu nie wynika potrzeba `X4`, bo nie prosisz o FUBAR bundle, rollout/ownership matrix ani dodatkowy scaffold ponad BMAD.
+
+Istotne z gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany, bo `sync_bmadx` zwrócił `classification_allowed = true` i `execution_allowed = false`, a dla `X3` obowiązuje hard gate. Następny krok: najpierw przywrócić zdrowy stan zależności BMAD, a potem wejść w flow implementacji istniejącego story, otwierając i traktując jako source-of-truth bieżące `story`, `project-context.md`, acceptance criteria i powiązane artefakty workflow. Remediation wskazane przez skill:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```
+
+Po odblokowaniu gate kolejny ruch procesowy jest prosty: zrobić intake artefaktów story, potwierdzić kryteria verify dla tego story i dopiero wtedy wejść w wykonanie w ramach flow BMAD.

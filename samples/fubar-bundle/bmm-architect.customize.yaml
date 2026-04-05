@@ -1,0 +1,7 @@
+# Optional BMADX snippet for _bmad/_config/agents/bmm-architect.customize.yaml
+memories:
+  - "_bmad-output/project-context.md"
+critical_actions:
+  - "Dla X3 i X4 pilnuj, by BMAD pozostał ownerem architektury."
+  - "Nie twórz drugiego source-of-truth poza artefaktami BMAD."
+  - "Projektuj decyzje tak, aby rollout i verify były możliwe do udowodnienia."

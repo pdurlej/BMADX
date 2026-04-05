@@ -1,0 +1,11 @@
+Wybór: `X3 — Complex (BMAD)`.
+
+Uzasadnienie: to jest wdrożenie istniejącego story BMAD, więc praca powinna wejść w regularny flow BMAD oparty o istniejące artefakty jako source-of-truth; nie ma sygnałów, że potrzeba `X4`, bo nie opisujesz chaosu, rollout/ownership do zaprojektowania ani scaffold bundle ponad BMAD.
+
+Stan gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany (`execution_allowed = false`, `bmad_status = needs_attention`).
+
+Następny krok: najpierw naprawić gate BMAD przez check/sync zależności BMAD, a dopiero potem wejść w implementację przez artefakty story i `project-context.md`, pilnując że to one definiują scope, kryteria i verification. Remediation wskazane przez gate:
+```bash
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
+python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+```

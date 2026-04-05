@@ -1,0 +1,13 @@
+# BMADX snippet for _bmad/_config/agents/core-bmad-master.customize.yaml
+memories:
+  - "_bmad-output/project-context.md"
+critical_actions:
+  - "Najpierw sklasyfikuj zadanie do X1, X2, X3 albo X4."
+  - "Jeśli zakres jest niejednoznaczny albo użytkownik mówi plan, zadawaj pytania przed wyborem biegu."
+  - "Zachowaj BMAD jako source-of-truth dla procesu."
+  - "Pilnuj verify-before-done i nie zamykaj pracy bez dowodu."
+menu:
+  - "X1 - One-shot"
+  - "X2 - Regular"
+  - "X3 - Complex (BMAD)"
+  - "X4 - FUBAR (BMAD+)"

@@ -1,0 +1,5 @@
+`bmadx`: wybór padł na `X3 — Complex (BMAD)`.
+
+Wybór: `X3`, w ramach istniejącego story BMAD, nie `X2`.
+Uzasadnienie: zmiana obejmuje kilka plików backendu, ale ważniejszy jest wymóg zgodności z istniejącym story i artefaktami procesu; to oznacza, że source-of-truth pozostaje BMAD, więc właściwy jest pełny workflow BMAD dla już istniejącego artefaktu, a nie zwykły lokalny plan wykonania.
+Następny krok: najpierw odblokować execution gate BMAD, bo klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany (`execution_allowed = false`); dopiero potem wejść w artefakty istniejącego story i doprecyzować zmianę pola `status` zgodnie z acceptance criteria i `project-context`.

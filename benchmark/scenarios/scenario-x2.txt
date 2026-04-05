@@ -1,0 +1,2 @@
+Use the requested skill to decide the right workflow for this task and answer briefly in Polish.
+Task: Dodaj obsługę nowego pola status w 4 plikach backendu i wskaż plan oraz verify.

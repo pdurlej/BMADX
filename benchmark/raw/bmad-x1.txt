@@ -1,0 +1,16 @@
+Użyłem skilla `bmad-method-codex`, bo zadanie dotyczy wyboru właściwego workflowu BMAD dla małej zmiany implementacyjnej.
+
+FAZA:
+- Wybrałbym `Quick flow`, konkretnie `bmad-bmm-quick-dev`.
+
+WYKONANE:
+- Sprawdziłem lokalne instrukcje skilla i mapę komend w [references/command-matrix.md](/Users/pd/.codex/skills/bmad-method-codex/references/command-matrix.md).
+- Zweryfikowałem lokalny snapshot wydania w [references/upstream/latest-release-summary.md](/Users/pd/.codex/skills/bmad-method-codex/references/upstream/latest-release-summary.md).
+- Uruchomienie `python3 scripts/sync_bmad_method.py check --json` nie domknęło się przez brak dostępu sieciowego do GitHub API, więc oparłem wybór na lokalnych źródłach skilla.
+
+KROK_BIEŻĄCY:
+- Dobór workflowu do zadania.
+
+KROK_NASTĘPNY:
+- `bmad-bmm-quick-dev`, bo chodzi o bardzo małą, lokalną poprawkę w istniejącym komponencie React, bez potrzeby pełnego planowania PRD, architektury ani rozbijania pracy na story.
+- Dalej najpierw zlokalizowałbym komponent i dokładny komunikat błędu, potem ocenił zakres wpływu tej zmiany, a dopiero później przygotował minimalną poprawkę i krótką weryfikację.

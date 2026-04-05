@@ -1,0 +1,5 @@
+Wybór: `solo execute` bez `$deep-interview`, `$ralplan` i `$team`.
+
+Uzasadnienie: zadanie jest wąskie, jednoznaczne, niskiego ryzyka i dotyczy pojedynczego komponentu React. Zgodnie z aktywnym `AGENTS.md` to przypadek na bezpośrednie wykonanie przez jednego agenta, bez narzutu planowania lub orkiestracji zespołu.
+
+Następny krok: zrobiłbym krótki, tylko-odczytowy przegląd repo, żeby zlokalizować komponent i dokładny komunikat błędu, potwierdzić literówkę, a potem przygotować minimalną poprawkę oraz lekką weryfikację, że zmiana nie dotyka nic poza tym stringiem. Zgodnie z Twoją instrukcją nic teraz nie implementuję.

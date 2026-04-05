@@ -1,0 +1,5 @@
+Wybrałbym `\$ralplan` czyli `\$plan --consensus`.
+
+To jest właściwy bieg, bo zadanie jest szerokie i czysto planistyczne: nie chodzi o pojedynczą zmianę w kodzie, tylko o zestaw artefaktów planu dla rozlanego projektu (`scaffold bundle`, draft `AGENTS.md`, snippet-y `.customize.yaml`, `verify matrix`). Zgodnie z aktywnym guidance taki zakres powinien przejść przez planowanie z przeglądem `Planner -> Architect -> Critic`, a nie przez `\$ralph` ani `\$team`, bo te ścieżki są wykonawcze. Jeśli podczas intake okaże się, że granice są nadal zbyt nieostre, `\$ralplan` i tak kieruje najpierw do krótkiego `\$deep-interview --quick`.
+
+Następny krok: zrobić `pre-context intake` dla zadania, czyli spisać snapshot kontekstu w `.omx/context/...`, zebrać fakty o repo i doprecyzować brakujące granice planu. Dopiero na tej podstawie powstaje właściwy bundle planistyczny: PRD/test-spec, draft `AGENTS.md`, snippet-y `.customize.yaml` i `verify matrix`, bez wchodzenia jeszcze w implementację.

@@ -1,0 +1,67 @@
+{
+  "name": "bmadx",
+  "skill_version": "0.2.2",
+  "target_codex_profile": "codex-5.4",
+  "dependency_skill": "bmad-method-codex",
+  "dependency_check_command": "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json",
+  "required_bmad_references": [
+    "docs_reference_workflow_map.md",
+    "docs_reference_commands.md",
+    "docs_reference_agents.md",
+    "docs_reference_modules.md",
+    "latest-release-summary.md"
+  ],
+  "tracked_local_files": [
+    "SKILL.md",
+    "agents/openai.yaml",
+    "references/gearbox.md",
+    "references/trigger-matrix.md",
+    "references/bmadx-vs-bmad.md",
+    "references/subagent-policy.md",
+    "references/verify-discipline.md",
+    "references/fubar-bundle-spec.md",
+    "references/skill-manifest.json",
+    "scripts/sync_bmadx.py",
+    "scripts/test_sync_bmadx.py",
+    "scripts/render_fubar_bundle.py",
+    "assets/templates/AGENTS.repo.md",
+    "assets/templates/core-bmad-master.customize.yaml",
+    "assets/templates/bmm-dev.customize.yaml",
+    "assets/templates/bmm-architect.customize.yaml",
+    "assets/templates/trigger-matrix.md",
+    "assets/templates/verify-matrix.md",
+    "assets/templates/rollout-checklist.md",
+    "assets/templates/subagent-policy.md"
+  ],
+  "template_checks": {
+    "assets/templates/AGENTS.repo.md": [
+      "BMAD > BMADX",
+      "_bmad-output/project-context.md",
+      "X1",
+      "X4",
+      "bmad-help"
+    ],
+    "assets/templates/core-bmad-master.customize.yaml": [
+      "_bmad-output/project-context.md",
+      "verify-before-done",
+      "X1",
+      "X4"
+    ],
+    "assets/templates/bmm-dev.customize.yaml": [
+      "_bmad-output/project-context.md",
+      "verify-before-done",
+      "X2",
+      "X3"
+    ],
+    "assets/templates/bmm-architect.customize.yaml": [
+      "_bmad-output/project-context.md",
+      "X3",
+      "X4"
+    ]
+  },
+  "expected_layout_paths": [
+    "_bmad/_config/agents",
+    "_bmad-output/project-context.md"
+  ],
+  "notes": "BMAD-first overlay with concise X1/X2 response contract, compact gate and mixed-metric benchmark guardrails"
+}

@@ -1,0 +1,166 @@
+{
+  "generated_at": "2026-04-05",
+  "framework": "bmadx",
+  "profile": "healthy",
+  "runner": {
+    "model": "gpt-5.4",
+    "reasoning": "medium",
+    "mcp_startup": "no servers"
+  },
+  "baselines": {
+    "mixed_summary": "/Users/pd/Developer/BMADX/benchmark/summary-2026-04-04.json",
+    "mixed_summary_note": "Contains historical BMAD/OMX baselines and prior BMADX degraded rerun."
+  },
+  "cases": [
+    {
+      "case": "bmadx-healthy-x1",
+      "framework": "bmadx",
+      "profile": "healthy",
+      "tokens": 8630,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Wyb\u00f3r: `X1 \u2014 One-shot`.",
+      "response_chars": 353,
+      "response_lines": 3,
+      "expected_gear": "X1",
+      "observed_gears": [
+        "X1"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "reference_reads": [],
+      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x1.txt",
+      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x1.log"
+    },
+    {
+      "case": "bmadx-healthy-x2",
+      "framework": "bmadx",
+      "profile": "healthy",
+      "tokens": 8770,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Wyb\u00f3r: `X2 \u2014 Regular`",
+      "response_chars": 890,
+      "response_lines": 13,
+      "expected_gear": "X2",
+      "observed_gears": [
+        "X2",
+        "X1"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "reference_reads": [],
+      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2.txt",
+      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2.log"
+    },
+    {
+      "case": "bmadx-healthy-x3",
+      "framework": "bmadx",
+      "profile": "healthy",
+      "tokens": 5385,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "U\u017cywam `bmadx`, bo pytanie dotyczy doboru biegu i wej\u015bcia w w\u0142a\u015bciwy flow BMAD z kontrol\u0105 artefakt\u00f3w procesu.",
+      "response_chars": 760,
+      "response_lines": 7,
+      "expected_gear": "X3",
+      "observed_gears": [
+        "X3",
+        "X1",
+        "X2",
+        "X4"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "reference_reads": [],
+      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x3.txt",
+      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x3.log"
+    },
+    {
+      "case": "bmadx-healthy-x4",
+      "framework": "bmadx",
+      "profile": "healthy",
+      "tokens": 10377,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Wyb\u00f3r: `X4 \u2014 FUBAR (BMAD+)`, z workflowem BMAD zaczynanym od `/bmad-bmm-create-prd`, potem `/bmad-bmm-create-architecture`, a dopiero p\u00f3\u017aniej scaffold bundle.",
+      "response_chars": 865,
+      "response_lines": 7,
+      "expected_gear": "X4",
+      "observed_gears": [
+        "X4",
+        "X3"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "reference_reads": [
+        "fubar-bundle-spec.md"
+      ],
+      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x4.txt",
+      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x4.log"
+    }
+  ],
+  "boundary_cases": [
+    {
+      "case": "bmadx-healthy-x2x3-boundary",
+      "framework": "bmadx",
+      "profile": "healthy",
+      "tokens": 14271,
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Wyb\u00f3r: `X3` , czyli regularny flow BMAD dla istniej\u0105cego story.",
+      "response_chars": 740,
+      "response_lines": 7,
+      "expected_gear": "X3",
+      "observed_gears": [
+        "X3",
+        "X2"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "reference_reads": [
+        "fubar-bundle-spec.md",
+        "subagent-policy.md",
+        "bmadx-vs-bmad.md",
+        "trigger-matrix.md",
+        "gearbox.md"
+      ],
+      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2x3-boundary.txt",
+      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2x3-boundary.log"
+    }
+  ],
+  "framework_averages": {
+    "bmadx": {
+      "avg_tokens": 8290.5,
+      "min_tokens": 5385,
+      "max_tokens": 10377,
+      "case_count": 4
+    }
+  },
+  "validation_summary": {
+    "core": {
+      "case_count": 4,
+      "format_pass_count": 4,
+      "token_pass_count": 4,
+      "reference_budget_pass_count": 4,
+      "routing_pass_count": 4
+    },
+    "boundary": {
+      "case_count": 1,
+      "format_pass_count": 1,
+      "token_pass_count": 1,
+      "reference_budget_pass_count": 1,
+      "routing_pass_count": 1
+    }
+  }
+}

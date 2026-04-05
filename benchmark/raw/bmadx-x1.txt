@@ -1,0 +1,7 @@
+Użyłem `bmadx`, bo zadanie polega dokładnie na doborze właściwego biegu przed wykonaniem.
+
+Wybór: `X1 — One-shot`.
+
+Uzasadnienie: poprawka literówki w komunikacie błędu w jednym komponencie React to mała, lokalna zmiana o niskim blast radius, bez potrzeby tworzenia artefaktów BMAD ani pełnego planowania. `bmadx` gate pozwala na klasyfikację i wykonanie `X1/X2`; jest tylko miękkie ostrzeżenie, że zależność BMAD nie jest obecnie w pełni zdrowa, ale to nie blokuje `X1`.
+
+Następny krok: zlokalizuję komponent i dokładny komunikat błędu, potwierdzę oczekiwaną treść, a potem przygotuję minimalną zmianę wraz z 1–2 prostymi checkami weryfikacyjnymi, że poprawka nie zmienia nic poza tekstem.

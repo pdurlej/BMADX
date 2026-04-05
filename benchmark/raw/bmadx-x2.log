@@ -1,0 +1,152 @@
+Wybór: `X2 — Regular`.
+
+Uzasadnienie: zadanie dotyczy małej/średniej zmiany w istniejącym backendzie, ale obejmuje `4 pliki`, więc to już nie jest `X1`. Jednocześnie z samego opisu nie wynika potrzeba pełnego flow BMAD, nowych artefaktów procesu ani scaffold bundle, więc `X3/X4` byłyby nadmiarowe. Dodatkowo gate BMADX pozwala teraz na execution tylko dla `X1/X2`; `X3/X4` są obecnie zablokowane przez niezdrowy stan BMAD.
+
+Następny krok: zrobić krótki impact scan tych 4 plików i potwierdzić, gdzie `status` zmienia kontrakt: model/DTO, walidację, mapowanie oraz warstwę persistence/handler.
+
+Plan:
+1. Zidentyfikować 4 pliki i rolę każdego z nich w przepływie danych `status`.
+2. Ustalić format pola `status`: typ, dozwolone wartości, required vs optional, default.
+3. Spisać minimalny zakres zmian w kolejności przepływu: wejście -> logika -> zapis/odczyt -> odpowiedź.
+4. Sprawdzić miejsca zależne: serializacja, walidacja, testy, ewentualne query/filter, jeśli `status` wpływa na zachowanie.
+5. Dopiero po tym wejść w implementację i verify.
+
+Verify:
+- Test jednostkowy lub integracyjny dla przyjęcia `status` na wejściu.
+- Test mapowania/persistence potwierdzający, że `status` jest zapisywany i odczytywany poprawnie.
+- Test odpowiedzi API/DTO potwierdzający obecność i poprawną wartość `status`.
+- Negatywny check dla nieprawidłowej wartości `status`, jeśli pole ma ograniczony zbiór wartości.
+- Krótki `/review`, jeśli diff dotknie kontraktu API albo walidacji w kilku miejscach.
+
+Założenie: `status` to zmiana lokalna w backendzie bez migracji, bez szerokiego rolloutu i bez nowych artefaktów BMAD. Jeśli okaże się, że pole zmienia publiczny kontrakt API lub wymaga migracji danych, warto podnieść ocenę ryzyka, ale nadal najpewniej zostanie to w `X2`, nie `X3`.
+
+--- STDERR ---
+OpenAI Codex v0.101.0 (research preview)
+--------
+workdir: /tmp/bmadx-bench
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+session id: 019d5796-2b2d-7b01-92ac-b8d73397d041
+--------
+user
+Use $bmadx. Na podstawie zadania wybierz właściwy workflow lub bieg, krótko uzasadnij wybór i opisz następny krok. Nie implementuj nic. Zadanie: Dodaj obsługę nowego pola status w 4 plikach backendu i wskaż plan oraz verify.
+mcp startup: no servers
+codex
+Użyję skilla `bmadx`, bo prosisz o dobór biegu/workflow, plan i verify bez implementacji. Najpierw sprawdzę gate BMADX/BMAD, potem sklasyfikuję zadanie i zsyntetyzuję zalecany następny krok.
+exec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/gearbox.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc "sed -n '1,220p' /private/tmp/codex-home-bmadx-bench/skills/bmadx/references/verify-discipline.md" in /tmp/bmadx-benchexec
+/bin/zsh -lc 'python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --json' in /tmp/bmadx-bench succeeded in 51ms:
+# Gearbox `X1..X4`
+
+BMADX działa jak automatyczna skrzynia biegów. Najpierw klasyfikuje zadanie,
+potem dobiera poziom procesu.
+
+Od `v0.2` klasyfikacja biegu i zgoda na execution to osobne decyzje:
+- `X1/X2` mogą przejść przy czerwonym BMAD jako soft gate,
+- `X3/X4` wymagają zdrowego execution gate,
+- czerwony gate nie zmienia poprawnej klasyfikacji zadania.
+
+| Bieg | Kiedy użyć | Co robić | Co musi być na wyjściu |
+| --- | --- | --- | --- |
+| `X1` | mały, lokalny task; niski blast radius; 1–2 checki | krótki plan w głowie, implementacja, verify | zmiana + dowód |
+| `X2` | kilka plików, trochę większe ryzyko, ale bez pełnego BMAD | krótki plan, implementacja, verify, opcjonalny review | plan, zmiana, dowód |
+| `X3` | potrzeba artefaktów BMAD albo decyzji w ramach workflow map | wejście w właściwy flow BMAD i praca po artefaktach | artefakt BMAD + kod + dowód |
+| `X4` | chaos, szeroki zakres, ryzyko, trudny rollout, potrzeba scaffold bundle | BMAD flow + FUBAR bundle + verify discipline | bundle + plan działania + dowód |
+
+## Sygnały wejścia
+
+### X1
+ succeeded in 51ms:
+# Verify Discipline
+
+BMADX nie zamyka pracy bez dowodu.
+
+## Zasada
+
+Najpierw implementacja, potem verify, potem dopiero status `done`.
+
+Dependency gate nie znosi tej zasady:
+- `X1/X2` mogą wejść w execution przy warningu z BMAD,
+- `X3/X4` wymagają zdrowego BMAD zanim verify będzie miało sens procesowy.
+
+## Minimalny kontrakt
+
+### X1
+- 1–2 checki lub najmocniejszy dostępny oracle,
+- krótki dowód w odpowiedzi.
+
+### X2
+- plan wykonania,
+codex
+Mam już kryteria doboru biegu i verify; teraz domykam dependency gate BMADX, żeby odróżnić samą klasyfikację od ewentualnej zgody na execution. Potem podam krótki wybór workflowu, plan i verify adekwatne do tego zadania.
+ succeeded in 7.25s:
+{
+  "mode": "check",
+  "requested_gear": null,
+  "first_run": false,
+  "skill": {
+    "name": "bmadx",
+    "version": "0.2.0",
+    "target_codex_profile": "codex-5.4"
+  },
+  "classification_allowed": true,
+  "execution_allowed": false,
+  "warning": "BMAD nie jest teraz w pe\u0142ni zdrowy; dla `X1/X2` to warning, a ostatni zdrowy stan zapisano 2026-04-04T08:09:05.721813+00:00.",
+  "bmad_dependency": {
+    "path": "/tmp/codex-home-bmadx-bench/skills/bmad-method-codex",
+    "available": true,
+    "healthy": false,
+    "action": "needs_attention",
+    "release_tag": "",
+    "cache": {
+      "available": true,
+codex
+Wybór: `X2 — Regular`.
+
+Uzasadnienie: zadanie dotyczy małej/średniej zmiany w istniejącym backendzie, ale obejmuje `4 pliki`, więc to już nie jest `X1`. Jednocześnie z samego opisu nie wynika potrzeba pełnego flow BMAD, nowych artefaktów procesu ani scaffold bundle, więc `X3/X4` byłyby nadmiarowe. Dodatkowo gate BMADX pozwala teraz na execution tylko dla `X1/X2`; `X3/X4` są obecnie zablokowane przez niezdrowy stan BMAD.
+
+Następny krok: zrobić krótki impact scan tych 4 plików i potwierdzić, gdzie `status` zmienia kontrakt: model/DTO, walidację, mapowanie oraz warstwę persistence/handler.
+
+Plan:
+1. Zidentyfikować 4 pliki i rolę każdego z nich w przepływie danych `status`.
+2. Ustalić format pola `status`: typ, dozwolone wartości, required vs optional, default.
+3. Spisać minimalny zakres zmian w kolejności przepływu: wejście -> logika -> zapis/odczyt -> odpowiedź.
+4. Sprawdzić miejsca zależne: serializacja, walidacja, testy, ewentualne query/filter, jeśli `status` wpływa na zachowanie.
+5. Dopiero po tym wejść w implementację i verify.
+
+Verify:
+- Test jednostkowy lub integracyjny dla przyjęcia `status` na wejściu.
+- Test mapowania/persistence potwierdzający, że `status` jest zapisywany i odczytywany poprawnie.
+- Test odpowiedzi API/DTO potwierdzający obecność i poprawną wartość `status`.
+- Negatywny check dla nieprawidłowej wartości `status`, jeśli pole ma ograniczony zbiór wartości.
+- Krótki `/review`, jeśli diff dotknie kontraktu API albo walidacji w kilku miejscach.
+
+Założenie: `status` to zmiana lokalna w backendzie bez migracji, bez szerokiego rolloutu i bez nowych artefaktów BMAD. Jeśli okaże się, że pole zmienia publiczny kontrakt API lub wymaga migracji danych, warto podnieść ocenę ryzyka, ale nadal najpewniej zostanie to w `X2`, nie `X3`.
+tokens used
+10 334
+Wybór: `X2 — Regular`.
+
+Uzasadnienie: zadanie dotyczy małej/średniej zmiany w istniejącym backendzie, ale obejmuje `4 pliki`, więc to już nie jest `X1`. Jednocześnie z samego opisu nie wynika potrzeba pełnego flow BMAD, nowych artefaktów procesu ani scaffold bundle, więc `X3/X4` byłyby nadmiarowe. Dodatkowo gate BMADX pozwala teraz na execution tylko dla `X1/X2`; `X3/X4` są obecnie zablokowane przez niezdrowy stan BMAD.
+
+Następny krok: zrobić krótki impact scan tych 4 plików i potwierdzić, gdzie `status` zmienia kontrakt: model/DTO, walidację, mapowanie oraz warstwę persistence/handler.
+
+Plan:
+1. Zidentyfikować 4 pliki i rolę każdego z nich w przepływie danych `status`.
+2. Ustalić format pola `status`: typ, dozwolone wartości, required vs optional, default.
+3. Spisać minimalny zakres zmian w kolejności przepływu: wejście -> logika -> zapis/odczyt -> odpowiedź.
+4. Sprawdzić miejsca zależne: serializacja, walidacja, testy, ewentualne query/filter, jeśli `status` wpływa na zachowanie.
+5. Dopiero po tym wejść w implementację i verify.
+
+Verify:
+- Test jednostkowy lub integracyjny dla przyjęcia `status` na wejściu.
+- Test mapowania/persistence potwierdzający, że `status` jest zapisywany i odczytywany poprawnie.
+- Test odpowiedzi API/DTO potwierdzający obecność i poprawną wartość `status`.
+- Negatywny check dla nieprawidłowej wartości `status`, jeśli pole ma ograniczony zbiór wartości.
+- Krótki `/review`, jeśli diff dotknie kontraktu API albo walidacji w kilku miejscach.
+
+Założenie: `status` to zmiana lokalna w backendzie bez migracji, bez szerokiego rolloutu i bez nowych artefaktów BMAD. Jeśli okaże się, że pole zmienia publiczny kontrakt API lub wymaga migracji danych, warto podnieść ocenę ryzyka, ale nadal najpewniej zostanie to w `X2`, nie `X3`.

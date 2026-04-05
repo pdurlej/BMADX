@@ -1,0 +1,3 @@
+Wybór: `X1 — One-shot`.
+Uzasadnienie: To pojedyncza, lokalna poprawka copy w jednym komponencie React o niskim blast radius; nie zmienia kontraktu, logiki ani procesu, a compact gate dla `X1` jest zielony.
+Następny krok: Zlokalizuję komponent i dokładny komunikat błędu, potwierdzę poprawne brzmienie literówki, a potem przygotuję minimalny diff oraz prosty check, że tekst został podmieniony tylko w tym miejscu.

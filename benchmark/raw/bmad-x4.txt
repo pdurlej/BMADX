@@ -1,0 +1,15 @@
+FAZA:
+- Wybrałbym standardowy bieg planistyczno-projektowy BMAD, zaczynając od `bmad-bmm-create-prd`, a nie `quick-spec` ani fazę implementacyjną.
+
+WYKONANE:
+- Sprawdziłem lokalny skill `bmad-method-codex`, mapę komend i lokalny snapshot release BMAD.
+- `check --json` nie mógł potwierdzić zgodności z upstream, bo środowisko nie ma dostępu do sieci; opieram wybór na lokalnych referencjach.
+- Dobór: `bmad-bmm-create-prd` jako wejście do pracy, bo zadanie dotyczy planu dla szerokiego, jeszcze nieustabilizowanego zakresu oraz zestawu artefaktów planistycznych (`scaffold bundle`, draft `AGENTS.md`, snippets `.customize.yaml`, `verify matrix`).
+- Uzasadnienie: to nie jest jeszcze wąska implementacja jednego feature’a, tylko uporządkowanie produktu i pakietu artefaktów. `quick-spec` byłby zbyt skrótowy, a `create-architecture` bez PRD ryzykowałby projektowanie bez ustalonego zakresu i kryteriów.
+
+KROK_BIEŻĄCY:
+- Bieżącym krokiem jest rozpisanie PRD pod ten “rozlany projekt” tak, aby jawnie zdefiniować: cele, granice scope, skład bundle, role `AGENTS.md`, strukturę `.customize.yaml` i wymagania weryfikacyjne dla `verify matrix`.
+
+KROK_NASTĘPNY:
+- Po PRD przejść do `bmad-bmm-create-architecture`, żeby zamienić ten zakres na strukturę artefaktów i zależności między nimi.
+- Jeśli chcesz, w następnym kroku mogę rozpisać ten bieg jako sekwencję artefaktów BMAD: PRD → architektura → epiki/stories, bez implementacji.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "BMADX"
+  short_description: "BMAD-first overlay dla Codex"
+  default_prompt: "Use $bmadx as a BMAD-first orchestration overlay for Codex with X1-X4 routing."
+policy:
+  allow_implicit_invocation: true
