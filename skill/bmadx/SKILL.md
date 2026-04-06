@@ -1,255 +1,267 @@
 ---
 name: bmadx
-description: Orkiestruje BMAD w Codex przez automatyczną skrzynię biegów X1-X4, pilnuje zależności od bmad-method-codex, rekomenduje właściwy poziom planowania i verification oraz generuje FUBAR scaffold bundle dla trudnych projektów.
+description: Use for choosing the lightest safe Codex workflow on top of BMAD, especially when the user wants less manual process selection, clearer verification, or a rescue mode for a messy project.
 ---
 
 # BMADX
 
-BMADX to BMAD-first overlay dla Codex. Nie zastępuje BMAD i nie tworzy drugiego
-source-of-truth dla procesu. Dokłada operacyjno-taktyczną warstwę inspirowaną
-OMX: routing, verify-before-done, capability-based politykę użycia subagentów i
-`X4/FUBAR` scaffold bundle dla trudnych projektów.
+BMADX is a BMAD-first tactical overlay for Codex.
 
-## Używaj tego skilla, gdy
+It does not replace BMAD and it must not create a second process source of
+truth. It adds a practical decision layer inspired by selected OMX ideas:
+routing, verify-before-done, capability-based subagent usage, and an
+`X4/FUBAR` scaffold bundle for high-entropy projects.
 
-- użytkownik chce dobrać właściwy tryb pracy dla zadania zamiast od razu wejść
-  w przypadkowy one-shot,
-- użytkownik chce uruchomić BMAD z dodatkową dyscypliną routingu, review i
-  verification,
-- trzeba zdecydować, czy zadanie jest `X1`, `X2`, `X3` czy `X4`,
-- trzeba wygenerować pakiet wdrożeniowy ponad BMAD: draft `AGENTS.md`,
-  snippets `.customize.yaml`, trigger matrix, verify matrix, rollout checklist,
-  politykę użycia subagentów,
-- użytkownik mówi o chaosie, rozlanym zakresie, trudnym projekcie, planie,
-  eskalacji lub potrzebie scaffold bundle.
+Non-negotiable rule:
+- `BMAD > BMADX`
 
-## Nie używaj tego skilla, gdy
+## Use this skill when
 
-- użytkownik chce tylko uruchomić znany workflow BMAD i nie potrzebuje overlayu,
-- zadanie jest czystym, lokalnym wykonaniem w ramach już ustalonego story BMAD,
-- użytkownik pyta wyłącznie o aktualność BMAD; wtedy użyj
-  `$bmad-method-codex`.
+- the user wants the right work mode chosen for them instead of a random one-shot,
+- the user wants BMAD with lighter day-to-day routing discipline,
+- the task needs to be classified into `X1`, `X2`, `X3`, or `X4`,
+- the task may need a rescue/scaffold bundle on top of BMAD,
+- the user talks about a messy project, unclear scope, escalation, planning, or ownership structure.
 
-## Dependency Gate
+## Do not use this skill when
 
-BMADX ma zależność od `bmad-method-codex`, ale od `v0.2.2` używa kontraktu
-`classify first, gate second`.
+- the user already knows they want a normal BMAD workflow and does not need the overlay,
+- the task is straightforward execution inside an already-established BMAD story,
+- the user is only asking about BMAD version/sync health; use `$bmad-method-codex` instead.
 
-1. Najpierw sklasyfikuj zadanie na podstawie `gearbox.md` i `trigger-matrix.md`.
-2. Dopiero po klasyfikacji uruchom gear-aware gate:
+## Dependency gate
 
-```bash
-python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X1 --compact
-python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X2 --compact
-python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X3 --compact
-python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --gear X4 --compact
-```
+Since `v0.2.2`, BMADX follows the contract:
+- classify first,
+- gate second.
 
-3. Czytaj compact raport w tej kolejności:
-- jeśli `classification_allowed = false`, zatrzymaj się i wypisz lokalny problem `BMADX`,
-- jeśli `classification_allowed = true`, utrzymaj poprawną klasyfikację biegu,
-- dla `X1/X2` traktuj `warning` jako sygnał miękki; brak cache nie blokuje execution,
-- dla `X3/X4` traktuj `execution_allowed = false` jako twardy stop execution,
-- jeśli `cache_used = true`, `X1/X2` jadą po ostatnim zdrowym snapshotcie BMAD bez live checka.
+The user usually should not choose a gear manually. BMADX should classify the
+task first, then check the compact gate for the chosen gear.
 
-4. Pełny verbose check zostaw na smoke-check i debug:
+### Preferred routing flow
+
+1. Classify the task using the embedded skill contract.
+2. Open reference docs only if the task is ambiguous or boundary-shaped.
+3. Run the compact gate for the chosen gear:
 
 ```bash
-python3 /Users/pd/.codex/skills/bmadx/scripts/sync_bmadx.py check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X1 --compact
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X2 --compact
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X3 --compact
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X4 --compact
 ```
 
-5. Zasada gate:
-- `X1/X2`: fast path z compact gate; czerwony BMAD bez cache daje warning, nie blokadę,
-- `X3/X4`: pełny live gate; czerwony BMAD blokuje execution, ale nie klasyfikację,
-- cache zdrowego stanu służy tylko `X1/X2`,
-- compact remediation dla zablokowanego `X3/X4` ma wskazywać dokładnie:
+4. Read the compact report in this order:
+- if `classification_allowed = false`, stop and report the local BMADX problem,
+- if `classification_allowed = true`, keep the correct gear classification,
+- for `X1/X2`, treat `warning` as soft guidance; missing cache does not block execution,
+- for `X3/X4`, treat `execution_allowed = false` as a hard stop for execution,
+- if `cache_used = true`, `X1/X2` can continue from the last healthy BMAD snapshot without a live check.
+
+5. Keep the full JSON check for smoke/debug only:
 
 ```bash
-python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
-python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --json
 ```
 
-## Obvious `X1/X2` Fast Path
+### Gate rules
 
-Przy oczywistym `X1` albo `X2` nie otwieraj reference docs. `SKILL.md` ma wtedy
-wystarczyć do decyzji.
+- `X1/X2`: fast path through the compact gate; unhealthy BMAD without cache yields a warning, not a block
+- `X3/X4`: full live gate; unhealthy BMAD blocks execution, not classification
+- cached healthy BMAD only softens `X1/X2`
+- blocked `X3/X4` remediation must point to exactly:
 
-Traktuj zadanie jako obvious happy path, jeśli:
-- `X1`: jedna lokalna zmiana, literówka/copy/fix małego tekstu, brak sygnałów o zmianie kontraktu albo ryzyku procesu,
-- `X2`: 2–5 plików lub lokalny blast radius, potrzeba krótkiego planu i kilku checków, ale bez artefaktu BMAD,
-- user prompt nie zawiera niejednoznaczności co do zakresu ani potrzeby eskalacji procesu,
-- compact gate dla wybranego biegu jest zielony albo daje tylko soft warning.
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```
 
-Otwórz `gearbox.md`, `trigger-matrix.md` albo `verify-discipline.md` tylko wtedy, gdy:
-- sygnały między `X1/X2/X3` konfliktują,
-- prompt zawiera `plan`, ale nie wiadomo, czy chodzi o zwykły `X2` czy pełny BMAD,
-- pojawia się story BMAD, nowy artefakt procesu, rollout/ownership, API/schema/auth/perf risk,
-- compact gate dla wybranego biegu jest czerwony i trzeba uzasadnić eskalację.
+## Obvious `X1/X2` fast path
 
-Nie narracyjnie nie raportuj, że „używasz skilla”, „czytasz refs” albo „sprawdzasz gate”, jeśli nie jest to konieczne dla decyzji.
+For obvious `X1` and `X2`, do not open reference docs. `SKILL.md` should be
+enough.
 
-## Automatyczna Skrzynia Biegów
+Treat the task as an obvious happy path if:
+- `X1`: one tiny local change, typo/copy/small fix, no contract/process risk
+- `X2`: bounded local work, short plan, a few checks, but no BMAD artifact needed
+- the prompt does not contain major ambiguity or process-escalation signals
+- the compact gate is green or soft-warning only
 
-Najpierw sklasyfikuj zadanie, dopiero potem proponuj wykonanie.
+Open `gearbox.md`, `trigger-matrix.md`, or `verify-discipline.md` only if:
+- `X1/X2/X3` signals conflict,
+- the user asks for a plan but it is unclear whether this is still `X2` or full BMAD,
+- the prompt mentions BMAD story ownership, new process artifacts, rollout, schema/API/auth/perf risk,
+- the compact gate is red and the escalation needs explanation.
+
+Do not narrate that you are “using the skill”, “reading refs”, or “checking the gate” unless that explanation is needed.
+
+## Automatic gearbox
+
+Classify first. Only then recommend the work mode.
 
 - `X1` — One-shot
 - `X2` — Regular
 - `X3` — Complex (BMAD)
-- `X4` — FUBAR (BMAD+)
+- `X4` — Rescue Mode (`X4/FUBAR`, BMAD+)
 
-Szczegóły i progi:
+Details:
 - [gearbox.md](references/gearbox.md)
 - [trigger-matrix.md](references/trigger-matrix.md)
 
-Reguła wyboru:
-- jeśli użytkownik sygnalizuje `plan` albo niejednoznaczność jest wysoka,
-  przejdź w tryb pytający przed rekomendacją biegu,
-- jeśli intencja jest jasna, zarekomenduj bieg i uzasadnij go jednym akapitem,
-- po klasyfikacji zawsze dopytaj tylko właściwy compact gate dla wybranego biegu,
-- dla obvious `X1/X2` nie otwieraj refs i odpowiedz od razu w krótkim formacie,
-- jeśli zadanie dotyczy istniejących artefaktów BMAD, `X3/X4` muszą opierać się
-  na BMAD jako source-of-truth,
-- jeśli klasyfikacja wskazuje `X3/X4`, ale execution gate jest czerwony,
-  podaj poprawną klasyfikację i osobno powiedz, że execution jest zablokowany.
+Selection rule:
+- if the user explicitly asks for a plan or the task is highly ambiguous, ask clarifying questions before committing to a gear
+- if the intent is clear, choose the gear and justify it briefly
+- after classification, check only the compact gate for the chosen gear
+- for obvious `X1/X2`, do not open refs; answer directly in the short format
+- if the task depends on BMAD artifacts, `X3/X4` must stay BMAD-first
+- if the gear is `X3/X4` but execution is blocked, keep the correct classification and report the execution block separately
 
-## Response Contract
+## Response contract
 
 ### `X1` obvious happy path
 
 Format:
-- `Wybór: ...`
-- `Uzasadnienie: ...`
-- `Następny krok: ...`
+- `Choice: ...`
+- `Why: ...`
+- `Next step: ...`
 
-Zasady:
-- maksimum `5` linii,
-- maksimum `650` znaków,
-- jedno zdanie uzasadnienia i jedno zdanie następnego kroku,
-- nie wspominaj o gate, jeśli jest zielony,
-- wspomnij gate tylko przy warningu albo blokadzie.
+Rules:
+- maximum `5` lines
+- maximum `650` characters
+- one sentence for why, one sentence for the next step
+- do not mention the gate if it is green
+- mention the gate only for a warning or block
 
 ### `X2` obvious happy path
 
 Format:
-- `Wybór: ...`
-- `Uzasadnienie: ...`
-- `Plan:` z maksymalnie `3` krokami,
-- `Verify:` z maksymalnie `3` krokami.
+- `Choice: ...`
+- `Why: ...` as one short sentence
+- `Plan:`
+- `1. ...`
+- `2. ...`
+- `Verify:`
+- `1. ...`
+- `2. ...`
 
-Zasady:
-- maksimum `12` linii,
-- maksimum `1000` znaków,
-- plan ma być konkretny, ale krótki,
-- verify ma obejmować tylko najmocniejsze checki,
-- bez końcówki typu „jeśli chcesz, mogę...” jeśli user nie prosi o kolejny krok.
+Rules:
+- maximum `12` lines
+- maximum `1000` characters
+- no blank lines between sections
+- prefer exactly `2` plan lines and `2` verify lines unless the user explicitly asks for more detail
+- keep the plan concrete but short
+- keep verify to the strongest checks only
+- keep each plan/verify line tight and operational; do not narrate
+- keep `Why:` under roughly `160` characters
+- keep each plan/verify line under roughly `120` characters
+- do not mention the compact gate if it is green
+- do not add `Next step:` in the obvious happy path unless the user explicitly asks for it
+- do not end with “if you want, I can...” unless the user asked for the next step
 
 ### `X3/X4`
 
-Nie skracaj ich według tych samych limitów. Dla `X3/X4` ważniejsze są:
-- poprawna klasyfikacja,
-- jawny stan execution gate,
-- zgodność z BMAD jako source-of-truth.
+Do not compress these into the same limits. For `X3/X4`, correctness matters more than terseness:
+- correct classification
+- explicit execution gate state
+- BMAD-first behavior
 
-## Biegi
+## Gear guide
 
 ### X1 — One-shot
 
-Użyj dla małych, lokalnych zmian o niskim blast radius.
+Use for tiny local changes with a low blast radius.
 
-- brak nowych artefaktów BMAD,
-- 1–2 checki końcowe,
-- szybkie wykonanie + dowód verification.
+- no new BMAD artifacts
+- 1–2 final checks
+- quick execution plus proof
 
 ### X2 — Regular
 
-Użyj dla małych i średnich zadań, które wymagają krótkiego planu, ale nie
-potrzebują pełnego flow BMAD.
+Use for small-to-medium bounded work that needs a short plan but not full BMAD.
 
-- zwięzły plan,
-- wykonanie,
-- verify-before-done,
-- opcjonalny `/review` przy nietrywialnym diffie.
+- short plan
+- execution
+- verify-before-done
+- optional `/review` for a non-trivial diff
 
 ### X3 — Complex (BMAD)
 
-Użyj, gdy trzeba wejść w pełny flow BMAD.
+Use when the work should enter a full BMAD flow.
 
-- BMAD definiuje fazy, workflow map i artefakty,
-- `project-context.md` i artefakty BMAD są source-of-truth,
-- BMADX jedynie pilnuje routingu, review i verification discipline.
+- BMAD defines phases, workflow maps, and artifacts
+- `project-context.md` and BMAD artifacts stay the source of truth
+- BMADX only adds routing, review, and verification discipline
 
-### X4 — FUBAR (BMAD+)
+### X4 — Rescue Mode (`X4/FUBAR`, BMAD+)
 
-Użyj, gdy projekt jest rozlany, wielowątkowy, ryzykowny albo wymaga scaffold
-bundle ponad BMAD.
+Use when the project is broad, risky, messy, or needs a scaffold bundle on top
+of BMAD.
 
-`X4` nie jest domyślnym trybem. To as w rękawie.
+`X4` is not the default mode. It is the ace in the sleeve.
 
-W `X4`:
-- wybierasz właściwy flow BMAD,
-- zaczynasz od `/bmad-bmm-create-prd`, potem `/bmad-bmm-create-architecture`,
-- traktujesz `_bmad-output/project-context.md` jako trwały technical memory,
-- generujesz scaffold bundle z szablonów,
-- porządkujesz ownership, verify matrix i rollout,
-- zachowujesz prosty język i jedną hierarchię decyzji: BMAD > BMADX.
+In `X4`:
+- choose the correct BMAD flow
+- start with `/bmad-bmm-create-prd`, then `/bmad-bmm-create-architecture`
+- treat `_bmad-output/project-context.md` as durable technical memory
+- generate the scaffold bundle from templates
+- clarify ownership, verification, and rollout
+- keep the decision hierarchy simple: BMAD > BMADX
 
-Specyfikacja bundle:
+Bundle spec:
 - [fubar-bundle-spec.md](references/fubar-bundle-spec.md)
 
-Render bundle:
+Render the bundle:
 
 ```bash
-python3 /Users/pd/.codex/skills/bmadx/scripts/render_fubar_bundle.py \
-  --project-name "Nazwa projektu" \
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/render_fubar_bundle.py" \
+  --project-name "Project name" \
   --project-path "$PWD" \
   --output-dir /tmp/bmadx-fubar
 ```
 
-## Verify Before Done
+## Verify before done
 
-BMADX wymusza verify-before-done niezależnie od biegu.
+BMADX enforces verify-before-done in every gear.
 
-- `X1`: minimum 1–2 checki lub jednoznaczny oracle,
-- `X2`: plan + checki + ewentualny `/review`,
-- `X3/X4`: checki muszą być zgodne z kryteriami BMAD i bieżącym
-  `project-context.md`.
+- `X1`: minimum 1–2 checks or the strongest available oracle
+- `X2`: plan + checks + optional `/review`
+- `X3/X4`: checks must align with BMAD criteria and the current `project-context.md`
 
-Szczegóły:
+Details:
 - [verify-discipline.md](references/verify-discipline.md)
 
-## Subagenci
+## Subagents
 
-BMADX promuje capability-based użycie subagentów.
+BMADX promotes capability-based subagent usage.
 
-- szybsze/mniejsze modele: bounded discovery, read-heavy repo mapping, diff
-  review support, verification support,
-- główny model: decyzje, synteza, integracja i odpowiedzialność końcowa,
-- bez hardcode pod jeden model lub jeden vendor.
+- smaller/faster models: bounded discovery, repo mapping, diff review support, verification support
+- main model: decisions, synthesis, integration, final responsibility
+- avoid hardcoding one model or one vendor
 
-Szczegóły:
+Details:
 - [subagent-policy.md](references/subagent-policy.md)
 
-## Granice BMADX vs BMAD
+## BMADX vs BMAD boundaries
 
-BMAD pozostaje ownerem:
-- faz,
-- workflow map,
-- artefaktów,
-- języka procesu.
+BMAD remains the owner of:
+- phases
+- workflow maps
+- artifacts
+- process vocabulary
 
-BMADX pozostaje ownerem:
-- wyboru biegu,
-- operacyjnego poziomu dyscypliny,
-- verify gate,
-- scaffold bundle dla `X4`.
+BMADX remains the owner of:
+- gear choice
+- operational discipline
+- verification gate
+- scaffold bundle for `X4`
 
-Granice i ownership:
+Boundaries and ownership:
 - [bmadx-vs-bmad.md](references/bmadx-vs-bmad.md)
 
-## Zasoby
+## Resources
 
-- `scripts/sync_bmadx.py` — health check, drift check, cache zdrowego BMAD i soft/hard dependency gate
-- `scripts/test_sync_bmadx.py` — smoke/unit testy dla sync
-- `scripts/render_fubar_bundle.py` — generator FUBAR scaffold bundle
-- `assets/templates/` — szablony bundle i snippets
+- `scripts/sync_bmadx.py` — health check, drift check, healthy BMAD cache, soft/hard dependency gate
+- `scripts/test_sync_bmadx.py` — smoke/unit tests for sync
+- `scripts/render_fubar_bundle.py` — generator for the `X4/FUBAR` scaffold bundle
+- `assets/templates/` — templates and snippets for the bundle
 - `references/` — gearbox, trigger matrix, boundaries, verify, subagents

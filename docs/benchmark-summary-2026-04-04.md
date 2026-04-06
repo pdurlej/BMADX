@@ -39,7 +39,8 @@ positioning:
 
 ## Follow-up
 
-The current repo state supersedes this first result with `v0.2.1` and `v0.2.2`
+The current repo state supersedes this first result with `v0.2.1`, `v0.2.2`,
+and `v0.2.3`
 reruns, but this file remains the historical baseline for:
 - the first `BMAD vs BMADX vs OMX` comparison
 - the original justification for softening the dependency gate

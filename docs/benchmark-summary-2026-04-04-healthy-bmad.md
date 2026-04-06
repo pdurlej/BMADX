@@ -1,63 +1,57 @@
 # Benchmark Summary — 2026-04-04 (`BMADX healthy`)
 
-## Cel
+## Goal
 
-Sprawdzić, jak `BMADX v0.2.1` zachowuje się po:
-- fast path `X1/X2`,
-- compact gate z `sync_bmadx.py`,
-- warmup cache zdrowego BMAD przed właściwym benchmarkiem.
+Check how `BMADX v0.2.1` behaved after:
+- the true `X1/X2` fast path,
+- compact gate output from `sync_bmadx.py`,
+- a warm-up sync that populated the last healthy BMAD cache.
 
-## Metodyka
+## Method
 
 - runner: [`benchmark/scripts/run_bmadx_benchmark.py`](../benchmark/scripts/run_bmadx_benchmark.py)
-- profil: `healthy`
+- profile: `healthy`
 - model: `gpt-5.4`
-- reasoning: `medium`
+- reasoning effort: `medium`
 - MCP startup: `no servers`
-- przed scenariuszami wykonany został warmup `sync_bmadx.py sync --json`, żeby napełnić cache zdrowego BMAD dla fast path
+- before the scenarios, the runner executed `sync_bmadx.py sync --json` to warm the healthy BMAD cache
 
 Summary JSON:
 - [`benchmark/summary-2026-04-04-healthy-bmad.json`](../benchmark/summary-2026-04-04-healthy-bmad.json)
 
-## Wyniki
+## Results
 
-| Scenariusz | `BMADX degraded` | `BMADX healthy` | Delta |
+| Scenario | `BMADX degraded` | `BMADX healthy` | Delta |
 | --- | --- | --- | --- |
 | `X1` | `10492` | `10306` | `-1.8%` |
 | `X2` | `10334` | `12472` | `+20.7%` |
 | `X3` | `12366` | `6504` | `-47.4%` |
 | `X4` | `10627` | `10354` | `-2.6%` |
-| średnia | `10954.75` | `9909.0` | `-9.5%` |
+| average | `10954.75` | `9909.0` | `-9.5%` |
 
-## Co zadziałało
+## What worked
 
-- runner odtwarza benchmark w czystym `CODEX_HOME` i zapisuje osobny dataset `healthy`,
-- `X1/X2` rzeczywiście używają `check --gear ... --compact`,
-- `X3/X4` zachowują klasyfikację i full BMAD-first workflow,
-- `X3` mocno tanieje przy zdrowym BMAD, bo znika degradacyjny narzut gate.
+- the runner recreated a clean `CODEX_HOME` and stored a separate `healthy` dataset
+- `X1/X2` really did use `check --gear ... --compact`
+- `X3/X4` kept correct classification and full BMAD-first workflow behavior
+- `X3` became much cheaper under healthy BMAD because the degraded-gate overhead disappeared
 
-## Co nie spełniło celu
+## What did not hit the target
 
-Kryterium planu mówiło o spadku tokenów `X1` i `X2` o co najmniej `20%` względem rerunu `v0.2`.
+The plan wanted `X1` and `X2` token counts to drop by at least `20%` compared
+to the earlier rerun.
 
-To się nie wydarzyło:
-- `X1` spadł tylko o `1.8%`,
-- `X2` wzrósł o `20.7%`.
+That did not happen:
+- `X1` only dropped `1.8%`
+- `X2` increased `20.7%`
 
-Przyczyna z logów:
-- skill używa już compact gate,
-- ale model nadal czyta reference docs przed odpowiedzią,
-- a `X2` generuje zbyt rozbudowany plan i verify jak na benchmark routingowy.
+## Reading
 
-## Wniosek
+`v0.2.1` delivered the infrastructure:
+- BMAD-first source of truth
+- compact gate
+- repo-tracked runner
+- separate `healthy` dataset
 
-`v0.2.1` dowozi infrastrukturę:
-- BMAD-first source-of-truth,
-- compact gate,
-- repo-tracked runner,
-- osobny dataset `healthy`.
-
-Nie dowozi jeszcze docelowej zwięzłości `X1/X2`. Następny krok powinien uderzyć już nie w gate, tylko w kontrakt odpowiedzi skilla:
-- krótszy output budget dla `X1/X2`,
-- mniejsza potrzeba otwierania reference docs przy oczywistej klasyfikacji,
-- twardszy limit planowania dla benchmarkowego `X2`.
+It did not yet deliver compact enough `X1/X2` answers. The next step clearly
+had to target the skill response contract rather than the gate itself.

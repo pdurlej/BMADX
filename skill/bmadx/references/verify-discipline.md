@@ -1,49 +1,49 @@
 # Verify Discipline
 
-BMADX nie zamyka pracy bez dowodu.
+BMADX does not close work without evidence.
 
-Ten plik jest materiałem boundary/debug. Dla obvious `X1/X2` verify ma być
-krótkie i wynikać z kontraktu odpowiedzi w `SKILL.md`.
+This file is boundary/debug material. For obvious `X1/X2`, verify should stay
+short and follow the response contract in `SKILL.md`.
 
-## Zasada
+## Rule
 
-Najpierw implementacja, potem verify, potem dopiero status `done`.
+Implement first, verify second, report done last.
 
-Dependency gate nie znosi tej zasady:
-- `X1/X2` mogą wejść w execution przy warningu z BMAD lub po cache healthy snapshot,
-- `X3/X4` wymagają zdrowego BMAD zanim verify będzie miało sens procesowy,
-- po klasyfikacji preferowaną ścieżką jest `sync_bmadx.py check --gear ... --compact`.
+The dependency gate does not remove that rule:
+- `X1/X2` may execute with a BMAD warning or with a cached healthy snapshot,
+- `X3/X4` require healthy BMAD before process-grade verify makes sense,
+- after classification, the preferred path is `sync_bmadx.py check --gear ... --compact`.
 
-## Minimalny kontrakt
+## Minimum contract
 
 ### X1
-- 1–2 checki lub najmocniejszy dostępny oracle,
-- krótki dowód w odpowiedzi.
+- 1-2 checks or the strongest available oracle,
+- brief proof in the answer.
 
 ### X2
-- plan wykonania,
-- checki lokalne,
-- `/review`, jeśli diff nie jest trywialny.
+- short execution plan,
+- local checks,
+- `/review` if the diff is not trivial.
 
 ### X3
-- verify zgodne z kryteriami BMAD,
-- zgodność z `project-context.md`,
-- dowód na poziomie kodu i workflowu.
+- verify aligned with BMAD criteria,
+- alignment with `project-context.md`,
+- evidence at both code and workflow level.
 
 ### X4
-- verify matrix z bundle,
-- wyraźne ownership,
-- dowód, że scaffold nie tworzy drugiego source-of-truth.
+- verify matrix from the bundle,
+- explicit ownership,
+- proof that the scaffold does not create a second source of truth.
 
-## Jeśli checki nie istnieją
+## If checks do not exist
 
-- powiedz to wprost,
-- użyj najmocniejszego dostępnego oracle,
-- nie udawaj pełnej pewności.
+- say so explicitly,
+- use the strongest available oracle,
+- do not pretend certainty you do not have.
 
-## Anti-patterny
+## Anti-patterns
 
-- „powinno działać” bez dowodu,
-- zakończenie taska bez wyniku checków,
-- review bez verify,
-- verify bez odniesienia do oczekiwanego zachowania.
+- "should work" without evidence,
+- closing the task without check results,
+- review without verify,
+- verify without tying back to expected behavior.

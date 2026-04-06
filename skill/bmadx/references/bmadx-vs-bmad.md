@@ -1,41 +1,41 @@
 # BMADX vs BMAD
 
-## Zasada nadrzędna
+## Non-negotiable rule
 
 `BMAD > BMADX`
 
-BMAD daje system działania, workflow map, artefakty i architekturę procesu.
-BMADX daje taktyczny i operacyjny overlay dla Codex.
+BMAD provides the operating system: workflow map, artifacts, and process
+architecture. BMADX provides the tactical and operational overlay for Codex.
 
-## BMAD pozostaje ownerem
+## BMAD remains the owner of
 
-- faz procesu,
-- workflow map,
-- agentów i workflowów BMAD,
-- artefaktów takich jak PRD, architektura, stories,
-- `project-context.md` jako trwałego kontekstu technicznego.
+- process phases,
+- workflow maps,
+- BMAD agents and workflows,
+- artifacts such as PRD, architecture, and stories,
+- `project-context.md` as durable technical memory.
 
-## BMADX pozostaje ownerem
+## BMADX remains the owner of
 
-- wyboru biegu `X1..X4`,
-- krótkiej klasyfikacji zadania przed implementacją,
+- routing into `X1..X4`,
+- short task classification before implementation,
 - verify-before-done,
-- capability-based polityki użycia subagentów,
-- scaffold bundle dla `X4/FUBAR`.
+- capability-based subagent policy,
+- the scaffold bundle for `X4/FUBAR`.
 
-## Czego BMADX nie robi
+## What BMADX does not do
 
-- nie podmienia workflow map BMAD,
-- nie tworzy drugiego trwałego plan store,
-- nie kopiuje `.omx/`,
-- nie wymaga `omx`, tmux, HUD ani team runtime,
-- nie redefiniuje nazewnictwa faz BMAD.
+- replace BMAD workflow maps,
+- create a second durable plan store,
+- copy `.omx/`,
+- require `omx`, tmux, HUD, or a team runtime,
+- redefine BMAD phase naming.
 
-## Decyzja operacyjna
+## Operational decision rule
 
-Gdy jest konflikt między wygodą BMADX a artefaktem BMAD:
-- wygrywa BMAD.
+If convenience in BMADX conflicts with a BMAD artifact:
+- BMAD wins.
 
-Gdy BMAD nie daje jeszcze wystarczającej warstwy operacyjnej:
-- BMADX może wygenerować bundle i checklisty,
-- ale nie przejmuje ownershipu nad procesem.
+If BMAD does not yet provide enough operational structure:
+- BMADX can generate the bundle and checklists,
+- but BMADX does not take ownership of the process.

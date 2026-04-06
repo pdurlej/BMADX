@@ -1,46 +1,46 @@
 # FUBAR Bundle Spec
 
-`X4/FUBAR` generuje scaffold bundle dla trudnego projektu lub trudnej zmiany.
+`X4/FUBAR` generates a scaffold bundle for a hard repo or a hard change.
 
-## Cel
+## Goal
 
-Nie zastąpić BMAD, tylko szybko dołożyć brakującą warstwę operacyjno-taktyczną
-pod Codex.
+Do not replace BMAD. Add the missing operational layer under Codex quickly and
+portably.
 
-## Bundle zawiera
+## What the bundle includes
 
-- obowiązkowy `AGENTS.md` draft dla repo,
-- obowiązkowy snippet `core-bmad-master.customize.yaml`,
-- obowiązkowy snippet `bmm-dev.customize.yaml`,
-- opcjonalny snippet `bmm-architect.customize.yaml`,
-- obowiązkowy `bmadx-trigger-matrix.md`,
-- obowiązkowy `bmadx-verify-matrix.md`,
-- obowiązkowy `bmadx-rollout-checklist.md`,
-- obowiązkowy `bmadx-subagent-policy.md`.
+- required `AGENTS.md` draft for the repo,
+- required `core-bmad-master.customize.yaml` snippet,
+- required `bmm-dev.customize.yaml` snippet,
+- optional `bmm-architect.customize.yaml` snippet,
+- required `bmadx-trigger-matrix.md`,
+- required `bmadx-verify-matrix.md`,
+- required `bmadx-rollout-checklist.md`,
+- required `bmadx-subagent-policy.md`.
 
-## Kiedy renderować
+## When to render it
 
-Renderuj bundle tylko wtedy, gdy:
-- klasyfikacja wskazuje `X4`,
-- najpierw zamknąłeś wejście BMAD przez `/bmad-bmm-create-prd` i `/bmad-bmm-create-architecture`,
-- trzeba uporządkować ownership, rollout, verify matrix albo adopcję snippetów ponad samym BMAD.
+Render the bundle only when:
+- classification says `X4`,
+- you already entered BMAD through `/bmad-bmm-create-prd` and `/bmad-bmm-create-architecture`,
+- you need to clean up ownership, rollout, verify matrix, or snippet adoption beyond plain BMAD.
 
-## Kiedy nie renderować
+## When not to render it
 
-Nie renderuj bundle, gdy:
-- zadanie jest obvious `X1` albo `X2`,
-- wystarczy zwykły flow `X3` w oparciu o istniejące artefakty BMAD,
-- bundle miałby stać się drugim plan store albo substytutem `project-context.md`.
+Do not render the bundle when:
+- the task is obviously `X1` or `X2`,
+- a normal `X3` flow based on existing BMAD artifacts is enough,
+- the bundle would become a second plan store or a substitute for `project-context.md`.
 
-## Zasady bundle
+## Bundle rules
 
-- prosty język,
-- zero OMX vocabulary drift,
-- jawne `BMAD > BMADX`,
-- `project-context.md` wskazany jako trwały technical memory,
-- bundle ma być ręcznie wdrażalny bez dodatkowego runtime.
+- keep the language simple,
+- avoid OMX vocabulary drift,
+- state `BMAD > BMADX` explicitly,
+- point to `project-context.md` as durable technical memory,
+- keep the bundle manually adoptable without an extra runtime.
 
-## Parametry rendera
+## Render parameters
 
 - `project_name`
 - `project_path`
@@ -51,9 +51,9 @@ Nie renderuj bundle, gdy:
 
 ## Exit criteria
 
-- wszystkie pliki bundle zostały wygenerowane,
-- obowiązkowe artefakty są gotowe do adopcji bez dodatkowych decyzji,
-- opcjonalny snippet architect jest dołączany tylko wtedy, gdy projekt realnie potrzebuje tej roli,
-- każdy plik jest czytelny bez znajomości OMX,
-- nie ma drugiego trwałego plan store,
-- nie ma redefinicji faz BMAD.
+- every bundle file is generated,
+- required artifacts are ready for adoption without extra decisions,
+- the optional architect snippet is included only when the project genuinely needs that role,
+- every file is understandable without OMX context,
+- there is no second durable plan store,
+- BMAD phases are not redefined.

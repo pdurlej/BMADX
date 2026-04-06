@@ -2,20 +2,19 @@
 
 This is the public roadmap surface for the repo.
 
-It is intentionally lightweight. Historical planning artifacts still exist in
-the repo, but this file is the easier public entry point.
+It is intentionally lightweight.
 
 ## Current status
 
 Current public version:
-- `v0.2.2`
+- `v0.2.3`
 
-What `v0.2.2` established:
-- short response contract for obvious `X1/X2`
-- `classify first, gate second`
-- compact gate usage for routing
-- mixed-metric benchmark guardrails
-- `healthy` and `degraded` benchmark profiles
+What `v0.2.3` focuses on:
+- English public surfaces
+- portable install and remediation paths
+- a first-success onboarding path instead of smoke-check-first onboarding
+- transcript-based proof for non-technical users
+- keeping BMAD-first boundaries while improving usability
 
 ## What is already stable
 
@@ -27,10 +26,10 @@ What `v0.2.2` established:
 
 ## Near-term improvements
 
-- make installation more one-command friendly
-- translate or replace the remaining important Polish public docs
-- tighten the public benchmark story so the caveats are obvious at a glance
-- make `X4` easier to adopt in external repositories without turning it into a default mode
+- keep making the public surface friendlier for non-technical Codex users
+- improve proof surfaces with better transcripts and examples
+- make Rescue Mode easier to adopt without turning it into a default mode
+- keep tightening portability and low-friction install paths
 
 ## Long-term guardrails
 

@@ -1,44 +1,43 @@
 # Capability-Based Subagent Policy
 
-BMADX promuje użycie subagentów według zdolności, nie według jednej sztywnej
-nazwy modelu.
+BMADX promotes capability-based subagent usage rather than a single hardcoded
+model name.
 
-## Zasada
+## Rule
 
-- szybsze i mniejsze subagenty: bounded, read-heavy, równoległe wsparcie,
-- główny model: decyzje, integracja, końcowa odpowiedzialność.
+- use smaller and faster subagents for bounded, read-heavy, parallel support,
+- keep the main model responsible for decisions, integration, and final accountability.
 
-## Dobre zastosowania
+## Good uses
 
-- repo mapping i discovery,
+- repo mapping and discovery,
 - diff review support,
 - verification support,
-- porównanie dwóch wariantów implementacji,
-- odczyt długich artefaktów bez zanieczyszczania głównego kontekstu.
+- comparing two implementation options,
+- reading long artifacts without polluting the main context.
 
-## Złe zastosowania
+## Bad uses
 
-- delegowanie całego problemu bez własnej syntezy,
-- odpalanie subagentów do prostych `X1`,
-- równoleglenie rzeczy, które i tak są zależne sekwencyjnie,
-- używanie subagentów jako maskowania braku decyzji.
+- delegating the whole problem without synthesis,
+- spawning subagents for simple `X1`,
+- parallelizing work that is actually sequentially dependent,
+- using subagents to hide indecision.
 
-## Reguła dla BMADX
+## BMADX policy by gear
 
-- `X1`: domyślnie bez subagentów.
-- `X2`: opcjonalnie jeden bounded helper.
-- `X3`: subagenty tylko wtedy, gdy przyspieszają discovery, review lub verify.
-- `X4`: można użyć kilku bounded lanes, ale ownership i synteza zostają w
-  głównym modelu.
+- `X1`: default to no subagents.
+- `X2`: optionally use one bounded helper.
+- `X3`: use subagents only if they accelerate discovery, review, or verify.
+- `X4`: multiple bounded lanes are acceptable, but ownership and synthesis stay with the main model.
 
 ## Future-proofing
 
-Nie hardcode’uj:
-- jednego modelu,
-- jednego vendora,
-- jednego typu subagenta.
+Do not hardcode:
+- one model,
+- one vendor,
+- one subagent type.
 
-Hardcode’uj tylko zadanie pomocnicze:
-- co ma zbadać,
-- jaki ma mieć write scope,
-- jaki wynik ma zwrócić.
+Do hardcode:
+- what the helper should investigate,
+- what its write scope is,
+- what output it must return.

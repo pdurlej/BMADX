@@ -1,9 +1,9 @@
 # BMADX Subagent Policy for {{project_name}}
 
-- Szybsze i mniejsze subagenty: bounded discovery, review support, verification support.
-- Główny model: decyzje, synteza, integracja, odpowiedzialność końcowa.
-- Nie hardcode’uj jednego modelu.
-- Nie używaj subagentów do prostych `X1`.
-- W `X4` używaj subagentów tylko tam, gdzie lane jest niezależny i jasno opisany.
+- Use smaller, faster subagents for bounded discovery, review support, and verification support.
+- Keep the main model responsible for decisions, synthesis, integration, and final accountability.
+- Do not hardcode a single model choice into policy.
+- Do not use subagents for simple `X1` tasks.
+- In `X4`, use subagents only where the lane is independent and clearly scoped.
 
 Generated: {{generated_at}}

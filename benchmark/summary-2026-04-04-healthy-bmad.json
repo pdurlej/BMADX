@@ -8,7 +8,7 @@
     "mcp_startup": "no servers"
   },
   "baselines": {
-    "mixed_summary": "/Users/pd/Developer/BMADX/benchmark/summary-2026-04-04.json",
+    "mixed_summary": "benchmark/summary-2026-04-04.json",
     "mixed_summary_note": "Contains historical BMAD/OMX baselines and prior BMADX degraded rerun."
   },
   "cases": [
@@ -22,8 +22,8 @@
       "response_first_line": "Wyb\u00f3r: `X1 \u2014 One-shot`.",
       "response_chars": 581,
       "response_lines": 5,
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x1.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x1.log"
+      "raw_txt": "benchmark/raw/bmadx-healthy-x1.txt",
+      "raw_log": "benchmark/raw/bmadx-healthy-x1.log"
     },
     {
       "case": "bmadx-healthy-x2",
@@ -35,8 +35,8 @@
       "response_first_line": "`bmadx` wskazuje `X2 \u2014 Regular`.",
       "response_chars": 1463,
       "response_lines": 19,
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x2.log"
+      "raw_txt": "benchmark/raw/bmadx-healthy-x2.txt",
+      "raw_log": "benchmark/raw/bmadx-healthy-x2.log"
     },
     {
       "case": "bmadx-healthy-x3",
@@ -48,8 +48,8 @@
       "response_first_line": "U\u017cy\u0142em `bmadx`, bo to zadanie dotyczy wyboru w\u0142a\u015bciwego biegu BMAD dla istniej\u0105cego story i utrzymania dyscypliny artefakt\u00f3w procesu.",
       "response_chars": 940,
       "response_lines": 5,
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x3.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x3.log"
+      "raw_txt": "benchmark/raw/bmadx-healthy-x3.txt",
+      "raw_log": "benchmark/raw/bmadx-healthy-x3.log"
     },
     {
       "case": "bmadx-healthy-x4",
@@ -61,8 +61,8 @@
       "response_first_line": "U\u017cy\u0142em skilla `bmadx`.",
       "response_chars": 1118,
       "response_lines": 24,
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x4.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-healthy-x4.log"
+      "raw_txt": "benchmark/raw/bmadx-healthy-x4.txt",
+      "raw_log": "benchmark/raw/bmadx-healthy-x4.log"
     }
   ],
   "framework_averages": {

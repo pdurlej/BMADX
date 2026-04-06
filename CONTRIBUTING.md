@@ -50,14 +50,15 @@ If you change install surfaces:
 
 ```bash
 python3 scripts/test_install_bmadx.py
-python3 scripts/install_bmadx.py --dry-run
+python3 scripts/test_install_and_verify_bmadx.py
+python3 scripts/install_and_verify_bmadx.py --dry-run
 ```
 
 If you change benchmark behavior:
 
 ```bash
 python3 benchmark/scripts/test_run_bmadx_benchmark.py
-python3 benchmark/scripts/run_bmadx_benchmark.py --profile healthy --date-stamp 2026-04-05
+python3 benchmark/scripts/run_bmadx_benchmark.py --profile healthy --date-stamp 2026-04-06
 ```
 
 If you change `X4` artifacts:
@@ -68,13 +69,10 @@ python3 skill/bmadx/scripts/render_fubar_bundle.py \
   --project-path "$PWD" \
   --output-dir samples/fubar-bundle \
   --include-architect \
+  --public-sample \
   --json
 ```
 
 ## Documentation
 
-Public-facing documentation should prefer English.
-
-Historical internal documents can stay in Polish if they are mainly archival,
-but the public onboarding path should remain readable to people who do not read
-Polish.
+Public-facing documentation should be English and portable.

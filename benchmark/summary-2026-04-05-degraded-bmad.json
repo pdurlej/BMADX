@@ -8,7 +8,7 @@
     "mcp_startup": "no servers"
   },
   "baselines": {
-    "mixed_summary": "/Users/pd/Developer/BMADX/benchmark/summary-2026-04-04.json",
+    "mixed_summary": "benchmark/summary-2026-04-04.json",
     "mixed_summary_note": "Contains historical BMAD/OMX baselines and prior BMADX degraded rerun."
   },
   "cases": [
@@ -31,8 +31,8 @@
       "reference_budget_pass": true,
       "routing_pass": true,
       "reference_reads": [],
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x1.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x1.log"
+      "raw_txt": "benchmark/raw/bmadx-degraded-x1.txt",
+      "raw_log": "benchmark/raw/bmadx-degraded-x1.log"
     },
     {
       "case": "bmadx-degraded-x2",
@@ -53,8 +53,8 @@
       "reference_budget_pass": true,
       "routing_pass": true,
       "reference_reads": [],
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x2.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x2.log"
+      "raw_txt": "benchmark/raw/bmadx-degraded-x2.txt",
+      "raw_log": "benchmark/raw/bmadx-degraded-x2.log"
     },
     {
       "case": "bmadx-degraded-x3",
@@ -79,8 +79,8 @@
         "trigger-matrix.md",
         "gearbox.md"
       ],
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x3.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x3.log"
+      "raw_txt": "benchmark/raw/bmadx-degraded-x3.txt",
+      "raw_log": "benchmark/raw/bmadx-degraded-x3.log"
     },
     {
       "case": "bmadx-degraded-x4",
@@ -104,8 +104,8 @@
       "reference_reads": [
         "fubar-bundle-spec.md"
       ],
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x4.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x4.log"
+      "raw_txt": "benchmark/raw/bmadx-degraded-x4.txt",
+      "raw_log": "benchmark/raw/bmadx-degraded-x4.log"
     }
   ],
   "boundary_cases": [
@@ -129,8 +129,8 @@
       "reference_budget_pass": true,
       "routing_pass": true,
       "reference_reads": [],
-      "raw_txt": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x2x3-boundary.txt",
-      "raw_log": "/Users/pd/Developer/BMADX/benchmark/raw/bmadx-degraded-x2x3-boundary.log"
+      "raw_txt": "benchmark/raw/bmadx-degraded-x2x3-boundary.txt",
+      "raw_log": "benchmark/raw/bmadx-degraded-x2x3-boundary.log"
     }
   ],
   "framework_averages": {

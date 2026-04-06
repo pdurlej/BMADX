@@ -1,27 +1,18 @@
 # Architecture — BMADX v0.2.2
 
-## Główne decyzje
+## Decision
 
-### Ograniczenie kontraktu, nie gate
+Keep BMADX small and tactical.
 
-- `sync_bmadx.py` pozostaje bez nowych flag,
-- zmiana dzieje się w kontrakcie skilla i benchmark harness,
-- obvious `X1/X2` mają korzystać wyłącznie z wiedzy osadzonej w `SKILL.md` plus compact gate.
+## Main architectural choices
 
-### Mixed metric benchmark
+- response shaping for obvious `X1/X2` belongs in the skill contract, not in new gate flags
+- benchmark governance should validate response shape and reference-read budget, not just tokens
+- BMADX remains an overlay on BMAD rather than a parallel process system
 
-- runner ocenia tokeny, format, routing i czytanie refs,
-- `X1/X2` nie mogą domyślnie otwierać `references/*.md`,
-- boundary scenario `X2/X3` chroni przed zbyt agresywnym skracaniem `X2`.
+## Constraints
 
-### Productized X4
-
-- bundle ma jawne obowiązkowe i opcjonalne artefakty,
-- rollout checklist ma mówić kiedy renderować i kiedy nie renderować,
-- `project-context.md` pozostaje jedyną trwałą pamięcią techniczną.
-
-## Granice
-
-- `BMAD > BMADX` pozostaje nadrzędne,
-- brak wejścia w pełny `OMX`,
-- brak redefinicji faz BMAD przez bundle albo benchmark harness.
+- `BMAD > BMADX`
+- BMADX stays lighter than OMX
+- `X4/FUBAR` stays rare and valuable
+- no second durable plan store

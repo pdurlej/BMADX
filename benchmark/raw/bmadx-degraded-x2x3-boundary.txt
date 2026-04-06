@@ -1,5 +1,10 @@
-`bmadx`: wybór padł na `X3 — Complex (BMAD)`.
+Using `bmadx` because the task is not just a bounded code edit; it must stay inside an existing BMAD story and remain aligned with BMAD artifacts.
 
-Wybór: `X3`, w ramach istniejącego story BMAD, nie `X2`.
-Uzasadnienie: zmiana obejmuje kilka plików backendu, ale ważniejszy jest wymóg zgodności z istniejącym story i artefaktami procesu; to oznacza, że source-of-truth pozostaje BMAD, więc właściwy jest pełny workflow BMAD dla już istniejącego artefaktu, a nie zwykły lokalny plan wykonania.
-Następny krok: najpierw odblokować execution gate BMAD, bo klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany (`execution_allowed = false`); dopiero potem wejść w artefakty istniejącego story i doprecyzować zmianę pola `status` zgodnie z acceptance criteria i `project-context`.
+Choice: `X3` - Complex (BMAD)  
+Why: the change spans multiple backend files and is explicitly tied to an existing BMAD story, so BMAD artifacts remain the source of truth and this should not be routed as `X1/X2`.  
+Next step: do not edit code yet; first restore BMAD health because `X3` execution is currently blocked, then update or confirm the existing story’s artifact state and acceptance for the new `status` field before touching the 4 files.
+
+Gate state: classification allowed, execution blocked (`bmad_status: needs_attention`).  
+Remediation:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json"`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync"`

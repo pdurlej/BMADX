@@ -2,6 +2,25 @@
 
 All notable changes to this repository will be documented here.
 
+## [0.2.3] - 2026-04-06
+
+### Added
+
+- `START_HERE.md` and a new first-success onboarding path
+- `scripts/install_and_verify_bmadx.py` as the primary public install wrapper
+- prompt pack for Codex starter prompts
+- plain-language chooser docs for BMAD vs BMADX vs OMX
+- FAQ and Rescue Mode docs
+- transcript-based proof surfaces for non-technical users
+
+### Changed
+
+- translated the public skill surface and public repo surfaces to English
+- removed maintainer-local path leakage from portable runtime and public docs
+- made remediation commands portable through `${CODEX_HOME:-$HOME/.codex}`
+- added public-sample rendering mode for the sample `X4/FUBAR` bundle
+- repositioned the public onboarding path around low-friction usage rather than smoke checks
+
 ## [0.2.2] - 2026-04-05
 
 ### Added

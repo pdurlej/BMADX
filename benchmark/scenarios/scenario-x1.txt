@@ -1,2 +1,2 @@
-Use the requested skill to decide the right workflow for this task and answer briefly in Polish.
-Task: Napraw literówkę w komunikacie błędu w jednym komponencie React i podaj, co zrobisz dalej.
+Use the requested skill to decide the right workflow for this task and answer briefly in English.
+Task: Fix a typo in an error message inside one React component and say what you will do next.

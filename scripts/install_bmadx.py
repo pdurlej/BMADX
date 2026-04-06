@@ -4,33 +4,47 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 from pathlib import Path
 
 
-DEFAULT_CODEX_HOME = Path.home() / ".codex"
-DEFAULT_TARGET = DEFAULT_CODEX_HOME / "skills" / "bmadx"
-DEFAULT_DEPENDENCY = DEFAULT_CODEX_HOME / "skills" / "bmad-method-codex"
+def default_codex_home() -> Path:
+    return Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+
+
+def default_target() -> Path:
+    return default_codex_home() / "skills" / "bmadx"
+
+
+def default_dependency() -> Path:
+    return default_codex_home() / "skills" / "bmad-method-codex"
+
+
+def codex_home_shell() -> str:
+    return "${CODEX_HOME:-$HOME/.codex}"
 
 
 def build_parser() -> argparse.ArgumentParser:
+    target_default = default_target()
+    dependency_default = default_dependency()
     parser = argparse.ArgumentParser(
         description="Install the BMADX skill from this repository into Codex."
     )
     parser.add_argument(
         "--target",
         type=Path,
-        default=DEFAULT_TARGET,
-        help=f"Target install path (default: {DEFAULT_TARGET})",
+        default=target_default,
+        help=f"Target install path (default: {target_default})",
     )
     parser.add_argument(
         "--dependency-path",
         type=Path,
-        default=DEFAULT_DEPENDENCY,
+        default=dependency_default,
         help=(
             "Path to the required bmad-method-codex skill "
-            f"(default: {DEFAULT_DEPENDENCY})"
+            f"(default: {dependency_default})"
         ),
     )
     parser.add_argument(
@@ -100,7 +114,7 @@ def install_skill(source: Path, dependency_path: Path, target: Path, force: bool
         f"- source: {source}\n"
         f"- target: {target}\n"
         f"- dependency: {dependency_path}\n"
-        "- next: run `python3 ~/.codex/skills/bmadx/scripts/sync_bmadx.py sync --json`"
+        f'- next: run `python3 "{codex_home_shell()}/skills/bmadx/scripts/sync_bmadx.py" sync --json`'
     )
 
 

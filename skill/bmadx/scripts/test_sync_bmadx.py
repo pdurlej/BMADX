@@ -53,7 +53,7 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.2.2",
+        "skill_version": "0.2.3",
         "target_codex_profile": "codex-5.4",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
@@ -226,9 +226,9 @@ class SyncBmadxTests(unittest.TestCase):
             self.assertTrue(payload["execution_allowed"])
             self.assertFalse(payload["bmad_dependency"]["checked_live"])
             self.assertFalse(payload["bmad_dependency"]["cache_used"])
-            self.assertIn("lokalnym stanie BMADX", payload["warning"])
+            self.assertIn("local BMADX state", payload["warning"])
             self.assertIn(
-                "Brak świeżego checka BMAD dla `X3/X4`.",
+                "No fresh BMAD check is available for `X3/X4`.",
                 payload["execution_gate"]["by_gear"]["X3"]["blockers"],
             )
 
@@ -266,14 +266,14 @@ class SyncBmadxTests(unittest.TestCase):
             self.assertEqual(payload["action"], "needs_attention")
             self.assertFalse(payload["execution_allowed"])
             self.assertIn(
-                "Bieżący check BMAD nie jest zdrowy.",
+                "The current BMAD check is not healthy.",
                 payload["execution_gate"]["by_gear"]["X3"]["blockers"],
             )
             self.assertEqual(
                 payload["remediation"],
                 [
-                    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json",
-                    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync",
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" sync",
                 ],
             )
 
@@ -302,7 +302,7 @@ class SyncBmadxTests(unittest.TestCase):
             self.assertFalse(second["execution_allowed"])
             self.assertIn("v1.0.0", "\n".join(second["warnings"]))
             self.assertIn(
-                "Wykryto zmianę releasu BMAD od ostatniego zapisu.",
+                "Detected a BMAD release change since the last saved state.",
                 second["execution_gate"]["by_gear"]["X3"]["blockers"],
             )
 
@@ -318,7 +318,7 @@ class SyncBmadxTests(unittest.TestCase):
             payload = self.run_sync(root, bmad, state_path=state_path)
             self.assertEqual(payload["action"], "ok")
             self.assertFalse(payload["state_persisted"])
-            self.assertIn("Nie udało się zapisać stanu BMADX", payload["state_write_warning"])
+            self.assertIn("Could not persist BMADX state", payload["state_write_warning"])
 
     def test_compact_x1_schema_is_minimal(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -338,7 +338,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.2.2")
+            self.assertEqual(payload["skill_version"], "0.2.3")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")
@@ -360,8 +360,8 @@ class SyncBmadxTests(unittest.TestCase):
             self.assertEqual(
                 payload["remediation"],
                 [
-                    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json",
-                    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync",
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" sync",
                 ],
             )
 

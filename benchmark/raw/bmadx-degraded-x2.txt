@@ -1,13 +1,9 @@
-Wybór: `X2 — Regular`.
-
-Uzasadnienie: To mały/średni backendowy change request z lokalnym blast radiusem (`4` pliki, nowe pole `status`, bez sygnału o potrzebie pełnego artefaktu BMAD), więc wystarczy krótki plan i verify; compact gate dla `X2` jest zielony.
-
+Choice: `X2` Regular  
+Why: This is bounded backend work across a few files with a schema/contract touch, so it needs a short plan and strong verification, but not full BMAD artifacts.  
 Plan:
-1. Zmapować `4` pliki i ustalić kontrakt pola `status`: wejście, model/dto, walidacja, serializacja/persistencja.
-2. Rozpisać minimalny diff per plik, żeby `status` było spójne na całej ścieżce request -> domain -> response/store.
-3. Określić test touchpoints i kryteria akceptacji dla nowego pola.
-
+1. Trace the current status field path across the 4 backend files and identify model, DTO/schema, mapping, and persistence touchpoints.
+2. Define the minimal change set for the new status field, then update validation, serialization, and any read/write flow consistently.
 Verify:
-1. Testy jednostkowe/integracyjne dla przyjęcia, zapisu i odczytu `status`.
-2. Sprawdzenie regresji kontraktu API/schema, jeśli `status` wychodzi na zewnątrz.
-3. Krótki review diffu pod spójność nazw, nullability/default i backward compatibility.
+1. Run the narrowest backend tests covering create/update/read paths for the affected entity and confirm the new field persists and returns correctly.
+2. Review for contract drift: defaults, nullability, enum/value validation, and any missing propagation in API or storage layers.
+Next step: inspect the 4 target files and map exactly where the existing status handling starts and stops before changing anything.

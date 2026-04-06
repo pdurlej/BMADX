@@ -1,7 +1,11 @@
-Wybór: `X3` , czyli regularny flow BMAD dla istniejącego story.
+Choice: X3, Complex (BMAD).
 
-Uzasadnienie: sama zmiana technicznie wygląda na lokalną (`4` pliki backendu), ale ma pozostać zgodna z istniejącym story i artefaktami BMAD, więc to nie jest zwykłe `X2`; source-of-truth musi pozostać w artefaktach procesu.
+Why: The code change is modest, but it belongs to an existing BMAD story and must stay aligned with BMAD artifacts, so the lightest safe mode is still BMAD-first rather than X2.
 
-Stan gate: klasyfikacja `X3` jest poprawna, ale execution jest obecnie zablokowany (`execution_allowed = false`, `bmad_status = needs_attention`).
+Gate: Classification is allowed, but execution is currently blocked because local BMAD health needs attention.
 
-Następny krok: najpierw przywrócić zdrowy stan BMAD (`sync_bmad_method.py check --json`, potem `sync_bmad_method.py sync` zgodnie z remediation), a dopiero potem wejść w artefakty istniejącego story i doprecyzować, jak pole `status` wpływa na acceptance criteria, kontrakt i verify dla tych 4 plików.
+Next step: restore BMAD sync, then update the existing story artifacts/acceptance context for the new `status` field before touching the 4 backend files.
+
+Remediation:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`

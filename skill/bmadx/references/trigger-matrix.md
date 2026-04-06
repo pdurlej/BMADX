@@ -1,43 +1,40 @@
 # Trigger Matrix
 
-Operacyjna macierz do klasyfikacji zadań bez zgadywania.
+Operational matrix for classifying tasks without guessing.
 
-Ten plik służy głównie boundary cases. Przy obvious `X1/X2` happy path użyj
-heurystyk osadzonych w `SKILL.md` i nie otwieraj reference docs.
+This file is mainly for boundary cases. In the obvious `X1/X2` happy path, use
+the heuristics embedded in `SKILL.md` and do not open reference docs.
 
-| Sygnał | X1 | X2 | X3 | X4 |
+| Signal | X1 | X2 | X3 | X4 |
 | --- | --- | --- | --- | --- |
-| 1 lokalny plik | tak | nie | nie | nie |
-| kilka plików / lokalny blast radius | nie | tak | nie | nie |
-| potrzeba nowego artefaktu BMAD | nie | nie | tak | tak |
-| `plan` w prośbie użytkownika | nie | pytania | pytania | pytania |
-| niejasny zakres | nie | pytania | pytania | pytania |
-| API/schema/auth/perf/concurrency risk | nie | czasem | tak | tak |
-| rollout i ownership do zaprojektowania | nie | nie | czasem | tak |
-| scaffold bundle ponad BMAD | nie | nie | nie | tak |
+| 1 local file | yes | no | no | no |
+| a few files / local blast radius | no | yes | no | no |
+| needs a new BMAD artifact | no | no | yes | yes |
+| user says `plan` | no | questions | questions | questions |
+| ambiguous scope | no | questions | questions | questions |
+| API/schema/auth/perf/concurrency risk | no | sometimes | yes | yes |
+| rollout and ownership need design | no | no | sometimes | yes |
+| scaffold bundle beyond BMAD | no | no | no | yes |
 
-## Rekomendowane progi
+## Recommended thresholds
 
-- `X1`: prosty fix lub prosty upgrade.
-- `X2`: lokalna zmiana wieloplikowa.
-- `X3`: regularny flow BMAD.
-- `X4`: BMAD+ bundle, gdy sam BMAD nie daje jeszcze wystarczająco
-  uporządkowanej warstwy operacyjnej.
+- `X1`: simple fix or simple upgrade.
+- `X2`: bounded multi-file local change.
+- `X3`: normal BMAD flow.
+- `X4`: BMAD plus bundle when BMAD alone does not yet provide enough operational structure.
 
-## Gate po klasyfikacji
+## Gate after classification
 
-- poprawna klasyfikacja ma pozostać poprawna nawet przy czerwonym BMAD,
-- `X1/X2` używają `check --gear X1|X2 --compact` i fast path z cache,
-- `X1/X2` bez cache dostają warning zamiast blokady,
-- `X3/X4` używają `check --gear X3|X4 --compact` z pełnym live gate,
-- bez zdrowego BMAD execution dla `X3/X4` ma być zatrzymany,
-- cache ostatniego zdrowego BMAD pomaga zmiękczyć komunikację dla `X1/X2`,
-  ale nie odblokowuje `X3/X4`.
+- the correct classification should remain correct even when BMAD is red,
+- `X1/X2` use `check --gear X1|X2 --compact` and the cached fast path,
+- `X1/X2` without cache should get a warning instead of a block,
+- `X3/X4` use `check --gear X3|X4 --compact` with the full live gate,
+- without healthy BMAD, execution for `X3/X4` must stop,
+- the last healthy BMAD cache softens communication for `X1/X2`, but must not unlock `X3/X4`.
 
-## Przykładowe klasyfikacje
+## Example classifications
 
-- „Napraw literówkę w jednym komponencie” -> `X1`
-- „Dodaj obsługę nowego pola w kilku miejscach i sprawdź testy” -> `X2`
-- „Zaimplementuj story z istniejącego sprintu BMAD” -> `X3`
-- „Ułóż nam kompletny sposób pracy dla trudnego projektu i wygeneruj scaffolding”
-  -> `X4`
+- "Fix a typo in one component" -> `X1`
+- "Add support for a new field in a few places and run tests" -> `X2`
+- "Implement a story from the current BMAD sprint" -> `X3`
+- "Set up a working approach for a difficult repo and generate scaffolding" -> `X4`

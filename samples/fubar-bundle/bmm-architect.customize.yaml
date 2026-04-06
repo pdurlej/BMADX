@@ -2,6 +2,6 @@
 memories:
   - "_bmad-output/project-context.md"
 critical_actions:
-  - "Dla X3 i X4 pilnuj, by BMAD pozostał ownerem architektury."
-  - "Nie twórz drugiego source-of-truth poza artefaktami BMAD."
-  - "Projektuj decyzje tak, aby rollout i verify były możliwe do udowodnienia."
+  - "For X3 and X4, keep BMAD as the owner of architecture decisions."
+  - "Do not create a second source of truth outside BMAD artifacts."
+  - "Design decisions so rollout and verify can be proven later."

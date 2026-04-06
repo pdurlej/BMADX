@@ -1,3 +1,3 @@
-Wybór: `X1 — One-shot`.
-Uzasadnienie: To pojedyncza, lokalna poprawka copy w jednym komponencie React, z niskim blast radius i bez zmiany kontraktu lub logiki.
-Następny krok: Zlokalizuję komponent i dokładny komunikat błędu, potwierdzę właściwe brzmienie tekstu, a potem przygotuję minimalną zmianę i krótki check, że komunikat wyświetla się poprawnie.
+Choice: `X1 — One-shot`
+Why: This is a tiny, low-risk local copy fix in one React component, so the lightest safe mode is enough.
+Next step: I will locate the component, confirm the typo in the error message, and then make the single-line text correction with a quick verification pass.

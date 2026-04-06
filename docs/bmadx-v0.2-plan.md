@@ -1,83 +1,56 @@
 # BMADX v0.2 Plan
 
-## Cel
+## Goal
 
-Podnieść użyteczność `BMADX` bez utraty jego głównej przewagi:
-- prosty routing `X1..X4`,
-- `BMAD-first`,
-- mocne `X4/FUBAR`,
-- niski narzut dla prostych zadań.
+Increase BMADX usefulness without losing its main advantages:
+- simple `X1..X4` routing
+- BMAD-first discipline
+- strong `X4/FUBAR`
+- low overhead for simple tasks
 
-## Zakres v0.2
+## Scope
 
-### 1. Soft gate dla `X1/X2`
+### 1. Soft gate for `X1/X2`
 
-Obecny problem:
-- `v0.1` odpala dependency gate zawsze,
-- nawet dla prostych zadań użytkownik dostaje zbędny komunikat o `needs_attention`.
+Problem:
+- `v0.1` always ran the dependency gate,
+- even simple tasks produced noisy `needs_attention` output.
 
-Cel:
-- `X1` i `X2` mają klasyfikować się i działać bez blokowania przez czerwony stan BMAD,
-- dependency gate ma być dla nich co najwyżej ostrzeżeniem, nie blokadą.
+Goal:
+- `X1` and `X2` should classify and continue without being blocked by a red BMAD state,
+- the dependency gate should be a warning for them, not a hard block.
 
-### 2. Rozdzielenie classify vs execute
+### 2. Separate classify vs execute
 
-Obecny problem:
-- `v0.1` miesza wybór biegu z prawem wejścia w cięższy flow.
+Problem:
+- `v0.1` mixed gear selection with permission to enter heavier flows.
 
-Cel:
-- klasyfikacja ma odpowiadać na pytanie: `jaki to bieg?`
-- execution gate ma odpowiadać osobno na pytanie: `czy wolno teraz wejść w X3/X4?`
+Goal:
+- classification answers: what gear is this?
+- execution gate answers: can `X3/X4` execute right now?
 
-Efekt:
-- nawet przy niezdrowym BMAD użytkownik dostaje poprawną klasyfikację `X3` lub `X4`,
-- ale też jasny komunikat, że execution jest zablokowany.
+### 3. Cache the last healthy BMAD state
 
-### 3. Cache ostatniego zdrowego stanu BMAD
+Problem:
+- the dependency gate moved to `needs_attention` too easily,
+- benchmark runs showed that this polluted simple cases.
 
-Obecny problem:
-- dependency gate zbyt łatwo przechodzi w `needs_attention`,
-- benchmark pokazał, że to zanieczyszcza proste przypadki.
+Goal:
+- store the last healthy BMAD state with a timestamp,
+- use it as a soft signal for `X1/X2`,
+- still require stricter checks for `X3/X4`.
 
-Cel:
-- zapisywać ostatni zdrowy stan BMAD z timestampem,
-- używać go jako miękkiego sygnału dla `X1/X2`,
-- dla `X3/X4` nadal wymagać świeższego i bardziej rygorystycznego checku.
+## Out of scope
 
-## Poza zakresem v0.2
+- full OMX port
+- `.omx/` as a second memory system
+- tmux or team runtime
+- turning BMADX into a dense dependency graph
 
-- pełny port `OMX`,
-- `.omx/` jako drugi system pamięci,
-- tmux/team runtime,
-- większa liczba helper skills,
-- rozbijanie `BMADX` na skomplikowaną siatkę zależności.
+## Acceptance criteria
 
-## Kryteria akceptacji
-
-- `X1` i `X2` nie spamują użytkownika gate'em, jeśli routing jest oczywisty,
-- `X3` i `X4` nadal respektują zdrowie BMAD,
-- `X4/FUBAR` nadal generuje kompletny scaffold bundle,
-- re-benchmark pokazuje poprawę doświadczenia dla `X1/X2`,
-- koszt tokenowy nie rośnie wyraźnie względem `v0.1`.
-
-## Minimalny plan pracy
-
-1. Zmienić logikę w [`sync_bmadx.py`](../skill/bmadx/scripts/sync_bmadx.py), tak żeby wynik rozróżniał:
-   - `classification_allowed`
-   - `execution_allowed`
-   - `warning`
-2. Zmienić opis dependency gate w [`SKILL.md`](../skill/bmadx/SKILL.md) i reference docs.
-3. Dodać testy dla:
-   - czerwonego BMAD + `X1`
-   - czerwonego BMAD + `X2`
-   - czerwonego BMAD + `X3`
-   - czerwonego BMAD + `X4`
-4. Uruchomić smoke-check.
-5. Powtórzyć benchmark `X1..X4`.
-
-## Co sprawdzić po wdrożeniu
-
-- czy `X1/X2` stały się lżejsze komunikacyjnie,
-- czy `X3/X4` nadal są bezpieczne,
-- czy output nie zrobił się bardziej rozwlekły,
-- czy benchmark nadal pokazuje przewagę `BMADX` w `X4`.
+- `X1` and `X2` stop spamming the user with dependency-gate noise when routing is obvious
+- `X3` and `X4` still respect BMAD health
+- `X4/FUBAR` still renders the full scaffold bundle
+- reruns show a better simple-task experience
+- token cost does not clearly worsen versus `v0.1`

@@ -1,7 +1,11 @@
-Wybór: `X4 — FUBAR (BMAD+)`, z workflowem BMAD zaczynanym od `/bmad-bmm-create-prd`, potem `/bmad-bmm-create-architecture`, a dopiero później scaffold bundle.
+Choice: `X4` Rescue Mode (`X4/FUBAR`).
 
-Uzasadnienie: zakres jest rozlany i prosisz jednocześnie o plan, scaffold bundle, draft `AGENTS.md`, snippety `.customize.yaml` i `verify matrix`, więc to przekracza zwykły `X3` i wprost pasuje do `X4`, gdzie BMAD pozostaje source-of-truth, a BMADX dokłada warstwę operacyjną i bundle.
+Why: the request explicitly combines a messy project, a plan, a scaffold bundle, draft governance files, config snippets, and a verify matrix. That is broader than `X2` and is exactly the `X4` pattern BMADX reserves for high-entropy setup work.
 
-Stan gate: klasyfikacja `X4` jest dozwolona, ale execution jest obecnie zablokowany, bo check BMAD zwrócił `execution_allowed: false` dla `X4`.
+Gate: classification is allowed, but `X4` execution is currently blocked because local BMAD health needs attention.
 
-Następny krok: najpierw domknąć health check/sync BMAD, potem wejść w PRD i architekturę jako podstawę, a na ich bazie przygotować bundle w kolejności: plan projektu, draft `AGENTS.md`, snippety `core-bmad-master` i `bmm-dev` `.customize.yaml`, oraz `bmadx-verify-matrix`.
+Next step: restore BMAD health first with:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`
+
+After that, the first BMAD step should be to start the rescue flow with PRD/architecture scaffolding, then generate the `X4/FUBAR` bundle for the plan, `AGENTS.md`, `.customize.yaml` snippets, and verify matrix.

@@ -22,7 +22,7 @@ class BenchmarkRunnerTests(unittest.TestCase):
         self.assertEqual(detect_reference_reads(stderr), ["gearbox.md", "trigger-matrix.md"])
 
     def test_validate_case_marks_reference_budget_failure_for_x1(self) -> None:
-        stdout = "Wybór: `X1 — One-shot`.\nUzasadnienie: ...\nNastępny krok: ...\n"
+        stdout = "Choice: `X1 — One-shot`.\nWhy: ...\nNext step: ...\n"
         stderr = 'exec /bin/zsh -lc "sed -n \'1,220p\' /tmp/codex-home/skills/bmadx/references/gearbox.md"\n'
         validation = validate_case(
             stdout,

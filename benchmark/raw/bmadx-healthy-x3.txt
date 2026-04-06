@@ -1,7 +1,11 @@
-Używam `bmadx`, bo pytanie dotyczy doboru biegu i wejścia w właściwy flow BMAD z kontrolą artefaktów procesu.
+Choice: `X3` (Complex, BMAD)
 
-Wybór: `X3 — Complex (BMAD)`.
+Why: This is implementation of an existing BMAD story, so the work belongs in the BMAD flow and must stay anchored to BMAD-owned artifacts rather than a lighter `X1/X2` track. It does not justify `X4` because the request is not asking for rescue scaffolding, new artifact creation, or broad project recovery.
 
-Uzasadnienie: macie już istniejące story BMAD, więc nie chodzi o zwykłe lokalne wykonanie `X1/X2`, tylko o wejście w pełny flow oparty na BMAD jako source-of-truth; jednocześnie z opisu nie wynika jeszcze chaos projektu, rozlany zakres ani potrzeba scaffold bundle, więc `X4` byłby przedwczesny.
+Gate: `X3` classification is allowed, but execution is currently blocked. The compact check returned `execution_allowed: false`, `bmad_status: needs_attention`, so the right classification stands, but work should not start until BMAD health is restored.
 
-Następny krok: wykonać compact gate dla `X3`, a jeśli execution jest zielony, wejść w implementację przez artefakty BMAD dla tego story i prowadzić pracę pod kryteria story oraz `project-context.md`; jeśli gate dla `X3` jest czerwony, klasyfikacja zostaje `X3`, ale execution należy wstrzymać do naprawy zależności BMAD.
+Next step: restore BMAD health first, then enter the existing story’s normal BMAD implementation path with `_bmad-output/project-context.md` and the story artifact as the source of truth. The required remediation is:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

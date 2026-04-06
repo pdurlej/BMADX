@@ -19,13 +19,9 @@ GEARS = ("X1", "X2", "X3", "X4")
 SOFT_GATE_GEARS = {"X1", "X2"}
 HARD_GATE_GEARS = {"X3", "X4"}
 FAST_PATH_WARNING = (
-    "Brak świeżego zdrowego snapshotu BMAD; decyzja dla `X1/X2` opiera się na lokalnym stanie BMADX."
+    "No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state."
 )
-FAST_PATH_HARD_BLOCKER = "Brak świeżego checka BMAD dla `X3/X4`."
-REMEDIATION_STEPS = [
-    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json",
-    "python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync",
-]
+FAST_PATH_HARD_BLOCKER = "No fresh BMAD check is available for `X3/X4`."
 
 ROOT = Path(os.environ.get("BMADX_ROOT", Path(__file__).resolve().parents[1]))
 MANIFEST_FILE = Path(
@@ -38,6 +34,26 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def codex_home() -> Path:
+    return Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+
+
+def codex_home_shell() -> str:
+    return "${CODEX_HOME:-$HOME/.codex}"
+
+
+def dependency_script_shell() -> str:
+    return f'"{codex_home_shell()}/skills/{DEPENDENCY_SKILL}/scripts/sync_bmad_method.py"'
+
+
+def remediation_steps() -> list[str]:
+    script = dependency_script_shell()
+    return [
+        f"python3 {script} check --json",
+        f"python3 {script} sync",
+    ]
+
+
 def normalize_gear(value: str | None) -> str | None:
     if value is None:
         return None
@@ -45,7 +61,7 @@ def normalize_gear(value: str | None) -> str | None:
     if not gear:
         return None
     if gear not in GEARS:
-        raise argparse.ArgumentTypeError(f"Nieobsługiwany bieg: {value}")
+        raise argparse.ArgumentTypeError(f"Unsupported gear: {value}")
     return gear
 
 
@@ -69,7 +85,7 @@ def try_write_json(path: Path, payload: dict) -> str | None:
     try:
         write_json(path, payload)
     except OSError as exc:
-        return f"Nie udało się zapisać stanu BMADX pod {path}: {exc}"
+        return f"Could not persist BMADX state at {path}: {exc}"
     return None
 
 
@@ -91,8 +107,7 @@ def discover_bmad_path() -> Path:
     if env_path:
         return Path(env_path)
 
-    codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
-    return codex_home / "skills" / DEPENDENCY_SKILL
+    return codex_home() / "skills" / DEPENDENCY_SKILL
 
 
 def run_bmad_check(bmad_path: Path) -> dict:
@@ -101,7 +116,7 @@ def run_bmad_check(bmad_path: Path) -> dict:
             "available": False,
             "path": str(bmad_path),
             "action": "needs_attention",
-            "warnings": [f"Brak zależności BMAD pod {bmad_path}."],
+            "warnings": [f"BMAD dependency is missing at {bmad_path}."],
             "checked_live": True,
             "cache_used": False,
             "status_source": "live",
@@ -126,7 +141,7 @@ def run_bmad_check(bmad_path: Path) -> dict:
             "available": False,
             "path": str(bmad_path),
             "action": "needs_attention",
-            "warnings": [f"Nie udało się uruchomić checka BMAD: {exc}"],
+            "warnings": [f"Could not run the BMAD health check: {exc}"],
             "checked_live": True,
             "cache_used": False,
             "status_source": "live",
@@ -143,7 +158,7 @@ def run_bmad_check(bmad_path: Path) -> dict:
 
     warnings = []
     if result.returncode != 0:
-        warnings.append("Check BMAD zwrócił niezerowy kod wyjścia.")
+        warnings.append("The BMAD health check returned a non-zero exit code.")
     warnings.extend(payload.get("warnings", []) if isinstance(payload, dict) else [])
 
     action = payload.get("action", "needs_attention") if isinstance(payload, dict) else "needs_attention"
@@ -239,12 +254,12 @@ def validate_templates(root: Path, template_checks: dict) -> List[str]:
     for rel, required_strings in template_checks.items():
         target = root / rel
         if not target.exists():
-            failures.append(f"Brak template: {rel}")
+            failures.append(f"Missing template: {rel}")
             continue
         content = target.read_text(encoding="utf-8")
         for needle in required_strings:
             if needle not in content:
-                failures.append(f"Template {rel} nie zawiera wymaganego tekstu: {needle}")
+                failures.append(f"Template {rel} is missing required text: {needle}")
     return failures
 
 
@@ -262,7 +277,7 @@ def validate_layout_markers(root: Path, tracked_files: Iterable[str], expected_l
     haystack = "\n".join(loaded)
     for marker in expected_layout_paths:
         if marker not in haystack:
-            failures.append(f"Brak oczekiwanego markera layoutu BMAD: {marker}")
+            failures.append(f"Missing expected BMAD layout marker: {marker}")
     return failures
 
 
@@ -285,29 +300,29 @@ def build_warnings(
         warnings.extend(bmad.get("warnings", []))
 
     if missing_local:
-        warnings.append("Brak wymaganych plików BMADX: " + ", ".join(sorted(missing_local)))
+        warnings.append("Missing required BMADX files: " + ", ".join(sorted(missing_local)))
 
     if missing_bmad_refs:
-        warnings.append("Brak wymaganych referencji BMAD: " + ", ".join(sorted(missing_bmad_refs)))
+        warnings.append("Missing required BMAD references: " + ", ".join(sorted(missing_bmad_refs)))
 
     warnings.extend(template_failures)
 
     release_changed = bool(previous_release and current_release and previous_release != current_release)
     if release_changed and mode in {"check", "report"}:
         warnings.append(
-            f"Wykryto zmianę releasu BMAD ({previous_release} -> {current_release}). "
-            "Uruchom sync BMADX i przejrzyj overlay."
+            f"Detected a BMAD release change ({previous_release} -> {current_release}). "
+            "Run BMADX sync and review the overlay."
         )
 
     if bmad_delta and mode in {"check", "report"} and not first_run:
         warnings.append(
-            "Wykryto zmianę wymaganych referencji BMAD od ostatniego zapisu: "
+            "Detected a change in required BMAD references since the last saved state: "
             + ", ".join(bmad_delta)
         )
 
     if local_delta and mode in {"check", "report"} and not first_run:
         warnings.append(
-            "Wykryto zmianę plików BMADX od ostatniego zapisu: "
+            "Detected a change in BMADX files since the last saved state: "
             + ", ".join(local_delta)
         )
 
@@ -327,11 +342,11 @@ def build_local_blockers(
 ) -> List[str]:
     blockers: List[str] = []
     if missing_local:
-        blockers.append("Brak wymaganych plików BMADX.")
+        blockers.append("Required BMADX files are missing.")
     if template_failures:
-        blockers.append("Template BMADX nie przechodzą walidacji.")
+        blockers.append("BMADX templates failed validation.")
     if layout_failures:
-        blockers.append("Brakuje oczekiwanych markerów layoutu BMAD.")
+        blockers.append("Expected BMAD layout markers are missing.")
     return blockers
 
 
@@ -349,18 +364,18 @@ def build_dependency_blockers(
         return blockers
 
     if not bmad.get("available"):
-        blockers.append("Zależność BMAD nie jest dostępna.")
+        blockers.append("The BMAD dependency is not available.")
     elif not bmad.get("healthy"):
-        blockers.append("Bieżący check BMAD nie jest zdrowy.")
+        blockers.append("The current BMAD check is not healthy.")
 
     if missing_bmad_refs:
-        blockers.append("Brak wymaganych referencji BMAD.")
+        blockers.append("Required BMAD references are missing.")
 
     if mode in {"check", "report"} and not first_run:
         if release_changed:
-            blockers.append("Wykryto zmianę releasu BMAD od ostatniego zapisu.")
+            blockers.append("Detected a BMAD release change since the last saved state.")
         if bmad_delta:
-            blockers.append("Wykryto zmianę referencji BMAD od ostatniego zapisu.")
+            blockers.append("Detected a BMAD reference change since the last saved state.")
 
     return blockers
 
@@ -401,12 +416,12 @@ def summarize_warning(
     warnings: List[str],
 ) -> str | None:
     if not classification_allowed:
-        return "Lokalny stan BMADX wymaga uwagi przed klasyfikacją i execution."
+        return "Local BMADX state needs attention before classification and execution."
 
     if requested_gear and not execution_allowed:
         return (
-            f"Klasyfikacja pozostaje dozwolona, ale execution dla `{requested_gear}` "
-            "jest zablokowany do czasu zdrowego checka BMAD."
+            f"Classification is still allowed, but execution for `{requested_gear}` "
+            "is blocked until BMAD is healthy again."
         )
 
     if requested_gear in SOFT_GATE_GEARS and not bmad.get("checked_live", True):
@@ -418,12 +433,12 @@ def summarize_warning(
         cached_at = str(cached_healthy_bmad.get("checked_at") or "")
         if cached_at:
             return (
-                "BMAD nie jest teraz w pełni zdrowy; dla `X1/X2` to warning, "
-                f"a ostatni zdrowy stan zapisano {cached_at}."
+                "BMAD is not fully healthy right now; for `X1/X2` this remains a warning, "
+                f"and the last healthy state was saved at {cached_at}."
             )
         return (
-            "BMAD nie jest teraz w pełni zdrowy; dla `X1/X2` to warning, "
-            "a dla `X3/X4` blokada execution."
+            "BMAD is not fully healthy right now; for `X1/X2` this remains a warning, "
+            "and for `X3/X4` it blocks execution."
         )
 
     if warnings:
@@ -447,9 +462,9 @@ def determine_bmad_status(*, bmad: dict, requested_gear: str | None, execution_a
 
 def build_remediation(*, requested_gear: str | None, execution_allowed: bool, dependency_blockers: List[str]) -> List[str]:
     if requested_gear in HARD_GATE_GEARS and not execution_allowed:
-        return list(REMEDIATION_STEPS)
+        return remediation_steps()
     if requested_gear is None and dependency_blockers:
-        return list(REMEDIATION_STEPS)
+        return remediation_steps()
     return []
 
 
@@ -460,12 +475,12 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:
         nargs="?",
         default="check",
         choices=("check", "report", "sync"),
-        help="check/report status or sync state",
+        help="Check/report status or sync the saved state",
     )
     parser.add_argument(
         "--gear",
         type=normalize_gear,
-        help="Evaluate execution gate for a specific gear: X1, X2, X3, or X4",
+        help="Evaluate the execution gate for a specific gear: X1, X2, X3, or X4",
     )
     parser.add_argument(
         "--compact",

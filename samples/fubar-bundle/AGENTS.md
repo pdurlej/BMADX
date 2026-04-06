@@ -1,36 +1,36 @@
 # AGENTS.md for BMADX
 
-To repo używa `BMAD > BMADX`.
+This repository uses `BMAD > BMADX`.
 
-- BMAD pozostaje systemem działania i architekturą procesu.
-- BMADX pozostaje warstwą operacyjno-taktyczną dla Codex.
-- Gdy routing jest niejasny, użyj `bmad-help` zamiast wymyślać nowy workflow.
+- BMAD remains the process system and workflow architecture.
+- BMADX remains the operational routing layer for Codex.
+- If routing is unclear, use `bmad-help` instead of inventing a parallel workflow.
 
 ## Routing
 
-- `X1` — One-shot: mały, lokalny task.
-- `X2` — Regular: krótki plan i standardowy verify.
-- `X3` — Complex (BMAD): wejście w właściwy flow BMAD.
-- `X4` — FUBAR (BMAD+): scaffold bundle, rollout, verify matrix.
+- `X1` — One-shot: tiny, local task.
+- `X2` — Regular: short plan and standard verify.
+- `X3` — Complex (BMAD): enter the real BMAD flow.
+- `X4` — Rescue Mode (`X4/FUBAR`, BMAD+): scaffold bundle, rollout, verify matrix.
 
-## Trwały kontekst
+## Durable context
 
-- Proces i artefakty: BMAD.
+- Process and artifacts: BMAD.
 - Technical memory: `_bmad-output/project-context.md`.
-- Lokalna pamięć sesji nie jest source-of-truth.
+- Session-local notes are not source-of-truth.
 
 ## Verify before done
 
-- Nie zamykaj pracy bez dowodu.
-- Dla nietrywialnych zmian uruchamiaj review.
-- Przy konfliktach między wygodą a artefaktem procesu wygrywa BMAD.
+- Do not close work without evidence.
+- For non-trivial changes, run review.
+- If convenience conflicts with the process artifact, BMAD wins.
 
 ## Escalation
 
-- Gdy `X1` nie wystarcza, przejdź do `X2`.
-- Gdy potrzebne są artefakty procesu, przejdź do `X3`.
-- Gdy potrzebny jest scaffold bundle i porządkowanie ownershipu, użyj `X4`.
-- Nie renderuj `X4/FUBAR`, jeśli wystarcza `X2` albo zwykły `X3`.
+- If `X1` is not enough, move to `X2`.
+- If the task needs BMAD artifacts, move to `X3`.
+- If the repo needs scaffolding, ownership cleanup, or a rollout/verify layer, use `X4`.
+- Do not render `X4/FUBAR` when `X2` or a normal `X3` is enough.
 
-Generated: 2026-04-04T23:03:29.385049+00:00
-Project path: /Users/pd/Developer/BMADX
+Generated: PUBLIC_SAMPLE
+Project path: $PROJECT_ROOT

@@ -1,24 +1,25 @@
 # PRD — BMADX v0.2.2
 
-## Cel
+## Goal
 
-Obniżyć koszt komunikacyjny obvious `X1/X2` bez zmiany semantyki compact gate i bez utraty bezpieczeństwa `X3/X4`.
+Improve BMADX’s day-to-day usefulness in Codex without weakening BMAD-first boundaries.
 
-## Problem
+## Product goal
 
-- `v0.2.1` naprawiło infrastrukturę, ale benchmark pokazał, że model nadal czyta reference docs i rozwleka odpowiedzi `X1/X2`.
-- Sam gate nie jest już bottleneckiem.
-- Brakuje stałych guardrails benchmarku oraz bardziej wdrażalnej dokumentacji `X4`.
+Reduce the amount of process thinking required for obvious `X1/X2` work while
+preserving correct BMAD-first behavior for `X3/X4`.
 
-## Zakres releasu
+## Scope
 
-- nowy response contract dla obvious `X1/X2`,
-- benchmark runner z mixed metric summary i boundary case `X2/X3`,
-- doprecyzowanie adoption rules dla `X4/FUBAR`.
+- shorter response contract for obvious `X1/X2`
+- keep `classify first, gate second`
+- mixed-metric benchmark guardrails
+- benchmark profiles for `healthy` and `degraded`
+- keep `X4/FUBAR` differentiated and rare
 
-## Kryteria sukcesu
+## Success criteria
 
-- `X1`: do `5` linii i `650` znaków,
-- `X2`: do `12` linii i `1000` znaków,
-- benchmark raportuje `format_pass`, `token_pass`, `reference_budget_pass`,
-- `X4` pozostaje trybem wyjątkowym i nie zastępuje BMAD.
+- `X1/X2` answers are shorter and more compact
+- `X3/X4` remain correctly classified and gated
+- benchmark validates format, routing, and reference budget in addition to tokens
+- BMAD remains the source of truth

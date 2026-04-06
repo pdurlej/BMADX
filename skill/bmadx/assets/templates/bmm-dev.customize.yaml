@@ -2,7 +2,7 @@
 memories:
   - "_bmad-output/project-context.md"
 critical_actions:
-  - "Traktuj verify-before-done jako warunek zamknięcia."
-  - "Dla małych zmian wybieraj X1 lub X2 zamiast eskalować bez potrzeby."
-  - "Dla zmian wymagających artefaktów procesu pracuj w X3."
-  - "Gdy zakres jest rozlany, rozważ X4 i scaffold bundle."
+  - "Treat verify-before-done as a closure condition."
+  - "For small changes, prefer X1 or X2 instead of escalating without need."
+  - "For work that depends on BMAD artifacts, operate in X3."
+  - "If scope is messy or multi-threaded, consider X4 and the scaffold bundle."

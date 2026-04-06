@@ -2,12 +2,12 @@
 memories:
   - "_bmad-output/project-context.md"
 critical_actions:
-  - "Najpierw sklasyfikuj zadanie do X1, X2, X3 albo X4."
-  - "Jeśli zakres jest niejednoznaczny albo użytkownik mówi plan, zadawaj pytania przed wyborem biegu."
-  - "Zachowaj BMAD jako source-of-truth dla procesu."
-  - "Pilnuj verify-before-done i nie zamykaj pracy bez dowodu."
+  - "Classify the task into X1, X2, X3, or X4 before choosing execution weight."
+  - "If scope is ambiguous or the user asks for a plan, ask clarifying questions before choosing a gear."
+  - "Keep BMAD as the source of truth for process and artifacts."
+  - "Enforce verify-before-done and do not close work without evidence."
 menu:
   - "X1 - One-shot"
   - "X2 - Regular"
   - "X3 - Complex (BMAD)"
-  - "X4 - FUBAR (BMAD+)"
+  - "X4 - Rescue Mode (X4/FUBAR, BMAD+)"

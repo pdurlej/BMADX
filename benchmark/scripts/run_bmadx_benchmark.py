@@ -83,9 +83,10 @@ def build_prompt(scenario_path: Path) -> str:
     )
     task = task_line.partition("Task:")[2].strip()
     return (
-        "Use $bmadx. Na podstawie zadania wybierz właściwy workflow lub bieg, "
-        "krótko uzasadnij wybór i opisz następny krok. Nie implementuj nic. "
-        f"Zadanie: {task}"
+        "Use $bmadx. Pick the lightest safe mode for this task, "
+        "justify the choice briefly, and describe the next step. "
+        "Do not implement anything. "
+        f"Task: {task}"
     )
 
 
@@ -162,6 +163,10 @@ def summarize_validation(cases: list[dict]) -> dict:
         "reference_budget_pass_count": sum(1 for case in cases if case["reference_budget_pass"]),
         "routing_pass_count": sum(1 for case in cases if case["routing_pass"]),
     }
+
+
+def repo_relative(path: Path) -> str:
+    return str(path.resolve().relative_to(REPO_ROOT))
 
 
 def write_config(codex_home: Path) -> None:
@@ -271,8 +276,8 @@ def run_case(codex_home: Path, profile: str, scenario_key: str, spec: dict, work
         "reference_budget_pass": validation["reference_budget_pass"],
         "routing_pass": validation["routing_pass"],
         "reference_reads": validation["reference_reads"],
-        "raw_txt": str(raw_base.with_suffix(".txt")),
-        "raw_log": str(raw_base.with_suffix(".log")),
+        "raw_txt": repo_relative(raw_base.with_suffix(".txt")),
+        "raw_log": repo_relative(raw_base.with_suffix(".log")),
     }
 
 
@@ -288,7 +293,7 @@ def build_summary(date_stamp: str, profile: str, core_cases: list[dict], boundar
             "mcp_startup": "no servers",
         },
         "baselines": {
-            "mixed_summary": str(BENCHMARK_ROOT / "summary-2026-04-04.json"),
+            "mixed_summary": repo_relative(BENCHMARK_ROOT / "summary-2026-04-04.json"),
             "mixed_summary_note": "Contains historical BMAD/OMX baselines and prior BMADX degraded rerun.",
         },
         "cases": core_cases,
@@ -334,7 +339,7 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "summary_path": str(summary_path),
+                "summary_path": repo_relative(summary_path),
                 "core_case_count": len(core_cases),
                 "boundary_case_count": len(boundary_cases),
             },

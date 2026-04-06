@@ -48,6 +48,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--project-path", default=str(Path.cwd()), help="Project path for the bundle")
     parser.add_argument("--output-dir", required=True, help="Output directory for rendered bundle")
     parser.add_argument("--include-architect", action="store_true", help="Include optional architect customize snippet")
+    parser.add_argument(
+        "--public-sample",
+        action="store_true",
+        help="Render a portable sample bundle without local path or timestamp leakage",
+    )
     parser.add_argument("--json", action="store_true", help="Print JSON manifest")
     return parser.parse_args()
 
@@ -55,14 +60,17 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     output_dir = Path(args.output_dir).resolve()
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = "PUBLIC_SAMPLE" if args.public_sample else datetime.now(timezone.utc).isoformat()
+    project_path = "$PROJECT_ROOT" if args.public_sample else str(Path(args.project_path).resolve())
+    bmadx_skill_path = "$CODEX_HOME/skills/bmadx" if args.public_sample else str(ROOT)
+    bmad_skill_path = "$CODEX_HOME/skills/bmad-method-codex"
 
     variables = {
         "project_name": args.project_name,
-        "project_path": str(Path(args.project_path).resolve()),
+        "project_path": project_path,
         "generated_at": generated_at,
-        "bmadx_skill_path": str(ROOT),
-        "bmad_skill_path": str(Path.home() / ".codex" / "skills" / "bmad-method-codex"),
+        "bmadx_skill_path": bmadx_skill_path,
+        "bmad_skill_path": bmad_skill_path,
     }
 
     rendered = {}
@@ -78,6 +86,7 @@ def main() -> int:
         "project_path": variables["project_path"],
         "output_dir": str(output_dir),
         "generated_at": generated_at,
+        "public_sample": bool(args.public_sample),
         "rendered_files": rendered,
     }
 

@@ -1,70 +1,68 @@
 # Gearbox `X1..X4`
 
-BMADX działa jak automatyczna skrzynia biegów. Najpierw klasyfikuje zadanie,
-potem dobiera poziom procesu.
+BMADX acts like an automatic gearbox. It classifies the task first, then chooses
+the right process weight.
 
-Od `v0.2` klasyfikacja biegu i zgoda na execution to osobne decyzje:
-- `X1/X2` mogą przejść przy czerwonym BMAD jako soft gate,
-- `X3/X4` wymagają zdrowego execution gate,
-- czerwony gate nie zmienia poprawnej klasyfikacji zadania.
+Since `v0.2`, gear classification and execution approval are separate decisions:
+- `X1/X2` can proceed through a soft gate when BMAD is degraded,
+- `X3/X4` require a healthy execution gate,
+- a red gate must not change the correct task classification.
 
-Od `v0.2.2` obowiązuje kolejność:
-- najpierw klasyfikacja,
-- potem `sync_bmadx.py check --gear ... --compact`,
-- `check --json` bez `--gear` zostaje trybem diagnostycznym, nie domyślną ścieżką routingu.
+Since `v0.2.2`, the preferred order is:
+- classify first,
+- then run `sync_bmadx.py check --gear ... --compact`,
+- keep `check --json` without `--gear` as a diagnostic mode, not the default routing path.
 
-Ten plik jest dla boundary cases i debugowania. Przy obvious `X1/X2` wystarcza
-kontrakt osadzony w `SKILL.md`; nie otwieraj refs, jeśli klasyfikacja jest
-jednoznaczna i compact gate jest zielony.
+This file is for boundary cases and debugging. For obvious `X1/X2`, the contract
+embedded in `SKILL.md` is enough; do not open refs if classification is clear
+and the compact gate is green.
 
-| Bieg | Kiedy użyć | Co robić | Co musi być na wyjściu |
+| Gear | When to use it | What to do | What should exist on exit |
 | --- | --- | --- | --- |
-| `X1` | mały, lokalny task; niski blast radius; 1–2 checki | krótki plan w głowie, implementacja, verify | zmiana + dowód |
-| `X2` | kilka plików, trochę większe ryzyko, ale bez pełnego BMAD | krótki plan, implementacja, verify, opcjonalny review | plan, zmiana, dowód |
-| `X3` | potrzeba artefaktów BMAD albo decyzji w ramach workflow map | wejście w właściwy flow BMAD i praca po artefaktach | artefakt BMAD + kod + dowód |
-| `X4` | chaos, szeroki zakres, ryzyko, trudny rollout, potrzeba scaffold bundle | BMAD flow + FUBAR bundle + verify discipline | bundle + plan działania + dowód |
+| `X1` | tiny local task; low blast radius; 1-2 checks | keep the plan in your head, implement, verify | change plus evidence |
+| `X2` | a few files, some risk, still no full BMAD | short plan, implement, verify, optional review | short plan, change, evidence |
+| `X3` | needs BMAD artifacts or workflow-map guidance | enter the real BMAD flow and work from artifacts | BMAD artifact plus code plus evidence |
+| `X4` | chaos, wide scope, risky rollout, needs scaffold bundle | BMAD flow plus bundle plus verify discipline | bundle plus operating plan plus evidence |
 
-## Sygnały wejścia
+## Input signals
 
 ### X1
-- 1 plik albo bardzo lokalny zakres,
-- brak zmian kontraktu API/CLI,
-- brak auth/security/schema/migration risk,
-- nie potrzeba nowego artefaktu BMAD.
+- 1 file or very local scope,
+- no API/CLI contract changes,
+- no auth/security/schema/migration risk,
+- no new BMAD artifact needed.
 
 ### X2
-- 2–5 plików lub więcej niż jeden katalog,
-- potrzeba krótkiego planu,
-- verification wymaga kilku checków,
-- nie ma jeszcze potrzeby pełnego flow BMAD.
+- 2-5 files or more than one directory,
+- needs a short plan,
+- verification needs a few checks,
+- still does not need the full BMAD flow.
 
 ### X3
-- nowe story albo istniejące story BMAD,
-- potrzeba PRD, architektury, readiness albo story context,
-- zmiana musi być osadzona w artefaktach procesu.
+- new story or an existing BMAD story,
+- needs PRD, architecture, readiness, or story context,
+- the change must stay grounded in process artifacts.
 
 ### X4
-- użytkownik mówi o planie, chaosie, trudnym projekcie lub eskalacji,
-- zakres jest wielowątkowy lub rozlany,
-- rollout, ownership, verify matrix i snippets trzeba zbudować świadomie,
-- zwykły quick flow przestaje być wystarczający.
+- the user talks about a plan, chaos, a hard project, or escalation,
+- the scope is multi-threaded or diffuse,
+- rollout, ownership, verify matrix, and snippets need deliberate design,
+- a normal quick flow is no longer enough.
 
-## Reguły przejść
+## Transition rules
 
-- `plan` lub wysoka niejednoznaczność -> pytania przed rekomendacją biegu.
-- Nie eskaluj z `X1` do `X3`, jeśli wystarczy `X2`.
-- `X4` nie jest karą ani domyślnym trybem. Używaj go tylko wtedy, gdy brak
-  scaffold bundle zwiększa ryzyko błędnych decyzji.
+- `plan` or high ambiguity means ask questions before recommending a gear.
+- Do not escalate from `X1` to `X3` if `X2` is enough.
+- `X4` is not a punishment or the default. Use it only when the absence of a scaffold bundle increases decision risk.
 
 ## Exit gates
 
-- `X1`: krótki wynik + verify.
-- `X2`: plan wykonany + verify + ewentualny review.
-- `X3`: zgodność z artefaktami BMAD + verify + zdrowy execution gate.
-- `X4`: bundle wygenerowany, ownership jasny, verify matrix gotowa, zdrowy
-  execution gate i dalej nadal obowiązuje BMAD jako source-of-truth.
+- `X1`: short result plus verify.
+- `X2`: short plan executed plus verify plus optional review.
+- `X3`: BMAD artifact alignment plus verify plus a healthy execution gate.
+- `X4`: bundle rendered, ownership clear, verify matrix ready, healthy execution gate, and BMAD still remains the source of truth.
 
-## Compact gate po klasyfikacji
+## Compact gate after classification
 
-- `X1/X2`: preferuj fast path z cache zdrowego BMAD; brak cache daje warning, ale nie blokuje.
-- `X3/X4`: zawsze wymagają live checka BMAD i mogą zwrócić remediation.
+- `X1/X2`: prefer the fast path with a cached healthy BMAD snapshot; no cache should warn, not block.
+- `X3/X4`: always require a live BMAD check and can return remediation.

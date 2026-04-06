@@ -1,9 +1,10 @@
-Wybór: `X4 — FUBAR (BMAD+)`
+Choice: `X4` (Rescue Mode / `X4-FUBAR`)
 
-Uzasadnienie: zadanie jest wyraźnie ponad `X3`, bo łączy rozlany zakres, potrzebę planu oraz komplet scaffold bundle (`AGENTS.md`, `.customize.yaml`, verify matrix), czyli dokładnie przypadek dla `X4`. Klasyfikacja `X4` jest poprawna, ale execution jest obecnie zablokowany: `classification_allowed = true`, `execution_allowed = false`.
+Why: the project is explicitly messy, and the requested outputs include a plan, scaffold bundle, `AGENTS.md`, `.customize.yaml` snippets, and a verify matrix. That is broader than `X2` and fits the `X4` bundle-oriented rescue path.
 
-Następny krok: najpierw odblokować gate BMAD zdrowym checkiem, a potem wejść w flow `X4` od `/bmad-bmm-create-prd`, następnie `/bmad-bmm-create-architecture`, i dopiero na tej bazie zrenderować FUBAR scaffold bundle oraz przygotować draft `AGENTS.md`, snippets `.customize.yaml` i verify matrix. Remediacja gate:
-```bash
-python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py check --json
-python3 /Users/pd/.codex/skills/bmad-method-codex/scripts/sync_bmad_method.py sync
-```
+Gate: classification is allowed, but execution for `X4` is currently blocked because BMAD health needs attention.
+
+Next step: restore BMAD health first with the remediation the gate requires, then start the `X4` flow by defining the rescue-plan scope and generating the scaffold bundle inputs.
+Required remediation:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`
