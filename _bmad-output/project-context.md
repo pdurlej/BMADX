@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.3
+# Project Context — BMADX v0.2.4
 
 ## Scope
 
@@ -10,6 +10,7 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
+- tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
@@ -22,8 +23,15 @@ Out of scope:
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.3.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.3.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.4.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.4.md`
+
+## Model target
+
+- target Codex model: `gpt-5.5`
+- default benchmark reasoning: `medium`
+- BMADX does not mutate global Codex config; users choose their model outside BMADX
+- stronger models reduce prompt scaffolding, but do not bypass `BMAD > BMADX`
 
 ## Routing contract
 
@@ -56,12 +64,36 @@ Out of scope:
 - runner: `benchmark/scripts/run_bmadx_benchmark.py`
 - profiles: `healthy`, `degraded`
 - mixed metrics: token budget, response format, routing, reference-read budget
+- model-aware artifacts use the model slug in raw and summary file names
 - historical baselines:
   - `benchmark/summary-2026-04-04.json`
   - `benchmark/summary-2026-04-05-healthy-bmad.json`
   - `benchmark/summary-2026-04-05-degraded-bmad.json`
   - `benchmark/summary-2026-04-06-healthy-bmad.json`
   - `benchmark/summary-2026-04-06-degraded-bmad.json`
+
+## Adjacent methods decision memo — 2026-04-12
+
+Top 3 ideas to borrow now:
+- `Aider`: context thrift and clearer lightweight/heavier mode discipline for `X1/X2`
+- `Goose`: reusable launch surfaces, recipe-like prompt packs, and stronger onboarding reuse
+- `superpowers`: activation UX and clearer first-run framing, but only as packaging
+
+Top 3 ideas to explicitly not copy:
+- `Task Master`: any BMADX-owned task store or project-management state
+- `superpowers`: mandatory workflow, worktree-first behavior, and methodology takeover
+- `GitHub Agentic Workflows`: repository-automation-first product posture
+
+Best-fit mapping:
+- `X1/X2`: `Aider`, then limited `Task Master` inspiration for thin "what next?" guidance
+- onboarding / public UX: `Goose`, then `superpowers`
+- governance / automation: `GitHub Agentic Workflows`, then `OneRedOak`
+- `X4` / Rescue Mode: `superpowers` for packaging clarity, `OneRedOak` for narrow specialized adjuncts
+
+Near-term BMADX implication:
+- likely release candidate: onboarding and `X1/X2` ergonomics only
+- later exploration: governance helpers, safe-output automation, and any review-adjacent adjuncts
+- not a release candidate: new runtime state, new plan ownership, or making `X4` normal
 
 ## Verify
 

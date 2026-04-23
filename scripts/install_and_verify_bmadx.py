@@ -25,6 +25,7 @@ My task:
 What I care about:
 <speed / clarity / safety / cleanup / shipping>
 """
+MODEL_NOTE = "BMADX is tuned for Codex on GPT-5.5. This installer does not change your Codex model config."
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -70,14 +71,14 @@ def install_and_verify(
     commands = verification_commands(target)
 
     if dry_run:
-        lines = [install_message, "- would verify with:"]
+        lines = [install_message, f"- {MODEL_NOTE}", "- would verify with:"]
         lines.extend(f"  - {' '.join(command)}" for command in commands)
         lines.append("- next prompt to paste into Codex:")
         lines.append(CANONICAL_NEXT_PROMPT)
         return "\n".join(lines)
 
     completed = run_verification(commands, runner)
-    lines = [install_message, "- verification completed:"]
+    lines = [install_message, f"- {MODEL_NOTE}", "- verification completed:"]
     lines.extend(f"  - {command}" for command in completed)
     lines.append("- next prompt to paste into Codex:")
     lines.append(CANONICAL_NEXT_PROMPT)

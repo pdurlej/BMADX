@@ -12,6 +12,10 @@ tiny fixes stay tiny, normal changes stay compact, BMAD-heavy work escalates
 when it should, and messy repos can drop into a rare Rescue Mode
 (`X4/FUBAR`) with a scaffold bundle.
 
+BMADX `v0.2.4` is tuned for Codex on GPT-5.5. Stronger models reduce the need
+for prompt scaffolding, but they make explicit boundaries and verification more
+important: BMAD still owns process, BMADX keeps the work mode light and safe.
+
 ![BMADX architecture overview](docs/assets/bmadx-architecture-overview.svg)
 
 BMADX is:
@@ -25,7 +29,7 @@ BMADX is not:
 - a second process system
 - a clone of the `.omx` runtime
 
-Current public version: `v0.2.3`
+Current public version: `v0.2.4`
 
 ## Start here
 
@@ -106,6 +110,7 @@ The internal gear model is:
 More detail:
 - [Why BMAD is required](docs/why-bmad-is-required.md)
 - [Choose BMAD vs BMADX vs OMX](docs/choose-bmad-bmadx-omx.md)
+- [Adjacent methods research](docs/adjacent-methods-research-2026-04-09.md)
 - [FAQ](docs/faq.md)
 
 ## What BMADX proves well today
@@ -125,6 +130,7 @@ Benchmark reading:
 - [Benchmark Overview](docs/benchmark-overview.md)
 - [Historical benchmark summary](docs/benchmark-summary-2026-04-04.md)
 - [Current mixed-metric summary](docs/benchmark-summary-2026-04-06.md)
+- [GPT-5.5 benchmark summary](docs/benchmark-summary-2026-04-24-gpt55.md)
 
 Human-readable proof:
 - [Plain Codex vs BMADX transcript](samples/transcripts/plain-codex-vs-bmadx.md)

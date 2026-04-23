@@ -1,7 +1,7 @@
 {
   "name": "bmadx",
-  "skill_version": "0.2.3",
-  "target_codex_profile": "codex-5.4",
+  "skill_version": "0.2.4",
+  "target_codex_profile": "codex-5.5",
   "dependency_skill": "bmad-method-codex",
   "dependency_check_command": "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
   "required_bmad_references": [
@@ -63,5 +63,5 @@
     "_bmad/_config/agents",
     "_bmad-output/project-context.md"
   ],
-  "notes": "BMAD-first low-friction overlay with concise X1/X2 response contract, compact gate, and mixed-metric benchmark guardrails"
+  "notes": "BMAD-first low-friction overlay tuned for Codex on GPT-5.5, with concise X1/X2 response contracts, compact gate, and mixed-metric benchmark guardrails"
 }

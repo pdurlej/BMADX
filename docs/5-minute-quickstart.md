@@ -8,6 +8,9 @@ BMAD must already be installed in your Codex skills.
 
 BMADX depends on `bmad-method-codex`. It does not replace it.
 
+BMADX `v0.2.4` is tuned for Codex on GPT-5.5. The installer does not edit your
+Codex model configuration; choose GPT-5.5 in Codex if it is available to you.
+
 ## Install and verify
 
 ```bash

@@ -7,14 +7,13 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.3`
+- `v0.2.4`
 
-What `v0.2.3` focuses on:
-- English public surfaces
-- portable install and remediation paths
-- a first-success onboarding path instead of smoke-check-first onboarding
-- transcript-based proof for non-technical users
-- keeping BMAD-first boundaries while improving usability
+What `v0.2.4` focuses on:
+- tuning BMADX for Codex on GPT-5.5
+- keeping GPT-5.5 from bypassing BMAD boundaries or Rescue Mode discipline
+- model-aware benchmark artifacts that do not overwrite historical GPT-5.4 runs
+- clearer positioning: BMADX is a boundary and verification layer, not a substitute for model intelligence
 
 ## What is already stable
 
@@ -23,6 +22,7 @@ What `v0.2.3` focuses on:
 - hard/soft split between `X1/X2` and `X3/X4`
 - `X4/FUBAR` scaffold bundle
 - benchmark runner committed in-repo
+- model-aware benchmark output naming
 
 ## Near-term improvements
 

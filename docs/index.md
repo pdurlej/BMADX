@@ -15,7 +15,8 @@ Deeper reading:
 2. [Why BMAD is required](why-bmad-is-required.md)
 3. [Rescue Mode (`X4/FUBAR`)](x4-rescue-mode.md)
 4. [Benchmark Overview](benchmark-overview.md)
-5. [Roadmap](roadmap.md)
+5. [Adjacent methods research, April 9 2026](adjacent-methods-research-2026-04-09.md)
+6. [Roadmap](roadmap.md)
 
 Historical context:
 
