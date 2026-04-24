@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.3
+# Project Context — BMADX v0.2.4
 
 ## Scope
 
@@ -10,6 +10,7 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
+- tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
@@ -22,8 +23,15 @@ Out of scope:
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.3.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.3.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.4.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.4.md`
+
+## Model target
+
+- target Codex model: `gpt-5.5`
+- default benchmark reasoning: `medium`
+- BMADX does not mutate global Codex config; users choose their model outside BMADX
+- stronger models reduce prompt scaffolding, but do not bypass `BMAD > BMADX`
 
 ## Routing contract
 
@@ -56,12 +64,19 @@ Out of scope:
 - runner: `benchmark/scripts/run_bmadx_benchmark.py`
 - profiles: `healthy`, `degraded`
 - mixed metrics: token budget, response format, routing, reference-read budget
+- model-aware artifacts use the model slug in raw and summary file names
+- current `v0.2.4` GPT-5.5 healthy result: `6302.0` average tokens, all core validation gates passed
+- current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
+- current GPT-5.4 healthy comparison: `12370.75` average tokens
 - historical baselines:
   - `benchmark/summary-2026-04-04.json`
   - `benchmark/summary-2026-04-05-healthy-bmad.json`
   - `benchmark/summary-2026-04-05-degraded-bmad.json`
   - `benchmark/summary-2026-04-06-healthy-bmad.json`
   - `benchmark/summary-2026-04-06-degraded-bmad.json`
+  - `benchmark/summary-2026-04-24-gpt-5-5-healthy-bmad.json`
+  - `benchmark/summary-2026-04-24-gpt-5-5-degraded-bmad.json`
+  - `benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json`
 
 ## Verify
 
@@ -71,5 +86,6 @@ Out of scope:
 - `python3 benchmark/scripts/test_run_bmadx_benchmark.py`
 - `python3 skill/bmadx/scripts/sync_bmadx.py check --json`
 - `python3 skill/bmadx/scripts/render_fubar_bundle.py --project-name BMADX --project-path "$PWD" --output-dir samples/fubar-bundle --include-architect --public-sample`
-- `python3 benchmark/scripts/run_bmadx_benchmark.py --profile healthy --date-stamp 2026-04-06`
-- `python3 benchmark/scripts/run_bmadx_benchmark.py --profile degraded --date-stamp 2026-04-06`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --reasoning medium --profile healthy --date-stamp 2026-04-24`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --reasoning medium --profile degraded --date-stamp 2026-04-24`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.4 --reasoning medium --profile healthy --date-stamp 2026-04-24`

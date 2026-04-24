@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from install_and_verify_bmadx import CANONICAL_NEXT_PROMPT, install_and_verify
+from install_and_verify_bmadx import CANONICAL_NEXT_PROMPT, MODEL_NOTE, install_and_verify
 
 
 def write(path: Path, content: str) -> None:
@@ -52,6 +52,7 @@ class InstallAndVerifyTests(unittest.TestCase):
             message = install_and_verify(source, dependency, target, force=False, dry_run=True)
 
             self.assertIn("would verify with", message)
+            self.assertIn(MODEL_NOTE, message)
             self.assertIn(CANONICAL_NEXT_PROMPT, message)
 
     def test_happy_path_runs_verification_commands(self) -> None:
@@ -67,6 +68,7 @@ class InstallAndVerifyTests(unittest.TestCase):
             self.assertEqual(len(runner.calls), 2)
             self.assertTrue(target.joinpath("SKILL.md").exists())
             self.assertIn("verification completed", message)
+            self.assertIn(MODEL_NOTE, message)
             self.assertIn(CANONICAL_NEXT_PROMPT, message)
 
     def test_missing_dependency_fails(self) -> None:

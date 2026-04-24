@@ -1,0 +1,13 @@
+Choice: X4 — Rescue Mode (`X4/FUBAR`)
+Gate: `classification_allowed=true`, `execution_allowed=true`
+Why: The project is explicitly messy and the ask is planning-only but rescue-shaped, with bundle surfaces, ownership scaffolding, and verification structure that should stay BMAD-first.
+Entry path:
+1. `/bmad-bmm-create-prd`
+2. `/bmad-bmm-create-architecture`
+Plan:
+1. Stabilize scope and ownership in BMAD artifacts first, with `_bmad-output/project-context.md` as durable technical memory.
+2. Define the `X4/FUBAR` bundle surfaces only: plan, scaffold bundle, `AGENTS.md` draft, `.customize.yaml` snippets, verify matrix.
+3. Defer rendering, drafting, and file generation until execution is explicitly requested.
+Verify:
+1. Every bundle surface maps back to BMAD artifacts and current `project-context.md`.
+2. Ownership, rollout, and verification checks are explicit before any scaffold render or artifact draft.

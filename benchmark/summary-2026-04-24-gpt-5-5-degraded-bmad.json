@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-04-24",
+  "framework": "bmadx",
+  "profile": "degraded",
+  "runner": {
+    "model": "gpt-5.5",
+    "reasoning": "medium",
+    "mcp_startup": "no servers"
+  },
+  "baselines": {
+    "mixed_summary": "benchmark/summary-2026-04-04.json",
+    "mixed_summary_note": "Contains historical BMAD/OMX baselines and prior BMADX degraded rerun."
+  },
+  "cases": [
+    {
+      "case": "bmadx-degraded-x1",
+      "framework": "bmadx",
+      "profile": "degraded",
+      "tokens": 13833,
+      "model": "gpt-5.5",
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Choice: X1 \u2014 One-shot",
+      "response_chars": 220,
+      "response_lines": 3,
+      "expected_gear": "X1",
+      "observed_gears": [
+        "X1"
+      ],
+      "format_pass": true,
+      "token_pass": false,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "overreach_pass": true,
+      "reference_reads": [],
+      "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x1.txt",
+      "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x1.log"
+    },
+    {
+      "case": "bmadx-degraded-x2",
+      "framework": "bmadx",
+      "profile": "degraded",
+      "tokens": 10212,
+      "model": "gpt-5.5",
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Choice: X2 Regular",
+      "response_chars": 469,
+      "response_lines": 8,
+      "expected_gear": "X2",
+      "observed_gears": [
+        "X2"
+      ],
+      "format_pass": true,
+      "token_pass": false,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "overreach_pass": true,
+      "reference_reads": [],
+      "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x2.txt",
+      "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x2.log"
+    },
+    {
+      "case": "bmadx-degraded-x3",
+      "framework": "bmadx",
+      "profile": "degraded",
+      "tokens": 5786,
+      "model": "gpt-5.5",
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Choice: X3 \u2014 Complex (BMAD)",
+      "response_chars": 514,
+      "response_lines": 11,
+      "expected_gear": "X3",
+      "observed_gears": [
+        "X3"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "overreach_pass": true,
+      "reference_reads": [],
+      "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x3.txt",
+      "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x3.log"
+    },
+    {
+      "case": "bmadx-degraded-x4",
+      "framework": "bmadx",
+      "profile": "degraded",
+      "tokens": 5843,
+      "model": "gpt-5.5",
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Choice: X4 Rescue Mode (`X4/FUBAR`, BMAD+)",
+      "response_chars": 715,
+      "response_lines": 13,
+      "expected_gear": "X4",
+      "observed_gears": [
+        "X4"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "overreach_pass": true,
+      "reference_reads": [],
+      "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x4.txt",
+      "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x4.log"
+    }
+  ],
+  "boundary_cases": [
+    {
+      "case": "bmadx-degraded-x2x3-boundary",
+      "framework": "bmadx",
+      "profile": "degraded",
+      "tokens": 5878,
+      "model": "gpt-5.5",
+      "reasoning": "medium",
+      "mcp_startup": "no servers",
+      "response_first_line": "Choice: X3 - Complex (BMAD)",
+      "response_chars": 430,
+      "response_lines": 4,
+      "expected_gear": "X3",
+      "observed_gears": [
+        "X3"
+      ],
+      "format_pass": true,
+      "token_pass": true,
+      "reference_budget_pass": true,
+      "routing_pass": true,
+      "overreach_pass": true,
+      "reference_reads": [],
+      "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x2x3-boundary.txt",
+      "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x2x3-boundary.log"
+    }
+  ],
+  "framework_averages": {
+    "bmadx": {
+      "avg_tokens": 8918.5,
+      "min_tokens": 5786,
+      "max_tokens": 13833,
+      "case_count": 4
+    }
+  },
+  "validation_summary": {
+    "core": {
+      "case_count": 4,
+      "format_pass_count": 4,
+      "token_pass_count": 2,
+      "reference_budget_pass_count": 4,
+      "routing_pass_count": 4,
+      "overreach_pass_count": 4
+    },
+    "boundary": {
+      "case_count": 1,
+      "format_pass_count": 1,
+      "token_pass_count": 1,
+      "reference_budget_pass_count": 1,
+      "routing_pass_count": 1,
+      "overreach_pass_count": 1
+    }
+  }
+}

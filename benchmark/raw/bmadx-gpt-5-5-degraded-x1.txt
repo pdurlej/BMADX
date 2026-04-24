@@ -1,0 +1,3 @@
+Choice: X1 — One-shot
+Why: This is one tiny typo fix in one React component with low blast radius.
+Next step: I will locate the component, patch only the error-message typo, then run the strongest quick check available.

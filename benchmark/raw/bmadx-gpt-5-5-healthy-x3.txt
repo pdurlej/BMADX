@@ -1,0 +1,4 @@
+Choice: X3 - Complex (BMAD)
+Gate: classification_allowed=true; execution_allowed=true
+Why: Existing BMAD story implementation must stay BMAD-first and aligned to story/process artifacts.
+Next step: enter the BMAD story implementation flow, use the story acceptance criteria as scope, and verify against BMAD artifacts before done.

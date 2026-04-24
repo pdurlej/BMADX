@@ -1,0 +1,51 @@
+Choice: X4 Rescue Mode
+Gate: classification_allowed=true, execution_allowed=true
+Why: Messy project plus scaffold bundle, AGENTS.md, customization snippets, and verify matrix is rescue-shaped BMAD+ planning.
+Plan:
+1. Enter BMAD-first via PRD, then architecture; keep `_bmad-output/project-context.md` as source of truth.
+2. Bundle surfaces: scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+Verify:
+1. Check each artifact maps to BMAD ownership, rollout, and verification criteria.
+2. Validate the matrix covers setup, tests, lint/typecheck, smoke, review, and rollback.
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.124.0 (research preview)
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-rijr5d29/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-rijr5d29/codex-home, /private/var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-rijr5d29/codex-home/memories]
+reasoning effort: medium
+reasoning summaries: none
+session id: 019dbcf1-7752-75a2-920f-9128436efa96
+--------
+user
+Use $bmadx. Compact gate only. Answer only the BMADX short contract. No analysis. For X1/X2 do not read refs. Do not implement/edit/render/inline artifacts. Task: I need a plan for a messy project, a scaffold bundle, a draft AGENTS.md, .customize.yaml snippets, and a verify matrix.
+exec
+/bin/zsh -lc 'python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X4 --compact' in /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-rijr5d29/workdir
+ succeeded in 194ms:
+{
+  "skill_version": "0.2.4",
+  "requested_gear": "X4",
+  "classification_allowed": true,
+  "execution_allowed": true,
+  "warning": null,
+  "bmad_status": "ok",
+  "cache_used": false,
+  "remediation": []
+}
+
+codex
+Choice: X4 Rescue Mode
+Gate: classification_allowed=true, execution_allowed=true
+Why: Messy project plus scaffold bundle, AGENTS.md, customization snippets, and verify matrix is rescue-shaped BMAD+ planning.
+Plan:
+1. Enter BMAD-first via PRD, then architecture; keep `_bmad-output/project-context.md` as source of truth.
+2. Bundle surfaces: scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+Verify:
+1. Check each artifact maps to BMAD ownership, rollout, and verification criteria.
+2. Validate the matrix covers setup, tests, lint/typecheck, smoke, review, and rollback.
+tokens used
+5679

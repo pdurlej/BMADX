@@ -1,0 +1,8 @@
+Choice: X2 Regular
+Why: Bounded backend change across four files with a short plan and verification, no BMAD artifact needed.
+Plan:
+1. Add the new status field to the shared model/schema and persistence mapping.
+2. Thread status through request/response handling and update the four backend touchpoints.
+Verify:
+1. Run backend unit tests covering model serialization and API behavior.
+2. Run typecheck/lint plus a focused smoke test for create/read/update status flow.

@@ -1,0 +1,13 @@
+Choice: X4 Rescue Mode (`X4/FUBAR`, BMAD+)
+
+Gate: classification allowed; execution blocked because BMAD needs attention.
+
+Why: messy project planning plus scaffold bundle, AGENTS.md, `.customize.yaml`, and verify matrix is rescue-shaped.
+
+Plan: enter BMAD first with `/bmad-bmm-create-prd`, then `/bmad-bmm-create-architecture`; use `_bmad-output/project-context.md` as source of truth.
+
+Bundle surfaces: project plan, scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+
+Remediate:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`

@@ -1,0 +1,63 @@
+Choice: X4 Rescue Mode (`X4/FUBAR`, BMAD+)
+
+Gate: classification allowed; execution blocked because BMAD needs attention.
+
+Why: messy project planning plus scaffold bundle, AGENTS.md, `.customize.yaml`, and verify matrix is rescue-shaped.
+
+Plan: enter BMAD first with `/bmad-bmm-create-prd`, then `/bmad-bmm-create-architecture`; use `_bmad-output/project-context.md` as source of truth.
+
+Bundle surfaces: project plan, scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+
+Remediate:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.124.0 (research preview)
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nb1o2av1/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nb1o2av1/codex-home, /private/var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nb1o2av1/codex-home/memories]
+reasoning effort: medium
+reasoning summaries: none
+session id: 019dbcf3-0150-7131-9de2-47e4e449b26c
+--------
+user
+Use $bmadx. Compact gate only. Answer only the BMADX short contract. No analysis. For X1/X2 do not read refs. Do not implement/edit/render/inline artifacts. Task: I need a plan for a messy project, a scaffold bundle, a draft AGENTS.md, .customize.yaml snippets, and a verify matrix.
+[analytics warning omitted]
+exec
+/bin/zsh -lc 'python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X4 --compact' in /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nb1o2av1/workdir
+ succeeded in 186ms:
+{
+  "skill_version": "0.2.4",
+  "requested_gear": "X4",
+  "classification_allowed": true,
+  "execution_allowed": false,
+  "warning": "Classification is still allowed, but execution for `X4` is blocked until BMAD is healthy again.",
+  "bmad_status": "needs_attention",
+  "cache_used": false,
+  "remediation": [
+    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
+    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" sync"
+  ]
+}
+
+codex
+Choice: X4 Rescue Mode (`X4/FUBAR`, BMAD+)
+
+Gate: classification allowed; execution blocked because BMAD needs attention.
+
+Why: messy project planning plus scaffold bundle, AGENTS.md, `.customize.yaml`, and verify matrix is rescue-shaped.
+
+Plan: enter BMAD first with `/bmad-bmm-create-prd`, then `/bmad-bmm-create-architecture`; use `_bmad-output/project-context.md` as source of truth.
+
+Bundle surfaces: project plan, scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+
+Remediate:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`
+tokens used
+5843

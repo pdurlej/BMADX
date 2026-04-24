@@ -19,11 +19,21 @@ RAW_ROOT = BENCHMARK_ROOT / "raw"
 SCENARIO_ROOT = BENCHMARK_ROOT / "scenarios"
 BMADX_SKILL_ROOT = REPO_ROOT / "skill" / "bmadx"
 BMAD_METHOD_ROOT = Path.home() / ".codex" / "skills" / "bmad-method-codex"
+DEFAULT_MODEL = "gpt-5.5"
+DEFAULT_REASONING = "medium"
+HEALTHY_BMAD_RELEASE = {
+    "tag_name": "v6.3.0",
+    "name": "BMAD v6.3.0",
+    "published_at": "2026-01-01T00:00:00Z",
+    "html_url": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.3.0",
+    "body": "Benchmark fixture for deterministic healthy BMAD profile.",
+}
 
 CORE_SCENARIOS = {
     "x1": {
         "path": SCENARIO_ROOT / "scenario-x1.txt",
         "expected_gear": "X1",
+        "forbidden_gears": ["X3", "X4"],
         "max_lines": 5,
         "max_chars": 650,
         "max_tokens": 9000,
@@ -32,6 +42,7 @@ CORE_SCENARIOS = {
     "x2": {
         "path": SCENARIO_ROOT / "scenario-x2.txt",
         "expected_gear": "X2",
+        "forbidden_gears": ["X3", "X4"],
         "max_lines": 12,
         "max_chars": 1000,
         "max_tokens": 10000,
@@ -40,6 +51,7 @@ CORE_SCENARIOS = {
     "x3": {
         "path": SCENARIO_ROOT / "scenario-x3.txt",
         "expected_gear": "X3",
+        "forbidden_gears": ["X4"],
         "allow_reference_reads": True,
     },
     "x4": {
@@ -59,8 +71,18 @@ REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
 GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run BMADX benchmark scenarios in a clean CODEX_HOME")
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=f"Codex model to run in the benchmark CODEX_HOME (default: {DEFAULT_MODEL})",
+    )
+    parser.add_argument(
+        "--reasoning",
+        default=DEFAULT_REASONING,
+        help=f"Codex model reasoning effort (default: {DEFAULT_REASONING})",
+    )
     parser.add_argument(
         "--profile",
         choices=("healthy", "degraded"),
@@ -72,7 +94,7 @@ def parse_args() -> argparse.Namespace:
         default=str(date.today()),
         help="Date stamp used in output file names (default: today)",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def build_prompt(scenario_path: Path) -> str:
@@ -83,9 +105,9 @@ def build_prompt(scenario_path: Path) -> str:
     )
     task = task_line.partition("Task:")[2].strip()
     return (
-        "Use $bmadx. Pick the lightest safe mode for this task, "
-        "justify the choice briefly, and describe the next step. "
-        "Do not implement anything. "
+        "Use $bmadx. Compact gate only. Answer only the BMADX short contract. "
+        "No analysis. For X1/X2 do not read refs. "
+        "Do not implement/edit/render/inline artifacts. "
         f"Task: {task}"
     )
 
@@ -96,6 +118,25 @@ def parse_token_count(stderr: str) -> int:
         return 0
     digits = match.group(1).replace("\u00a0", "").replace(" ", "")
     return int(digits) if digits.isdigit() else 0
+
+
+def sanitize_stderr(stderr: str) -> str:
+    lines = stderr.splitlines()
+    sanitized: list[str] = []
+    skipping_analytics = False
+    resume_prefixes = ("exec", "codex", "tokens used", "thinking", "user", "assistant")
+    for line in lines:
+        if "codex_analytics::client: events failed" in line:
+            sanitized.append("[analytics warning omitted]")
+            skipping_analytics = True
+            continue
+        if skipping_analytics:
+            if line.startswith(resume_prefixes):
+                skipping_analytics = False
+            else:
+                continue
+        sanitized.append(line)
+    return "\n".join(sanitized).rstrip()
 
 
 def detect_reference_reads(text: str) -> list[str]:
@@ -121,6 +162,7 @@ def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
     observed_gears = detect_observed_gears(stdout)
     reference_reads = detect_reference_reads(stderr)
     expected_gear = str(spec.get("expected_gear") or "")
+    forbidden_gears = set(spec.get("forbidden_gears") or [])
 
     format_pass = True
     if spec.get("max_lines") is not None:
@@ -135,6 +177,7 @@ def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
     allow_reference_reads = bool(spec.get("allow_reference_reads", True))
     reference_budget_pass = allow_reference_reads or not reference_reads
     routing_pass = expected_gear in observed_gears if expected_gear else True
+    overreach_pass = not any(gear in forbidden_gears for gear in observed_gears)
 
     return {
         "expected_gear": expected_gear,
@@ -144,6 +187,7 @@ def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
         "token_pass": token_pass,
         "reference_budget_pass": reference_budget_pass,
         "routing_pass": routing_pass,
+        "overreach_pass": overreach_pass,
     }
 
 
@@ -155,6 +199,7 @@ def summarize_validation(cases: list[dict]) -> dict:
             "token_pass_count": 0,
             "reference_budget_pass_count": 0,
             "routing_pass_count": 0,
+            "overreach_pass_count": 0,
         }
     return {
         "case_count": len(cases),
@@ -162,6 +207,7 @@ def summarize_validation(cases: list[dict]) -> dict:
         "token_pass_count": sum(1 for case in cases if case["token_pass"]),
         "reference_budget_pass_count": sum(1 for case in cases if case["reference_budget_pass"]),
         "routing_pass_count": sum(1 for case in cases if case["routing_pass"]),
+        "overreach_pass_count": sum(1 for case in cases if case["overreach_pass"]),
     }
 
 
@@ -169,11 +215,16 @@ def repo_relative(path: Path) -> str:
     return str(path.resolve().relative_to(REPO_ROOT))
 
 
-def write_config(codex_home: Path) -> None:
+def model_slug(model: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", model.strip().lower()).strip("-")
+    return slug or "model"
+
+
+def write_config(codex_home: Path, model: str, reasoning: str) -> None:
     config = '\n'.join(
         [
-            'model = "gpt-5.4"',
-            'model_reasoning_effort = "medium"',
+            f'model = "{model}"',
+            f'model_reasoning_effort = "{reasoning}"',
             'personality = "pragmatic"',
             "",
         ]
@@ -183,7 +234,7 @@ def write_config(codex_home: Path) -> None:
 
 
 def copy_runtime_files(codex_home: Path) -> None:
-    for name in ("auth.json", "version.json", ".codex-global-state.json"):
+    for name in ("auth.json", "version.json"):
         source = Path.home() / ".codex" / name
         if source.exists():
             shutil.copy2(source, codex_home / name)
@@ -196,17 +247,25 @@ def copy_skills(codex_home: Path) -> None:
     shutil.copytree(BMAD_METHOD_ROOT, skills_dir / "bmad-method-codex", dirs_exist_ok=True)
 
 
-def benchmark_env(codex_home: Path, profile: str) -> dict[str, str]:
+def write_healthy_bmad_fixture(tmp_root: Path) -> Path:
+    fixture = tmp_root / "healthy-bmad-release.json"
+    fixture.write_text(json.dumps(HEALTHY_BMAD_RELEASE, indent=2) + "\n", encoding="utf-8")
+    return fixture
+
+
+def benchmark_env(codex_home: Path, profile: str, healthy_release_fixture: Path | None = None) -> dict[str, str]:
     env = os.environ.copy()
     env["CODEX_HOME"] = str(codex_home)
-    if profile == "degraded":
+    if profile == "healthy" and healthy_release_fixture is not None:
+        env["BMAD_RELEASE_API"] = healthy_release_fixture.resolve().as_uri()
+    elif profile == "degraded":
         env["BMAD_RELEASE_API"] = "https://127.0.0.1:9/releases/latest"
         env["BMAD_RAW_BASE"] = "https://127.0.0.1:9/"
         env["BMAD_MAX_RETRIES"] = "0"
     return env
 
 
-def warmup_profile(codex_home: Path, profile: str) -> None:
+def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path | None = None) -> None:
     command = [
         "python3",
         str(codex_home / "skills" / "bmadx" / "scripts" / "sync_bmadx.py"),
@@ -217,7 +276,7 @@ def warmup_profile(codex_home: Path, profile: str) -> None:
         command,
         capture_output=True,
         text=True,
-        env=benchmark_env(codex_home, profile),
+        env=benchmark_env(codex_home, profile, healthy_release_fixture),
         check=False,
     )
     if result.returncode != 0:
@@ -226,31 +285,61 @@ def warmup_profile(codex_home: Path, profile: str) -> None:
         )
 
 
-def run_case(codex_home: Path, profile: str, scenario_key: str, spec: dict, workdir: Path) -> dict:
-    scenario_path = Path(spec["path"])
-    prompt = build_prompt(scenario_path)
-    command = [
+def build_codex_command(prompt: str, workdir: Path, codex_home: Path, *, model: str, reasoning: str) -> list[str]:
+    return [
         "codex",
         "exec",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--ephemeral",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "general_analytics",
+        "-m",
+        model,
+        "-c",
+        f'model_reasoning_effort="{reasoning}"',
         "-C",
         str(workdir),
+        "--add-dir",
+        str(codex_home),
         "-s",
-        "read-only",
+        "workspace-write",
         "--skip-git-repo-check",
         "--color",
         "never",
         prompt,
     ]
+
+
+def run_case(
+    codex_home: Path,
+    profile: str,
+    scenario_key: str,
+    spec: dict,
+    workdir: Path,
+    healthy_release_fixture: Path | None,
+    *,
+    model: str,
+    reasoning: str,
+    model_slug_value: str,
+) -> dict:
+    scenario_path = Path(spec["path"])
+    prompt = build_prompt(scenario_path)
+    command = build_codex_command(prompt, workdir, codex_home, model=model, reasoning=reasoning)
     result = subprocess.run(
         command,
         capture_output=True,
         text=True,
-        env=benchmark_env(codex_home, profile),
+        env=benchmark_env(codex_home, profile, healthy_release_fixture),
         check=False,
     )
     stdout = result.stdout.rstrip() + "\n"
-    stderr = result.stderr.rstrip() + "\n"
-    raw_base = RAW_ROOT / f"bmadx-{profile}-{scenario_key}"
+    stderr = sanitize_stderr(result.stderr.rstrip()) + "\n"
+    raw_base = RAW_ROOT / f"bmadx-{model_slug_value}-{profile}-{scenario_key}"
     raw_base.with_suffix(".txt").write_text(stdout, encoding="utf-8")
     raw_base.with_suffix(".log").write_text(stdout + "\n--- STDERR ---\n" + stderr, encoding="utf-8")
     if result.returncode != 0:
@@ -264,7 +353,8 @@ def run_case(codex_home: Path, profile: str, scenario_key: str, spec: dict, work
         "framework": "bmadx",
         "profile": profile,
         "tokens": tokens,
-        "reasoning": "medium",
+        "model": model,
+        "reasoning": reasoning,
         "mcp_startup": "no servers",
         "response_first_line": lines[0] if lines else "",
         "response_chars": len(stdout),
@@ -275,21 +365,30 @@ def run_case(codex_home: Path, profile: str, scenario_key: str, spec: dict, work
         "token_pass": validation["token_pass"],
         "reference_budget_pass": validation["reference_budget_pass"],
         "routing_pass": validation["routing_pass"],
+        "overreach_pass": validation["overreach_pass"],
         "reference_reads": validation["reference_reads"],
         "raw_txt": repo_relative(raw_base.with_suffix(".txt")),
         "raw_log": repo_relative(raw_base.with_suffix(".log")),
     }
 
 
-def build_summary(date_stamp: str, profile: str, core_cases: list[dict], boundary_cases: list[dict]) -> dict:
+def build_summary(
+    date_stamp: str,
+    profile: str,
+    core_cases: list[dict],
+    boundary_cases: list[dict],
+    *,
+    model: str,
+    reasoning: str,
+) -> dict:
     token_values = [case["tokens"] for case in core_cases]
     return {
         "generated_at": date_stamp,
         "framework": "bmadx",
         "profile": profile,
         "runner": {
-            "model": "gpt-5.4",
-            "reasoning": "medium",
+            "model": model,
+            "reasoning": reasoning,
             "mcp_startup": "no servers",
         },
         "baselines": {
@@ -315,26 +414,59 @@ def build_summary(date_stamp: str, profile: str, core_cases: list[dict], boundar
 
 def main() -> int:
     args = parse_args()
+    model_slug_value = model_slug(args.model)
     RAW_ROOT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="bmadx-benchmark-") as tmpdir:
         tmp_root = Path(tmpdir)
         codex_home = tmp_root / "codex-home"
         workdir = tmp_root / "workdir"
         workdir.mkdir(parents=True, exist_ok=True)
-        write_config(codex_home)
+        write_config(codex_home, args.model, args.reasoning)
         copy_runtime_files(codex_home)
         copy_skills(codex_home)
-        warmup_profile(codex_home, args.profile)
+        healthy_release_fixture = write_healthy_bmad_fixture(tmp_root) if args.profile == "healthy" else None
+        warmup_profile(codex_home, args.profile, healthy_release_fixture)
 
         core_cases = []
         for scenario_key, spec in CORE_SCENARIOS.items():
-            core_cases.append(run_case(codex_home, args.profile, scenario_key, spec, workdir))
+            core_cases.append(
+                run_case(
+                    codex_home,
+                    args.profile,
+                    scenario_key,
+                    spec,
+                    workdir,
+                    healthy_release_fixture,
+                    model=args.model,
+                    reasoning=args.reasoning,
+                    model_slug_value=model_slug_value,
+                )
+            )
         boundary_cases = []
         for scenario_key, spec in BOUNDARY_SCENARIOS.items():
-            boundary_cases.append(run_case(codex_home, args.profile, scenario_key, spec, workdir))
+            boundary_cases.append(
+                run_case(
+                    codex_home,
+                    args.profile,
+                    scenario_key,
+                    spec,
+                    workdir,
+                    healthy_release_fixture,
+                    model=args.model,
+                    reasoning=args.reasoning,
+                    model_slug_value=model_slug_value,
+                )
+            )
 
-    summary = build_summary(args.date_stamp, args.profile, core_cases, boundary_cases)
-    summary_path = BENCHMARK_ROOT / f"summary-{args.date_stamp}-{args.profile}-bmad.json"
+    summary = build_summary(
+        args.date_stamp,
+        args.profile,
+        core_cases,
+        boundary_cases,
+        model=args.model,
+        reasoning=args.reasoning,
+    )
+    summary_path = BENCHMARK_ROOT / f"summary-{args.date_stamp}-{model_slug_value}-{args.profile}-bmad.json"
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(

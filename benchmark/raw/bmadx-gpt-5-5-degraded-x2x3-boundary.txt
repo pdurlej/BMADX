@@ -1,0 +1,4 @@
+Choice: X3 - Complex (BMAD)
+Why: The change touches multiple backend files and must stay aligned with an existing BMAD story.
+Gate: Classification allowed; execution blocked because BMAD needs attention.
+Next step: Run `python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`, then `python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`.

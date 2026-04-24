@@ -1,0 +1,4 @@
+Choice: X3 — Complex (BMAD)
+Why: This is implementation of an existing BMAD story, so the work belongs in the BMAD flow and must stay anchored to current BMAD artifacts as the source of truth.
+Execution gate: Allowed (`classification_allowed = true`, `execution_allowed = true`, `bmad_status = ok`)
+Next step: Enter the story’s normal BMAD implementation path, execute against the current story and `project-context.md`, and keep verification aligned to the story acceptance criteria and process artifacts.

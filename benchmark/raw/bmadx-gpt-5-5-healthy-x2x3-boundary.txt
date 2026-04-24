@@ -1,0 +1,9 @@
+Choice: X3 - Complex (BMAD)
+Gate: execution_allowed = true
+Why: The change is bounded, but it explicitly belongs to an existing BMAD story and must stay aligned with process artifacts.
+Plan:
+1. Locate the active BMAD story and confirm the status-field acceptance criteria.
+2. Update only the 4 backend files in scope, preserving story ownership.
+Verify:
+1. Run the relevant backend tests for the touched paths.
+2. Check the story artifacts still match the implemented field behavior.

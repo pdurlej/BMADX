@@ -12,6 +12,10 @@ truth. It adds a practical decision layer inspired by selected OMX ideas:
 routing, verify-before-done, capability-based subagent usage, and an
 `X4/FUBAR` scaffold bundle for high-entropy projects.
 
+Since `v0.2.4`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
+better executors, not as permission to skip boundaries: BMADX remains a
+boundary and verification layer, not a substitute for BMAD process ownership.
+
 Non-negotiable rule:
 - `BMAD > BMADX`
 
@@ -80,6 +84,10 @@ python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_
 
 For obvious `X1` and `X2`, do not open reference docs. `SKILL.md` should be
 enough.
+
+On GPT-5.5, keep obvious `X1/X2` even quieter: classify, run the compact gate,
+and answer in the short contract without explaining the machinery unless the
+gate warns or blocks.
 
 Treat the task as an obvious happy path if:
 - `X1`: one tiny local change, typo/copy/small fix, no contract/process risk
@@ -164,6 +172,12 @@ Do not compress these into the same limits. For `X3/X4`, correctness matters mor
 - correct classification
 - explicit execution gate state
 - BMAD-first behavior
+- stronger models do not bypass BMAD artifacts, BMAD ownership, or the hard gate
+
+For planning-only or benchmark prompts that say not to implement, do not inline
+full X4 bundle files, long templates, or draft artifacts. State the correct
+Rescue Mode entry path, name the bundle surfaces, and defer rendering/drafting
+until execution is explicitly requested and the hard gate allows it.
 
 ## Gear guide
 
@@ -198,6 +212,8 @@ Use when the project is broad, risky, messy, or needs a scaffold bundle on top
 of BMAD.
 
 `X4` is not the default mode. It is the ace in the sleeve.
+GPT-5.5 does not make `X4` normal; use Rescue Mode only when the repo, rollout,
+or ownership problem is genuinely rescue-shaped.
 
 In `X4`:
 - choose the correct BMAD flow

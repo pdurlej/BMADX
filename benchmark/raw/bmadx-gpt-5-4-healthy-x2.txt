@@ -1,0 +1,8 @@
+Choice: X2
+Why: Adding a new backend field across 4 files is bounded local work with a short plan and targeted verification.
+Plan:
+1. Trace the existing status data path and identify the 4 backend touchpoints for model, validation, mapping, and API/handler use.
+2. Add the new `status` field consistently across those files and update tests or fixtures that assert the payload shape.
+Verify:
+1. Run the strongest backend tests covering serialization, validation, and the affected endpoint/service flow.
+2. Exercise the changed path with a representative request and confirm the new `status` field persists and returns correctly.

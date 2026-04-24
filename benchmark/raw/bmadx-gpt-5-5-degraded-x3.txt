@@ -1,0 +1,11 @@
+Choice: X3 — Complex (BMAD)
+
+Execution gate: blocked.
+
+Why: Existing BMAD story implementation must stay BMAD-first and aligned with story/process artifacts.
+
+BMAD-first path: use the current BMAD story as source of truth, then implement only within its acceptance criteria and workflow context.
+
+Remediation:
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json`
+`python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync`

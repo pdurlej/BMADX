@@ -2,6 +2,29 @@
 
 All notable changes to this repository will be documented here.
 
+## [0.2.4] - 2026-04-24
+
+### Added
+
+- GPT-5.5 as the BMADX target/default for Codex-oriented tooling and benchmark runs
+- model-aware benchmark output names so GPT-5.4 and GPT-5.5 runs do not overwrite each other
+- benchmark overreach validation for stronger-model escalation discipline
+- BMAD source-of-truth artifacts for the GPT-5.5 optimization release
+- deterministic healthy BMAD release fixture for benchmark runs
+
+### Changed
+
+- updated public positioning around BMADX as a boundary and verification layer for stronger Codex models
+- benchmark runner now accepts `--model` and `--reasoning`
+- benchmark runner isolates local Codex config and disables plugin/app startup surfaces for stable model comparisons
+- install-and-verify output now states that BMADX is tuned for GPT-5.5 without changing the user's Codex config
+
+### Benchmarks
+
+- GPT-5.5 healthy: `6302.0` average tokens, all core validation gates passed
+- GPT-5.5 degraded: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
+- GPT-5.4 healthy comparison: `12370.75` average tokens
+
 ## [0.2.3] - 2026-04-06
 
 ### Added

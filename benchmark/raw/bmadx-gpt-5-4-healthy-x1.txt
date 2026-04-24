@@ -1,0 +1,3 @@
+Choice: X1
+Why: This is one tiny local copy change in a single React component with low blast radius.
+Next step: Update the component’s error message text to fix the typo, then run a quick targeted check to confirm only the intended string changed.

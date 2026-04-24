@@ -1,0 +1,3 @@
+Choice: X1 - One-shot
+Why: This is one tiny typo fix inside one React component with no process or contract risk.
+Next step: I will locate the component, patch only the typo, then run the smallest relevant check.

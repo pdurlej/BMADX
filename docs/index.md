@@ -19,8 +19,9 @@ Deeper reading:
 
 Historical context:
 
-1. [Historical benchmark summary, April 4 2026](benchmark-summary-2026-04-04.md)
-2. [Historical healthy BMAD rerun, April 4 2026](benchmark-summary-2026-04-04-healthy-bmad.md)
-3. [Mixed-metric summary, April 6 2026](benchmark-summary-2026-04-06.md)
-4. [Earlier mixed-metric summary, April 5 2026](benchmark-summary-2026-04-05.md)
-5. [Working v0.2 plan archive](bmadx-v0.2-plan.md)
+1. [GPT-5.5 benchmark summary, April 24 2026](benchmark-summary-2026-04-24-gpt55.md)
+2. [Historical benchmark summary, April 4 2026](benchmark-summary-2026-04-04.md)
+3. [Historical healthy BMAD rerun, April 4 2026](benchmark-summary-2026-04-04-healthy-bmad.md)
+4. [Mixed-metric summary, April 6 2026](benchmark-summary-2026-04-06.md)
+5. [Earlier mixed-metric summary, April 5 2026](benchmark-summary-2026-04-05.md)
+6. [Working v0.2 plan archive](bmadx-v0.2-plan.md)

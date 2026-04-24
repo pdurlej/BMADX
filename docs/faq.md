@@ -8,6 +8,10 @@ Yes. BMADX depends on `bmad-method-codex` and does not replace it.
 
 Usually no. The normal use pattern is to describe the task in plain language and let BMADX choose the lightest safe mode.
 
+## Does BMADX require GPT-5.5?
+
+No. BMADX `v0.2.4` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
+
 ## When does `X4/FUBAR` happen?
 
 Only when the repo or rollout needs extra structure: messy scope, unclear ownership, or a need for scaffold bundle artifacts. It is intentionally rare.

@@ -1,0 +1,5 @@
+Choice: X3
+Why: Adding a backend status field across 4 files inside an existing BMAD story is implementation work that must stay aligned with BMAD-owned artifacts, so this should run in the current story flow rather than as X1/X2.
+Execution gate: Allowed
+BMAD path: Update the existing story and its acceptance/technical context first, then implement the 4-file backend change against those artifacts as the source of truth.
+Verify: Confirm code, tests, and story acceptance criteria all reflect the new status field consistently before marking done.
