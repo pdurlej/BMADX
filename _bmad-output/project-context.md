@@ -68,6 +68,7 @@ Out of scope:
 - current `v0.2.4` GPT-5.5 healthy result: `6302.0` average tokens, all core validation gates passed
 - current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
 - current GPT-5.4 healthy comparison: `12370.75` average tokens
+- post-release hardening: missing `tokens used` is a benchmark failure, not a silent `0` token result
 - historical baselines:
   - `benchmark/summary-2026-04-04.json`
   - `benchmark/summary-2026-04-05-healthy-bmad.json`

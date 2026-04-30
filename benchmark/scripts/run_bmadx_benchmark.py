@@ -112,12 +112,12 @@ def build_prompt(scenario_path: Path) -> str:
     )
 
 
-def parse_token_count(stderr: str) -> int:
+def parse_token_count(stderr: str) -> int | None:
     match = re.search(r"tokens used\s*\n([0-9 \u00a0]+)", stderr, re.IGNORECASE)
     if not match:
-        return 0
+        return None
     digits = match.group(1).replace("\u00a0", "").replace(" ", "")
-    return int(digits) if digits.isdigit() else 0
+    return int(digits) if digits.isdigit() else None
 
 
 def sanitize_stderr(stderr: str) -> str:
@@ -156,13 +156,14 @@ def detect_observed_gears(stdout: str) -> list[str]:
     return seen
 
 
-def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
+def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> dict:
     response = stdout.strip()
     lines = [line for line in response.splitlines() if line.strip()]
     observed_gears = detect_observed_gears(stdout)
     reference_reads = detect_reference_reads(stderr)
     expected_gear = str(spec.get("expected_gear") or "")
     forbidden_gears = set(spec.get("forbidden_gears") or [])
+    token_count_present = tokens is not None
 
     format_pass = True
     if spec.get("max_lines") is not None:
@@ -170,9 +171,9 @@ def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
     if spec.get("max_chars") is not None:
         format_pass = format_pass and len(response) <= int(spec["max_chars"])
 
-    token_pass = True
+    token_pass = token_count_present
     if spec.get("max_tokens") is not None:
-        token_pass = tokens <= int(spec["max_tokens"])
+        token_pass = token_pass and int(tokens) <= int(spec["max_tokens"])
 
     allow_reference_reads = bool(spec.get("allow_reference_reads", True))
     reference_budget_pass = allow_reference_reads or not reference_reads
@@ -184,6 +185,7 @@ def validate_case(stdout: str, stderr: str, tokens: int, spec: dict) -> dict:
         "observed_gears": observed_gears,
         "reference_reads": reference_reads,
         "format_pass": format_pass,
+        "token_count_present": token_count_present,
         "token_pass": token_pass,
         "reference_budget_pass": reference_budget_pass,
         "routing_pass": routing_pass,
@@ -196,6 +198,7 @@ def summarize_validation(cases: list[dict]) -> dict:
         return {
             "case_count": 0,
             "format_pass_count": 0,
+            "token_count_present_count": 0,
             "token_pass_count": 0,
             "reference_budget_pass_count": 0,
             "routing_pass_count": 0,
@@ -204,6 +207,7 @@ def summarize_validation(cases: list[dict]) -> dict:
     return {
         "case_count": len(cases),
         "format_pass_count": sum(1 for case in cases if case["format_pass"]),
+        "token_count_present_count": sum(1 for case in cases if case.get("token_count_present")),
         "token_pass_count": sum(1 for case in cases if case["token_pass"]),
         "reference_budget_pass_count": sum(1 for case in cases if case["reference_budget_pass"]),
         "routing_pass_count": sum(1 for case in cases if case["routing_pass"]),
@@ -347,6 +351,8 @@ def run_case(
 
     lines = [line for line in stdout.splitlines() if line.strip()]
     tokens = parse_token_count(stderr)
+    if tokens is None:
+        raise RuntimeError(f"codex exec did not report token usage for {scenario_key}")
     validation = validate_case(stdout, stderr, tokens, spec)
     return {
         "case": f"bmadx-{profile}-{scenario_key}",
@@ -362,6 +368,7 @@ def run_case(
         "expected_gear": validation["expected_gear"],
         "observed_gears": validation["observed_gears"],
         "format_pass": validation["format_pass"],
+        "token_count_present": validation["token_count_present"],
         "token_pass": validation["token_pass"],
         "reference_budget_pass": validation["reference_budget_pass"],
         "routing_pass": validation["routing_pass"],

@@ -31,6 +31,9 @@ class BenchmarkRunnerTests(unittest.TestCase):
         stderr = "tokens used\n10\u00a0306\n"
         self.assertEqual(parse_token_count(stderr), 10306)
 
+    def test_parse_token_count_returns_none_when_missing(self) -> None:
+        self.assertIsNone(parse_token_count("no usage footer here"))
+
     def test_sanitize_stderr_omits_analytics_html(self) -> None:
         stderr = """before
 2026-04-24 WARN codex_analytics::client: events failed with status 403 Forbidden: <html>
@@ -81,11 +84,22 @@ tokens used
             },
         )
         self.assertTrue(validation["format_pass"])
+        self.assertTrue(validation["token_count_present"])
         self.assertTrue(validation["token_pass"])
         self.assertTrue(validation["routing_pass"])
         self.assertFalse(validation["reference_budget_pass"])
         self.assertEqual(validation["reference_reads"], ["gearbox.md"])
         self.assertTrue(validation["overreach_pass"])
+
+    def test_validate_case_fails_token_pass_when_count_is_missing(self) -> None:
+        validation = validate_case(
+            "Choice: `X1 — One-shot`.\nWhy: ...\nNext step: ...\n",
+            "",
+            None,
+            {"expected_gear": "X1", "max_tokens": 9000, "allow_reference_reads": False},
+        )
+        self.assertFalse(validation["token_count_present"])
+        self.assertFalse(validation["token_pass"])
 
     def test_default_model_is_gpt55(self) -> None:
         args = parse_args([])
@@ -153,6 +167,7 @@ tokens used
                 {
                     "tokens": 100,
                     "format_pass": True,
+                    "token_count_present": True,
                     "token_pass": True,
                     "reference_budget_pass": True,
                     "routing_pass": True,
@@ -165,6 +180,7 @@ tokens used
         )
         self.assertEqual(summary["runner"]["model"], "gpt-5.5")
         self.assertEqual(summary["runner"]["reasoning"], "medium")
+        self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
 
     def test_validate_case_catches_gpt55_overreach(self) -> None:

@@ -34,7 +34,8 @@
       "overreach_pass": true,
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-4-healthy-x1.txt",
-      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x1.log"
+      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x1.log",
+      "token_count_present": true
     },
     {
       "case": "bmadx-healthy-x2",
@@ -58,7 +59,8 @@
       "overreach_pass": true,
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-4-healthy-x2.txt",
-      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x2.log"
+      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x2.log",
+      "token_count_present": true
     },
     {
       "case": "bmadx-healthy-x3",
@@ -82,7 +84,8 @@
       "overreach_pass": true,
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-4-healthy-x3.txt",
-      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x3.log"
+      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x3.log",
+      "token_count_present": true
     },
     {
       "case": "bmadx-healthy-x4",
@@ -106,7 +109,8 @@
       "overreach_pass": true,
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-4-healthy-x4.txt",
-      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x4.log"
+      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x4.log",
+      "token_count_present": true
     }
   ],
   "boundary_cases": [
@@ -134,7 +138,8 @@
       "overreach_pass": true,
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-4-healthy-x2x3-boundary.txt",
-      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x2x3-boundary.log"
+      "raw_log": "benchmark/raw/bmadx-gpt-5-4-healthy-x2x3-boundary.log",
+      "token_count_present": true
     }
   ],
   "framework_averages": {
@@ -152,7 +157,8 @@
       "token_pass_count": 2,
       "reference_budget_pass_count": 4,
       "routing_pass_count": 4,
-      "overreach_pass_count": 4
+      "overreach_pass_count": 4,
+      "token_count_present_count": 4
     },
     "boundary": {
       "case_count": 1,
@@ -160,7 +166,8 @@
       "token_pass_count": 1,
       "reference_budget_pass_count": 1,
       "routing_pass_count": 1,
-      "overreach_pass_count": 1
+      "overreach_pass_count": 1,
+      "token_count_present_count": 1
     }
   }
 }

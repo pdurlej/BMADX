@@ -29,6 +29,11 @@ Use these artifacts:
 - [`../benchmark/summary-2026-04-24-gpt-5-5-degraded-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-5-degraded-bmad.json)
 - [`../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json)
 
+Runner hardening after `v0.2.4`:
+- benchmark runs now fail if `codex exec` does not report a `tokens used` footer
+- validation summaries track `token_count_present_count` alongside `token_pass_count`
+- raw logs keep benchmark-relevant stderr while omitting analytics HTML noise
+
 ## Historical baseline
 
 From `2026-04-04`:
