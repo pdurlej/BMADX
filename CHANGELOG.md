@@ -4,6 +4,10 @@ All notable changes to this repository will be documented here.
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [0.2.5] - 2026-05-05
+
 ### Added
 
 - Architecture Guardrail Card for non-technical builders, with five plain-language questions and gear-specific defaults.
@@ -30,6 +34,7 @@ All notable changes to this repository will be documented here.
 - public and skill copy now frame BMADX more clearly as architecture guardrails for non-technical builders, while preserving `BMAD > BMADX`.
 - clear bounded plan requests remain `X2` by default instead of forcing clarification or escalation.
 - future benchmark summary filenames use a `-bmadx.json` suffix to avoid confusing BMADX results with BMAD baselines.
+- GitHub repository description now uses the public low-friction architecture guardrails positioning instead of the older `lazy overlay` wording.
 
 ## [0.2.4] - 2026-04-24
 

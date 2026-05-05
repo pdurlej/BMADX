@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.4
+# Project Context — BMADX v0.2.5
 
 ## Scope
 
@@ -10,6 +10,7 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
+- publish `v0.2.5` as the public release for the non-technical architecture guardrail stack,
 - tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - position BMADX as an architecture guardrail for people who understand the
@@ -27,8 +28,8 @@ Out of scope:
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.4.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.4.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.5.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.5.md`
 
 ## Model target
 

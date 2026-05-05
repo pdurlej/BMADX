@@ -7,14 +7,15 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.4`
+- `v0.2.5`
 
-What `v0.2.4` focuses on:
+What `v0.2.5` focuses on:
 - tuning BMADX for Codex on GPT-5.5
 - keeping GPT-5.5 from bypassing BMAD boundaries or Rescue Mode discipline
 - model-aware benchmark artifacts that do not overwrite historical GPT-5.4 runs
 - clearer positioning: BMADX is a boundary and verification layer, not a substitute for model intelligence
 - clearer mission: architecture guardrails for non-technical builders, not a framework for framework people
+- the full non-technical builder stack: Oracle, BMAD, BMADX, Guardrails.md, pyfallow, and CI/tests
 
 ## What is already stable
 

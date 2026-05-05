@@ -21,7 +21,7 @@ BMADX now includes an Architecture Guardrail Card: five plain-English questions
 that help Codex protect product outcomes, system ownership, existing patterns,
 failure risk, and proof a non-technical owner can understand.
 
-BMADX `v0.2.4` is tuned for Codex on GPT-5.5. Stronger models reduce the need
+BMADX `v0.2.5` is tuned for Codex on GPT-5.5. Stronger models reduce the need
 for prompt scaffolding, but they make explicit boundaries and verification more
 important: BMAD still owns process, BMADX keeps the work mode light and safe.
 
@@ -38,7 +38,7 @@ BMADX is not:
 - a second process system
 - a clone of the `.omx` runtime
 
-Current public version: `v0.2.4`
+Current public version: `v0.2.5`
 
 ## Start here
 
@@ -77,6 +77,7 @@ Then open Codex in your project and paste:
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
+Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
 
 My task:
 <describe the change in plain English>

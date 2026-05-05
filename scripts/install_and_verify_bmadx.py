@@ -19,6 +19,7 @@ from install_bmadx import (
 
 CANONICAL_NEXT_PROMPT = """Use BMADX for this repo. Pick the lightest safe mode.
 Keep it lightweight unless BMAD is truly needed.
+Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
 
 My task:
 <describe the change in plain English>

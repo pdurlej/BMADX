@@ -17,7 +17,7 @@ do not necessarily understand software architecture get safer, clearer Codex
 workflows. It should translate plain-language intent into the lightest safe mode
 without exposing more process machinery than the task needs.
 
-Since `v0.2.4`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
+Since `v0.2.5`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
 better executors, not as permission to skip boundaries: BMADX remains a
 boundary and verification layer, not a substitute for BMAD process ownership.
 
