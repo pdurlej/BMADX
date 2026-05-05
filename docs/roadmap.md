@@ -14,6 +14,7 @@ What `v0.2.4` focuses on:
 - keeping GPT-5.5 from bypassing BMAD boundaries or Rescue Mode discipline
 - model-aware benchmark artifacts that do not overwrite historical GPT-5.4 runs
 - clearer positioning: BMADX is a boundary and verification layer, not a substitute for model intelligence
+- clearer mission: architecture guardrails for non-technical builders, not a framework for framework people
 
 ## What is already stable
 
@@ -27,6 +28,7 @@ What `v0.2.4` focuses on:
 ## Near-term improvements
 
 - keep making the public surface friendlier for non-technical Codex users
+- make architecture tradeoffs understandable without teaching users the whole process model
 - improve proof surfaces with better transcripts and examples
 - make Rescue Mode easier to adopt without turning it into a default mode
 - keep tightening portability and low-friction install paths

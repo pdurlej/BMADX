@@ -11,6 +11,11 @@ about how much process, verification, and scaffolding the task actually needs.
 - `BMADX` owns task routing and operational discipline
 - Codex remains the execution engine
 
+For non-technical builders, BMADX should behave like architecture guardrails:
+the user describes the outcome, BMAD keeps the process backbone, and BMADX
+prevents Codex from treating every request as either a random one-shot or an
+overbuilt framework exercise.
+
 ## High-level diagram
 
 ```mermaid
@@ -94,6 +99,7 @@ BMADX is intentionally constrained by these rules:
 
 This repo is optimized for:
 - lower operator friction in Codex
+- safer architecture-shaped work for people who are not software architects
 - explicit routing between different task shapes
 - keeping BMAD upstream while making day-to-day usage easier
 - a benchmarkable, inspectable public artifact

@@ -18,4 +18,8 @@ In plain language:
 - BMAD is the planning brain,
 - BMADX is the lighter day-to-day operator layer.
 
+For non-technical builders, that split matters. BMADX should make it easier to
+ask for product outcomes in plain English while BMAD keeps the architecture and
+process backbone from becoming ad-hoc prompting.
+
 If you do not want the BMAD dependency model, BMADX is probably not the right tool.

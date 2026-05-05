@@ -130,6 +130,7 @@ def make_bmad_skill(
     action: str = "ok",
     warnings: list[str] | None = None,
     return_code: int = 0,
+    sleep_seconds: int = 0,
 ) -> Path:
     bmad = tmp / "bmad-method-codex"
     write(bmad / "SKILL.md", "---\nname: bmad-method-codex\ndescription: test\n---\n")
@@ -148,7 +149,9 @@ def make_bmad_skill(
         #!/usr/bin/env python3
         import json
         import sys
+        import time
         payload = {repr(payload)}
+        time.sleep({sleep_seconds})
         print(json.dumps(payload))
         raise SystemExit({return_code})
         """
@@ -189,6 +192,7 @@ class SyncBmadxTests(unittest.TestCase):
             text=True,
             env=env,
             check=True,
+            timeout=15,
         )
         return json.loads(result.stdout)
 
@@ -231,6 +235,22 @@ class SyncBmadxTests(unittest.TestCase):
                 "No fresh BMAD check is available for `X3/X4`.",
                 payload["execution_gate"]["by_gear"]["X3"]["blockers"],
             )
+
+    def test_x2_fast_path_first_run_does_not_poison_later_x3_bmad_baseline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            root = make_root(tmp)
+            state_path = root / "state" / "bmadx-state.json"
+            first = self.run_sync(root, None, gear="X2", state_path=state_path)
+            self.assertTrue(first["execution_allowed"])
+            self.assertEqual(first["bmad_status"], "warning")
+
+            bmad = make_bmad_skill(tmp, "v1.0.0")
+            second = self.run_sync(root, bmad, gear="X3", state_path=state_path)
+            self.assertEqual(second["action"], "ok")
+            self.assertTrue(second["execution_allowed"])
+            self.assertEqual(second["tracked_file_changes"]["bmad_references"], [])
+            self.assertEqual(second["dependency_blockers"], [])
 
     def test_x1_with_healthy_cache_skips_live_red_bmad(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -277,6 +297,30 @@ class SyncBmadxTests(unittest.TestCase):
                 ],
             )
 
+    def test_bmad_timeout_blocks_x3_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            root = make_root(tmp)
+            bmad = make_bmad_skill(tmp, sleep_seconds=2)
+            env_state = root / "state" / "bmadx-state.json"
+            env = os.environ.copy()
+            env["BMADX_ROOT"] = str(root)
+            env["BMADX_MANIFEST_FILE"] = str(root / "references" / "skill-manifest.json")
+            env["BMADX_STATE_FILE"] = str(env_state)
+            env["BMADX_BMAD_SKILL_PATH"] = str(bmad)
+            env["BMADX_BMAD_CHECK_TIMEOUT_SECONDS"] = "1"
+            result = subprocess.run(
+                ["python3", str(SCRIPT_PATH), "check", "--gear", "X3", "--compact"],
+                capture_output=True,
+                text=True,
+                env=env,
+                check=True,
+            )
+            payload = json.loads(result.stdout)
+            self.assertFalse(payload["execution_allowed"])
+            self.assertEqual(payload["bmad_status"], "needs_attention")
+            self.assertIn("timed out", payload["warning"])
+
     def test_x4_with_healthy_bmad_execution_is_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
@@ -304,6 +348,61 @@ class SyncBmadxTests(unittest.TestCase):
             self.assertIn(
                 "Detected a BMAD release change since the last saved state.",
                 second["execution_gate"]["by_gear"]["X3"]["blockers"],
+            )
+
+            third = self.run_sync(root, bmad, gear="X3")
+            self.assertEqual(third["action"], "needs_attention")
+            self.assertFalse(third["execution_allowed"])
+            self.assertIn(
+                "Detected a BMAD release change since the last saved state.",
+                third["execution_gate"]["by_gear"]["X3"]["blockers"],
+            )
+
+            synced = self.run_sync(root, bmad, mode="sync")
+            self.assertEqual(synced["action"], "ok")
+            after_sync = self.run_sync(root, bmad, gear="X3")
+            self.assertEqual(after_sync["action"], "ok")
+            self.assertTrue(after_sync["execution_allowed"])
+
+    def test_sync_with_missing_bmad_does_not_poison_dependency_baseline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            root = make_root(tmp)
+            bmad = make_bmad_skill(tmp, "v1.0.0")
+            state_path = root / "state" / "bmadx-state.json"
+            first = self.run_sync(root, bmad, mode="sync", state_path=state_path)
+            self.assertEqual(first["action"], "ok")
+
+            missing = self.run_sync(root, None, mode="sync", state_path=state_path)
+            self.assertEqual(missing["action"], "warning")
+
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            self.assertEqual(state["bmad_release_tag"], "v1.0.0")
+            self.assertEqual(set(state["bmad_reference_hashes"]), set(BMAD_REFS))
+
+            recovered = self.run_sync(root, bmad, gear="X3", state_path=state_path)
+            self.assertEqual(recovered["action"], "ok")
+            self.assertTrue(recovered["execution_allowed"])
+
+    def test_compact_x3_release_drift_reports_needs_attention(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            root = make_root(tmp)
+            bmad = make_bmad_skill(tmp, "v1.0.0")
+            first = self.run_sync(root, bmad, gear="X3")
+            self.assertEqual(first["action"], "ok")
+
+            make_bmad_skill(tmp, "v1.1.0")
+            payload = self.run_sync(root, bmad, gear="X3", compact=True)
+            self.assertFalse(payload["execution_allowed"])
+            self.assertEqual(payload["bmad_status"], "needs_attention")
+            self.assertIn("BMAD release change", payload["warning"])
+            self.assertEqual(
+                payload["remediation"],
+                [
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
+                    "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" sync",
+                ],
             )
 
     def test_state_write_failure_does_not_crash_check(self) -> None:

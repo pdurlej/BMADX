@@ -1,6 +1,6 @@
 ---
 name: bmadx
-description: Use for choosing the lightest safe Codex workflow on top of BMAD, especially when the user wants less manual process selection, clearer verification, or a rescue mode for a messy project.
+description: Use for helping Codex pick the lightest safe BMAD-backed workflow, especially for non-technical builders who want architecture guardrails, less manual process selection, clearer verification, or Rescue Mode for a messy project.
 ---
 
 # BMADX
@@ -12,6 +12,11 @@ truth. It adds a practical decision layer inspired by selected OMX ideas:
 routing, verify-before-done, capability-based subagent usage, and an
 `X4/FUBAR` scaffold bundle for high-entropy projects.
 
+Product intent: BMADX should help people who understand the product problem but
+do not necessarily understand software architecture get safer, clearer Codex
+workflows. It should translate plain-language intent into the lightest safe mode
+without exposing more process machinery than the task needs.
+
 Since `v0.2.4`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
 better executors, not as permission to skip boundaries: BMADX remains a
 boundary and verification layer, not a substitute for BMAD process ownership.
@@ -22,6 +27,7 @@ Non-negotiable rule:
 ## Use this skill when
 
 - the user wants the right work mode chosen for them instead of a random one-shot,
+- the user is non-technical or semi-technical and wants architecture guardrails,
 - the user wants BMAD with lighter day-to-day routing discipline,
 - the task needs to be classified into `X1`, `X2`, `X3`, or `X4`,
 - the task may need a rescue/scaffold bundle on top of BMAD,
@@ -117,7 +123,8 @@ Details:
 - [trigger-matrix.md](references/trigger-matrix.md)
 
 Selection rule:
-- if the user explicitly asks for a plan or the task is highly ambiguous, ask clarifying questions before committing to a gear
+- a request for a plan does not by itself force `X3`; for clear bounded work, choose `X2` and give the short plan
+- ask clarifying questions only when ambiguity blocks safe classification or BMAD artifact ownership is unclear
 - if the intent is clear, choose the gear and justify it briefly
 - after classification, check only the compact gate for the chosen gear
 - for obvious `X1/X2`, do not open refs; answer directly in the short format

@@ -26,7 +26,16 @@ Because BMADX is intentionally lighter. If you want a heavier runtime, OMX is cl
 
 ## Can I use BMADX if I am not a developer?
 
-Yes, if you already use Codex and want a lower-friction workflow layer. The public docs and prompt pack are written for non-technical or semi-technical users.
+Yes. BMADX is explicitly meant for people who understand the product problem but
+do not want to manually design the software process or architecture workflow.
+You still need Codex and BMAD installed, but you should be able to describe the
+task in plain English and let BMADX pick the lightest safe mode.
+
+## Does BMADX make architecture decisions for me?
+
+It gives Codex architecture guardrails, not unchecked authority. Small changes
+stay compact, larger architecture-shaped work escalates to BMAD, and Rescue Mode
+exists only when a messy repo needs extra structure.
 
 ## What should I do right after install?
 

@@ -19,6 +19,8 @@ This is a Codex benchmark, not an API availability claim for GPT-5.5.
 Post-release hardening:
 - missing `tokens used` output is treated as an invalid benchmark run, not as `0` tokens
 - validation summaries include `token_count_present_count`
+- summary JSON includes explicit `validation_failures` lists for human-readable failed-check inspection
+- routing validation uses the selected gear from `Choice:` instead of incidental gear mentions
 - raw logs omit analytics HTML noise but keep prompts, tool calls, compact gate output, and token totals
 
 ## Artifacts

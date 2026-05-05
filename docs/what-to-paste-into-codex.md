@@ -14,6 +14,20 @@ What I care about:
 speed, clarity, and not overengineering it
 ```
 
+## Non-technical product builder
+
+```text
+Use BMADX for this repo. Pick the lightest safe mode and keep the architecture understandable.
+
+My task:
+I understand the product problem, but I do not want to manually decide the technical approach.
+Help me turn this into a safe implementation path:
+<describe the outcome in plain English>
+
+What I care about:
+clear tradeoffs, a small first step, and verification I can understand
+```
+
 ## Founder MVP change
 
 ```text

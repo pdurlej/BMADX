@@ -90,6 +90,14 @@ def validate_paths(
         )
 
 
+def ignore_runtime_state(directory: str, names: list[str]) -> set[str]:
+    ignored = {"__pycache__"}
+    if Path(directory).name == "state":
+        ignored.update(name for name in names if name.endswith(".json"))
+    ignored.update(name for name in names if name.endswith(".pyc"))
+    return ignored
+
+
 def install_skill(source: Path, dependency_path: Path, target: Path, force: bool, dry_run: bool) -> str:
     validate_paths(source, dependency_path, target, force, dry_run)
 
@@ -107,7 +115,7 @@ def install_skill(source: Path, dependency_path: Path, target: Path, force: bool
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists():
         shutil.rmtree(target)
-    shutil.copytree(source, target)
+    shutil.copytree(source, target, ignore=ignore_runtime_state)
 
     return (
         "BMADX installed successfully.\n"

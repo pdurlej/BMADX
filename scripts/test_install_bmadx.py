@@ -90,6 +90,23 @@ class InstallBmadxTests(unittest.TestCase):
             self.assertIn("would replace existing target", message)
             self.assertEqual(target.joinpath("SKILL.md").read_text(encoding="utf-8"), "already-here\n")
 
+    def test_install_does_not_copy_runtime_state_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            source = root / "repo" / "skill" / "bmadx"
+            dependency = root / "skills" / "bmad-method-codex"
+            target = root / "skills" / "bmadx"
+
+            write(source / "SKILL.md", "---\nname: bmadx\n---\n")
+            write(source / "state" / ".gitkeep", "")
+            write(source / "state" / "bmadx-state.json", '{"path":"/Users/example"}\n')
+            write(dependency / "SKILL.md", "---\nname: bmad-method-codex\n---\n")
+
+            install_skill(source, dependency, target, force=False, dry_run=False)
+
+            self.assertTrue(target.joinpath("state", ".gitkeep").exists())
+            self.assertFalse(target.joinpath("state", "bmadx-state.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,6 +12,11 @@ tiny fixes stay tiny, normal changes stay compact, BMAD-heavy work escalates
 when it should, and messy repos can drop into a rare Rescue Mode
 (`X4/FUBAR`) with a scaffold bundle.
 
+The longer-term mission is practical: help non-technical builders get better
+software architecture from AI agents without needing to become software
+architects first. BMAD provides the process backbone; BMADX keeps day-to-day
+Codex work guided, bounded, and understandable.
+
 BMADX `v0.2.4` is tuned for Codex on GPT-5.5. Stronger models reduce the need
 for prompt scaffolding, but they make explicit boundaries and verification more
 important: BMAD still owns process, BMADX keeps the work mode light and safe.
@@ -43,6 +48,7 @@ If this is your first time:
 
 BMADX is for:
 - founders, makers, designers, and PM-ish users who already use Codex
+- non-technical builders who understand the problem better than the technology
 - engineers who want more discipline than ad-hoc prompting
 - people who want BMAD behind the scenes without running full BMAD ceremony on every bounded task
 - teams that occasionally need a rescue/scaffold layer for messy repos

@@ -12,6 +12,8 @@ Non-negotiable rule:
 Current release focus:
 - tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
+- position BMADX as an architecture guardrail for people who understand the
+  product problem better than the software architecture,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
 - keep `X4/FUBAR` valuable without making it normal.
@@ -58,6 +60,8 @@ Out of scope:
 - install that ends in a first real task, not in smoke checks
 - transcript-based proof for non-technical users
 - portable public sample bundle for `X4/FUBAR`
+- plain-language architecture guidance for non-technical builders, without
+  hiding the BMAD dependency or weakening verification gates
 
 ## Benchmark context
 
@@ -69,6 +73,12 @@ Out of scope:
 - current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
 - current GPT-5.4 healthy comparison: `12370.75` average tokens
 - post-release hardening: missing `tokens used` is a benchmark failure, not a silent `0` token result
+- post-release hardening: summary JSON includes `validation_failures` for direct failed-check inspection
+- post-release hardening: BMAD dependency checks and install verification use explicit timeouts
+- post-release hardening: `sync` only accepts a BMAD dependency baseline when live BMAD is healthy and required references are present
+- post-release hardening: benchmark routing uses the selected `Choice:` gear, not incidental gear mentions
+- post-release hardening: future BMADX benchmark summaries use `-bmadx.json`
+- post-release hardening: installer excludes runtime `state/*.json` from copied skill trees
 - historical baselines:
   - `benchmark/summary-2026-04-04.json`
   - `benchmark/summary-2026-04-05-healthy-bmad.json`

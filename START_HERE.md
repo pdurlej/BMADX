@@ -14,6 +14,10 @@ It helps Codex pick the lightest safe way to work:
 
 BMAD still stays in charge of process and artifacts.
 
+The goal is not to teach you software architecture jargon. The goal is to help
+you describe the product problem clearly, then let Codex work inside safer
+architecture and verification boundaries.
+
 ## What to do first
 
 1. Make sure BMAD is already installed in your Codex skills.

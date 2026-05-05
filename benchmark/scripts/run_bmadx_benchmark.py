@@ -9,6 +9,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from datetime import date
 from pathlib import Path
@@ -69,6 +70,15 @@ BOUNDARY_SCENARIOS = {
 }
 REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
 GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
+SELECTED_GEAR_PATTERN = re.compile(r"(?im)^\s*(?:Choice|Gear|Mode)\s*:\s*`?\s*(X[1-4])\b")
+VALIDATION_CHECKS = (
+    "format_pass",
+    "token_count_present",
+    "token_pass",
+    "reference_budget_pass",
+    "routing_pass",
+    "overreach_pass",
+)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -156,10 +166,16 @@ def detect_observed_gears(stdout: str) -> list[str]:
     return seen
 
 
+def detect_selected_gear(stdout: str) -> str | None:
+    match = SELECTED_GEAR_PATTERN.search(stdout)
+    return match.group(1).upper() if match else None
+
+
 def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> dict:
     response = stdout.strip()
     lines = [line for line in response.splitlines() if line.strip()]
     observed_gears = detect_observed_gears(stdout)
+    selected_gear = detect_selected_gear(stdout)
     reference_reads = detect_reference_reads(stderr)
     expected_gear = str(spec.get("expected_gear") or "")
     forbidden_gears = set(spec.get("forbidden_gears") or [])
@@ -177,11 +193,12 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
 
     allow_reference_reads = bool(spec.get("allow_reference_reads", True))
     reference_budget_pass = allow_reference_reads or not reference_reads
-    routing_pass = expected_gear in observed_gears if expected_gear else True
+    routing_pass = selected_gear == expected_gear if expected_gear else True
     overreach_pass = not any(gear in forbidden_gears for gear in observed_gears)
 
     return {
         "expected_gear": expected_gear,
+        "selected_gear": selected_gear,
         "observed_gears": observed_gears,
         "reference_reads": reference_reads,
         "format_pass": format_pass,
@@ -215,6 +232,20 @@ def summarize_validation(cases: list[dict]) -> dict:
     }
 
 
+def validation_failures(cases: list[dict]) -> list[dict]:
+    failures = []
+    for case in cases:
+        failed_checks = [check for check in VALIDATION_CHECKS if not case.get(check)]
+        if failed_checks:
+            failures.append(
+                {
+                    "case": case.get("case", "unknown"),
+                    "failed_checks": failed_checks,
+                }
+            )
+    return failures
+
+
 def repo_relative(path: Path) -> str:
     return str(path.resolve().relative_to(REPO_ROOT))
 
@@ -222,6 +253,10 @@ def repo_relative(path: Path) -> str:
 def model_slug(model: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", model.strip().lower()).strip("-")
     return slug or "model"
+
+
+def summary_path_for(date_stamp: str, model_slug_value: str, profile: str) -> Path:
+    return BENCHMARK_ROOT / f"summary-{date_stamp}-{model_slug_value}-{profile}-bmadx.json"
 
 
 def write_config(codex_home: Path, model: str, reasoning: str) -> None:
@@ -269,9 +304,28 @@ def benchmark_env(codex_home: Path, profile: str, healthy_release_fixture: Path 
     return env
 
 
+def parse_json_report(stdout: str) -> dict:
+    try:
+        payload = json.loads(stdout or "{}")
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"BMADX warmup returned invalid JSON: {exc}") from exc
+    return payload if isinstance(payload, dict) else {}
+
+
+def validate_warmup_payload(profile: str, payload: dict) -> None:
+    dependency_healthy = bool((payload.get("bmad_dependency") or {}).get("healthy"))
+    if profile == "healthy":
+        if payload.get("action") != "ok" or not dependency_healthy:
+            raise RuntimeError("Healthy BMADX warmup did not produce an ok, healthy dependency report.")
+        return
+
+    if profile == "degraded" and payload.get("action") == "ok" and dependency_healthy:
+        raise RuntimeError("Degraded BMADX warmup unexpectedly produced an ok, healthy dependency report.")
+
+
 def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path | None = None) -> None:
     command = [
-        "python3",
+        sys.executable,
         str(codex_home / "skills" / "bmadx" / "scripts" / "sync_bmadx.py"),
         "sync",
         "--json",
@@ -287,6 +341,7 @@ def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path
         raise RuntimeError(
             f"Warmup BMADX failed for profile {profile}: {result.stderr.strip() or result.stdout.strip()}"
         )
+    validate_warmup_payload(profile, parse_json_report(result.stdout))
 
 
 def build_codex_command(prompt: str, workdir: Path, codex_home: Path, *, model: str, reasoning: str) -> list[str]:
@@ -366,6 +421,7 @@ def run_case(
         "response_chars": len(stdout),
         "response_lines": len(stdout.splitlines()),
         "expected_gear": validation["expected_gear"],
+        "selected_gear": validation["selected_gear"],
         "observed_gears": validation["observed_gears"],
         "format_pass": validation["format_pass"],
         "token_count_present": validation["token_count_present"],
@@ -415,6 +471,10 @@ def build_summary(
         "validation_summary": {
             "core": summarize_validation(core_cases),
             "boundary": summarize_validation(boundary_cases),
+        },
+        "validation_failures": {
+            "core": validation_failures(core_cases),
+            "boundary": validation_failures(boundary_cases),
         },
     }
 
@@ -473,7 +533,7 @@ def main() -> int:
         model=args.model,
         reasoning=args.reasoning,
     )
-    summary_path = BENCHMARK_ROOT / f"summary-{args.date_stamp}-{model_slug_value}-{args.profile}-bmad.json"
+    summary_path = summary_path_for(args.date_stamp, model_slug_value, args.profile)
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(

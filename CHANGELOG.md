@@ -2,6 +2,25 @@
 
 All notable changes to this repository will be documented here.
 
+## [Unreleased]
+
+### Fixed
+
+- `sync_bmadx.py check` and `report` no longer accept BMAD release/reference drift as the new baseline; only explicit `sync` or first run can do that.
+- `sync_bmadx.py sync` no longer records a BMAD dependency baseline unless the live dependency check is healthy and required references are present.
+- compact `X3/X4` output now reports `bmad_status=needs_attention` when hard-gate execution is blocked by dependency drift.
+- benchmark summaries now include explicit `validation_failures` lists so failed checks are inspectable without recomputing pass counters.
+- BMAD dependency checks and install verification now fail with explicit timeout errors instead of hanging indefinitely.
+- benchmark routing validation now uses the selected gear from the response contract, not incidental gear mentions.
+- install verification now parses BMADX sync JSON and rejects semantic warning/error states.
+- installer copy now excludes runtime `state/*.json` files so local health cache does not leak into installs.
+
+### Changed
+
+- public and skill copy now frame BMADX more clearly as architecture guardrails for non-technical builders, while preserving `BMAD > BMADX`.
+- clear bounded plan requests remain `X2` by default instead of forcing clarification or escalation.
+- future benchmark summary filenames use a `-bmadx.json` suffix to avoid confusing BMADX results with BMAD baselines.
+
 ## [0.2.4] - 2026-04-24
 
 ### Added

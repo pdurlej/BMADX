@@ -22,6 +22,7 @@ FAST_PATH_WARNING = (
     "No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state."
 )
 FAST_PATH_HARD_BLOCKER = "No fresh BMAD check is available for `X3/X4`."
+DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS = 60
 
 ROOT = Path(os.environ.get("BMADX_ROOT", Path(__file__).resolve().parents[1]))
 MANIFEST_FILE = Path(
@@ -123,11 +124,20 @@ def run_bmad_check(bmad_path: Path) -> dict:
         }
 
     command = [
-        "python3",
+        sys.executable,
         str(bmad_path / "scripts" / "sync_bmad_method.py"),
         "check",
         "--json",
     ]
+    try:
+        timeout_seconds = int(
+            os.environ.get(
+                "BMADX_BMAD_CHECK_TIMEOUT_SECONDS",
+                os.environ.get("BMADX_BMAD_CHECK_TIMEOUT_SEC", DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS),
+            )
+        )
+    except ValueError:
+        timeout_seconds = DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS
     try:
         result = subprocess.run(
             command,
@@ -135,7 +145,18 @@ def run_bmad_check(bmad_path: Path) -> dict:
             capture_output=True,
             text=True,
             env=os.environ.copy(),
+            timeout=timeout_seconds,
         )
+    except subprocess.TimeoutExpired:
+        return {
+            "available": True,
+            "path": str(bmad_path),
+            "action": "needs_attention",
+            "warnings": [f"The BMAD health check timed out after {timeout_seconds} seconds."],
+            "checked_live": True,
+            "cache_used": False,
+            "status_source": "live",
+        }
     except OSError as exc:
         return {
             "available": False,
@@ -292,7 +313,8 @@ def build_warnings(
     previous_release: str,
     current_release: str,
     mode: str,
-    first_run: bool,
+    first_local_run: bool,
+    first_bmad_run: bool,
 ) -> List[str]:
     warnings: List[str] = []
 
@@ -314,13 +336,13 @@ def build_warnings(
             "Run BMADX sync and review the overlay."
         )
 
-    if bmad_delta and mode in {"check", "report"} and not first_run:
+    if bmad_delta and mode in {"check", "report"} and not first_bmad_run:
         warnings.append(
             "Detected a change in required BMAD references since the last saved state: "
             + ", ".join(bmad_delta)
         )
 
-    if local_delta and mode in {"check", "report"} and not first_run:
+    if local_delta and mode in {"check", "report"} and not first_local_run:
         warnings.append(
             "Detected a change in BMADX files since the last saved state: "
             + ", ".join(local_delta)
@@ -357,7 +379,7 @@ def build_dependency_blockers(
     release_changed: bool,
     bmad_delta: List[str],
     mode: str,
-    first_run: bool,
+    first_bmad_run: bool,
 ) -> List[str]:
     blockers: List[str] = []
     if not bmad.get("checked_live", True):
@@ -367,11 +389,12 @@ def build_dependency_blockers(
         blockers.append("The BMAD dependency is not available.")
     elif not bmad.get("healthy"):
         blockers.append("The current BMAD check is not healthy.")
+        blockers.extend(str(warning) for warning in bmad.get("warnings", []) if warning)
 
     if missing_bmad_refs:
         blockers.append("Required BMAD references are missing.")
 
-    if mode in {"check", "report"} and not first_run:
+    if mode in {"check", "report"} and not first_bmad_run:
         if release_changed:
             blockers.append("Detected a BMAD release change since the last saved state.")
         if bmad_delta:
@@ -413,15 +436,21 @@ def summarize_warning(
     execution_allowed: bool,
     bmad: dict,
     cached_healthy_bmad: dict,
+    execution_blockers: List[str],
     warnings: List[str],
 ) -> str | None:
     if not classification_allowed:
         return "Local BMADX state needs attention before classification and execution."
 
     if requested_gear and not execution_allowed:
+        if execution_blockers:
+            return (
+                f"Classification is still allowed, but execution for `{requested_gear}` "
+                "is blocked: " + "; ".join(execution_blockers)
+            )
         return (
             f"Classification is still allowed, but execution for `{requested_gear}` "
-            "is blocked until BMAD is healthy again."
+            "is blocked until the BMAD dependency is synced and healthy."
         )
 
     if requested_gear in SOFT_GATE_GEARS and not bmad.get("checked_live", True):
@@ -450,6 +479,9 @@ def summarize_warning(
 def determine_bmad_status(*, bmad: dict, requested_gear: str | None, execution_allowed: bool) -> str:
     if not bmad.get("checked_live", True):
         return "ok" if bmad.get("cache_used") else "warning"
+
+    if requested_gear in HARD_GATE_GEARS and not execution_allowed:
+        return "needs_attention"
 
     if bmad.get("healthy"):
         return "ok"
@@ -500,6 +532,8 @@ def main(argv: List[str] | None = None) -> int:
     previous_release = str(state.get("bmad_release_tag") or "")
     cached_healthy_bmad = get_cached_healthy_bmad(state)
     first_run = not STATE_FILE.exists()
+    first_local_run = not bool(previous_local)
+    first_bmad_run = not bool(previous_release or previous_bmad_refs)
 
     tracked_local = manifest.get("tracked_local_files", [])
     template_checks = manifest.get("template_checks", {})
@@ -533,6 +567,8 @@ def main(argv: List[str] | None = None) -> int:
         bmad = run_bmad_check(bmad_root)
         bmad_ref_hashes, missing_bmad_refs = collect_bmad_reference_hashes(bmad_root, required_bmad_refs)
         bmad_delta = compute_delta(bmad_ref_hashes, previous_bmad_refs)
+        if first_bmad_run:
+            bmad_delta = []
         current_release = str(bmad.get("release_tag") or "")
         release_changed = bool(previous_release and current_release and previous_release != current_release)
 
@@ -546,7 +582,8 @@ def main(argv: List[str] | None = None) -> int:
         previous_release=previous_release,
         current_release=current_release,
         mode=args.mode,
-        first_run=first_run,
+        first_local_run=first_local_run,
+        first_bmad_run=first_bmad_run,
     )
     warnings.extend(layout_failures)
 
@@ -556,7 +593,7 @@ def main(argv: List[str] | None = None) -> int:
         release_changed=release_changed,
         bmad_delta=bmad_delta,
         mode=args.mode,
-        first_run=first_run,
+        first_bmad_run=first_bmad_run,
     )
     classification_allowed = len(local_blockers) == 0
     hard_dependency_blockers = list(dependency_blockers)
@@ -568,12 +605,14 @@ def main(argv: List[str] | None = None) -> int:
         local_blockers=local_blockers,
         hard_dependency_blockers=hard_dependency_blockers,
     )
+    requested_execution_blockers = execution_gate[args.gear]["blockers"] if args.gear else []
     warning_summary = summarize_warning(
         classification_allowed=classification_allowed,
         requested_gear=args.gear,
         execution_allowed=execution_allowed,
         bmad=bmad,
         cached_healthy_bmad=cached_healthy_bmad,
+        execution_blockers=requested_execution_blockers,
         warnings=warnings,
     )
     bmad_status = determine_bmad_status(
@@ -603,11 +642,23 @@ def main(argv: List[str] | None = None) -> int:
             "action": bmad.get("action", "ok"),
         }
 
+    dependency_baseline_ready = bool(
+        bmad.get("checked_live", True)
+        and bmad.get("available")
+        and bmad.get("healthy")
+        and not missing_bmad_refs
+    )
+
+    # `check` and `report` may refresh the soft X1/X2 cache, but they must not
+    # accept BMAD release/reference drift. A local-only fast path can create a
+    # local baseline without poisoning the first later live BMAD baseline.
+    accepts_local_baseline = args.mode == "sync" or first_local_run
+    accepts_dependency_baseline = (args.mode == "sync" or first_bmad_run) and dependency_baseline_ready
     state_payload = {
         "skill_version": manifest.get("skill_version", "0.0.0"),
-        "bmad_release_tag": current_release,
-        "local_hashes": local_hashes,
-        "bmad_reference_hashes": bmad_ref_hashes,
+        "bmad_release_tag": current_release if accepts_dependency_baseline else previous_release,
+        "local_hashes": local_hashes if accepts_local_baseline else previous_local,
+        "bmad_reference_hashes": bmad_ref_hashes if accepts_dependency_baseline else previous_bmad_refs,
         "template_failures": template_failures,
         "layout_failures": layout_failures,
         "last_healthy_bmad": next_cached_healthy_bmad,

@@ -39,6 +39,7 @@ For a normal bounded task, BMADX should:
 - keep the answer compact,
 - avoid making you think about process gears,
 - give you a short execution shape,
+- explain architecture tradeoffs in plain language when they matter,
 - escalate only if the task really needs BMAD-heavy handling.
 
 ## If you want examples

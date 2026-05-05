@@ -32,6 +32,9 @@ Use these artifacts:
 Runner hardening after `v0.2.4`:
 - benchmark runs now fail if `codex exec` does not report a `tokens used` footer
 - validation summaries track `token_count_present_count` alongside `token_pass_count`
+- summaries include explicit `validation_failures` lists so failed cases are visible without recomputing counters
+- routing validation now checks the selected gear in the response contract instead of passing on incidental gear mentions
+- future BMADX benchmark summaries use a `-bmadx.json` suffix; historical files keep their original names
 - raw logs keep benchmark-relevant stderr while omitting analytics HTML noise
 
 ## Historical baseline

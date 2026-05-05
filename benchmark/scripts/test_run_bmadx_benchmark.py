@@ -16,11 +16,16 @@ from run_bmadx_benchmark import (
     build_summary,
     copy_runtime_files,
     detect_reference_reads,
+    detect_selected_gear,
     model_slug,
     parse_args,
+    parse_json_report,
     parse_token_count,
     sanitize_stderr,
+    summary_path_for,
     validate_case,
+    validate_warmup_payload,
+    validation_failures,
     write_healthy_bmad_fixture,
     write_config,
 )
@@ -68,6 +73,10 @@ tokens used
         """
         self.assertEqual(detect_reference_reads(stderr), ["gearbox.md", "trigger-matrix.md"])
 
+    def test_detect_selected_gear_reads_choice_line(self) -> None:
+        self.assertEqual(detect_selected_gear("Choice: `X2 — Regular`\nWhy: ..."), "X2")
+        self.assertIsNone(detect_selected_gear("Why: This mentions X2 but does not choose it."))
+
     def test_validate_case_marks_reference_budget_failure_for_x1(self) -> None:
         stdout = "Choice: `X1 — One-shot`.\nWhy: ...\nNext step: ...\n"
         stderr = 'exec /bin/zsh -lc "sed -n \'1,220p\' /tmp/codex-home/skills/bmadx/references/gearbox.md"\n'
@@ -90,6 +99,17 @@ tokens used
         self.assertFalse(validation["reference_budget_pass"])
         self.assertEqual(validation["reference_reads"], ["gearbox.md"])
         self.assertTrue(validation["overreach_pass"])
+
+    def test_validate_case_routes_by_selected_gear_not_incidental_mentions(self) -> None:
+        validation = validate_case(
+            "Choice: `X2 — Regular`\nWhy: This is not X3.\n",
+            "",
+            1000,
+            {"expected_gear": "X3", "allow_reference_reads": True},
+        )
+        self.assertEqual(validation["selected_gear"], "X2")
+        self.assertIn("X3", validation["observed_gears"])
+        self.assertFalse(validation["routing_pass"])
 
     def test_validate_case_fails_token_pass_when_count_is_missing(self) -> None:
         validation = validate_case(
@@ -115,6 +135,12 @@ tokens used
     def test_model_slug_is_filename_safe(self) -> None:
         self.assertEqual(model_slug("gpt-5.5"), "gpt-5-5")
         self.assertEqual(model_slug("GPT 5.4 Pro"), "gpt-5-4-pro")
+
+    def test_summary_path_uses_bmadx_suffix(self) -> None:
+        self.assertEqual(
+            summary_path_for("2026-05-05", "gpt-5-5", "healthy").name,
+            "summary-2026-05-05-gpt-5-5-healthy-bmadx.json",
+        )
 
     def test_write_config_uses_model_and_reasoning(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -159,6 +185,32 @@ tokens used
             env = benchmark_env(root / "codex-home", "healthy", fixture)
             self.assertEqual(env["BMAD_RELEASE_API"], fixture.resolve().as_uri())
 
+    def test_parse_json_report_rejects_invalid_json(self) -> None:
+        with self.assertRaises(RuntimeError):
+            parse_json_report("not json")
+
+    def test_warmup_healthy_profile_requires_ok_json(self) -> None:
+        validate_warmup_payload(
+            "healthy",
+            {"action": "ok", "bmad_dependency": {"healthy": True}},
+        )
+        with self.assertRaises(RuntimeError):
+            validate_warmup_payload(
+                "healthy",
+                {"action": "warning", "bmad_dependency": {"healthy": True}},
+            )
+
+    def test_warmup_degraded_profile_rejects_ok_healthy_json(self) -> None:
+        with self.assertRaises(RuntimeError):
+            validate_warmup_payload(
+                "degraded",
+                {"action": "ok", "bmad_dependency": {"healthy": True}},
+            )
+        validate_warmup_payload(
+            "degraded",
+            {"action": "warning", "bmad_dependency": {"healthy": False}},
+        )
+
     def test_summary_records_model_and_reasoning(self) -> None:
         summary = build_summary(
             "2026-04-24",
@@ -182,6 +234,7 @@ tokens used
         self.assertEqual(summary["runner"]["reasoning"], "medium")
         self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
+        self.assertEqual(summary["validation_failures"]["core"], [])
 
     def test_validate_case_catches_gpt55_overreach(self) -> None:
         validation = validate_case(
@@ -192,6 +245,30 @@ tokens used
         )
         self.assertTrue(validation["routing_pass"])
         self.assertFalse(validation["overreach_pass"])
+
+    def test_validation_failures_names_failed_checks(self) -> None:
+        failures = validation_failures(
+            [
+                {
+                    "case": "bmadx-healthy-x1",
+                    "format_pass": True,
+                    "token_count_present": True,
+                    "token_pass": False,
+                    "reference_budget_pass": True,
+                    "routing_pass": False,
+                    "overreach_pass": True,
+                }
+            ]
+        )
+        self.assertEqual(
+            failures,
+            [
+                {
+                    "case": "bmadx-healthy-x1",
+                    "failed_checks": ["token_pass", "routing_pass"],
+                }
+            ],
+        )
 
 
 if __name__ == "__main__":

@@ -35,7 +35,8 @@
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x1.txt",
       "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x1.log",
-      "token_count_present": true
+      "token_count_present": true,
+      "selected_gear": "X1"
     },
     {
       "case": "bmadx-degraded-x2",
@@ -60,7 +61,8 @@
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x2.txt",
       "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x2.log",
-      "token_count_present": true
+      "token_count_present": true,
+      "selected_gear": "X2"
     },
     {
       "case": "bmadx-degraded-x3",
@@ -85,7 +87,8 @@
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x3.txt",
       "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x3.log",
-      "token_count_present": true
+      "token_count_present": true,
+      "selected_gear": "X3"
     },
     {
       "case": "bmadx-degraded-x4",
@@ -110,7 +113,8 @@
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x4.txt",
       "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x4.log",
-      "token_count_present": true
+      "token_count_present": true,
+      "selected_gear": "X4"
     }
   ],
   "boundary_cases": [
@@ -137,7 +141,8 @@
       "reference_reads": [],
       "raw_txt": "benchmark/raw/bmadx-gpt-5-5-degraded-x2x3-boundary.txt",
       "raw_log": "benchmark/raw/bmadx-gpt-5-5-degraded-x2x3-boundary.log",
-      "token_count_present": true
+      "token_count_present": true,
+      "selected_gear": "X3"
     }
   ],
   "framework_averages": {
@@ -152,20 +157,37 @@
     "core": {
       "case_count": 4,
       "format_pass_count": 4,
+      "token_count_present_count": 4,
       "token_pass_count": 2,
       "reference_budget_pass_count": 4,
       "routing_pass_count": 4,
-      "overreach_pass_count": 4,
-      "token_count_present_count": 4
+      "overreach_pass_count": 4
     },
     "boundary": {
       "case_count": 1,
       "format_pass_count": 1,
+      "token_count_present_count": 1,
       "token_pass_count": 1,
       "reference_budget_pass_count": 1,
       "routing_pass_count": 1,
-      "overreach_pass_count": 1,
-      "token_count_present_count": 1
+      "overreach_pass_count": 1
     }
+  },
+  "validation_failures": {
+    "core": [
+      {
+        "case": "bmadx-degraded-x1",
+        "failed_checks": [
+          "token_pass"
+        ]
+      },
+      {
+        "case": "bmadx-degraded-x2",
+        "failed_checks": [
+          "token_pass"
+        ]
+      }
+    ],
+    "boundary": []
   }
 }
