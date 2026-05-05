@@ -39,6 +39,22 @@ Non-negotiable rule:
 - the task is straightforward execution inside an already-established BMAD story,
 - the user is only asking about BMAD version/sync health; use `$bmad-method-codex` instead.
 
+## Execution surface boundary
+
+BMADX is Codex-first. Its supported contract depends on Codex Skills,
+`CODEX_HOME`, the local compact gate, and `codex exec` benchmarkability.
+
+Do not propose a Claude Code adapter as near-term default work. Claude Code has
+different native surfaces (`CLAUDE.md`, hooks, subagents, MCP, plugins,
+permissions, and `claude -p`) that make a simple port unreliable and push BMADX
+toward runtime-platform drift. Treat Claude Code as watch/prototype only unless
+the user explicitly asks for a validation spike.
+
+Local-model experiments are allowed through Codex OSS providers when available,
+but they are benchmark experiments, not product defaults. A local model must
+pass the same routing, compact-output, red-zone, and `X4` rarity checks before
+it is useful for BMADX.
+
 ## Dependency gate
 
 Since `v0.2.2`, BMADX follows the contract:

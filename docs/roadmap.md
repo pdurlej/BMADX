@@ -33,6 +33,8 @@ What `v0.2.5` focuses on:
 - ship the Architecture Guardrail Card as the default mental model for non-technical architecture risk
 - keep red-zone routing strict for auth, billing, permissions, data, secrets, production config, and privacy
 - integrate with companion guardrails such as pyfallow and Guardrails.md by recommendation, not by platform ownership
+- keep BMADX Codex-first; do not spend near-term roadmap on Claude Code parity
+- add experimental Codex OSS-provider benchmark lanes for local models such as Mistral, without turning them into default claims
 - improve proof surfaces with better transcripts and examples
 - make Rescue Mode easier to adopt without turning it into a default mode
 - keep tightening portability and low-friction install paths
@@ -44,3 +46,4 @@ These should not change:
 - BMADX stays lighter than OMX
 - BMADX stays useful for vibe coders without becoming undisciplined
 - BMADX should not drift into a full orchestration runtime
+- BMADX should not promise adapter parity with Claude Code, Cursor, Windsurf, or other execution surfaces unless their gates and benchmarks prove the same behavior

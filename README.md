@@ -37,6 +37,7 @@ BMADX is not:
 - a replacement for BMAD
 - a second process system
 - a clone of the `.omx` runtime
+- a general adapter layer for every AI coding tool
 
 Current public version: `v0.2.5`
 
@@ -61,6 +62,23 @@ BMADX is probably not for you if:
 - you already know you want to work directly in BMAD all the time
 - you want a durable orchestration runtime with `.omx`-style state and runtime tooling
 - you only need plain Codex for trivial one-off prompts
+- you want Claude Code-native hooks, MCP, plugins, subagents, or settings automation
+
+## Codex-first stance
+
+BMADX is intentionally Codex-first. The current product is optimized around
+Codex Skills, `CODEX_HOME`, `codex exec` benchmarkability, and a compact gate
+that separates classification from execution permission.
+
+Claude Code is not a near-term target. Its Skills, `CLAUDE.md`, hooks,
+subagents, MCP, plugins, permissions, and interactive/non-interactive behavior
+make a simple BMADX port misleading. BMADX may watch Claude Code as an
+execution surface, but the repo does not currently ship or promise a Claude
+adapter.
+
+Model experiments are welcome inside Codex. The benchmark runner supports the
+primary OpenAI/Codex path and can also run experimental local-model checks via
+Codex OSS providers when a local model is installed.
 
 ## 5 minute quickstart
 
@@ -123,6 +141,7 @@ More detail:
 - [Why BMAD is required](docs/why-bmad-is-required.md)
 - [Choose BMAD vs BMADX vs OMX](docs/choose-bmad-bmadx-omx.md)
 - [Ecosystem and strategic stance](docs/ecosystem-and-stance.md)
+- [Model experiments](docs/model-experiments.md)
 - [FAQ](docs/faq.md)
 
 ## Recommended companion stack

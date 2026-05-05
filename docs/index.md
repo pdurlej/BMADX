@@ -17,7 +17,8 @@ Deeper reading:
 3. [Rescue Mode (`X4/FUBAR`)](x4-rescue-mode.md)
 4. [Ecosystem and Strategic Stance](ecosystem-and-stance.md)
 5. [Benchmark Overview](benchmark-overview.md)
-6. [Roadmap](roadmap.md)
+6. [Model Experiments](model-experiments.md)
+7. [Roadmap](roadmap.md)
 
 Historical context:
 

@@ -21,6 +21,7 @@ The benchmark does not prove:
 - BMADX `healthy` rerun from `2026-04-06`
 - BMADX `degraded` rerun from `2026-04-06`
 - BMADX GPT-5.5 optimization rerun from `2026-04-24`
+- experimental Codex OSS-provider reruns for local models, if a local provider such as Ollama or LM Studio is installed
 
 Use these artifacts:
 - [`../benchmark/summary-2026-04-04.json`](../benchmark/summary-2026-04-04.json)
@@ -38,6 +39,29 @@ Runner hardening after `v0.2.4`:
 - future BMADX benchmark summaries use a `-bmadx.json` suffix; historical files keep their original names
 - raw logs keep benchmark-relevant stderr while omitting analytics HTML noise
 - future runner summaries include `non_technical_cases` plus a plain-language `what_failed_why_it_matters` readout
+- runner summaries record whether the run used the primary Codex/OpenAI path or an experimental OSS local provider
+
+## Model and provider experiments
+
+The default benchmark target remains Codex on GPT-5.5. Other OpenAI/Codex
+models can be compared with `--model`.
+
+Local-model experiments use Codex OSS providers and are explicitly exploratory.
+For example, after installing a Mistral-family model in Ollama, run:
+
+```bash
+python3 benchmark/scripts/run_bmadx_benchmark.py \
+  --oss \
+  --local-provider ollama \
+  --model mistral \
+  --profile healthy \
+  --date-stamp 2026-05-05
+```
+
+Read these results as model-behavior experiments, not release claims. A local
+model has to pass the same format, routing, red-zone escalation, reference
+budget, and `X4` rarity checks before it is useful for BMADX’s non-technical
+builder promise.
 
 ## Non-technical routing scenarios
 

@@ -57,6 +57,30 @@ BMADX should not compete with:
 - Codex, Claude Code, Cursor, Windsurf, or other execution surfaces,
 - spec/workflow tools that intentionally own more process than BMADX should own.
 
+## Execution-surface stance
+
+BMADX is Codex-first by design. Its current working contract depends on Codex
+Skills, `CODEX_HOME`, a portable Python compact gate, and `codex exec`
+benchmark runs. That is a strength, not a temporary limitation.
+
+BMADX should not chase parity with every coding agent. Claude Code is useful to
+watch, but it should not be a near-term implementation target because its
+native surfaces introduce different failure modes: `CLAUDE.md`, hooks,
+subagents, MCP, plugins, permissions, and differences between interactive and
+`claude -p` behavior. A naive adapter would either be unreliable or would push
+BMADX toward runtime-platform drift.
+
+Near-term rule:
+- optimize BMADX for Codex,
+- benchmark model behavior through Codex,
+- treat Claude Code as watch/prototype only,
+- do not ship hooks, MCP, plugins, subagents, or global settings automation.
+
+Local-model experiments, including Mistral-family models, are acceptable only
+as Codex OSS-provider benchmarks. They are not the default product target until
+they pass routing, red-zone escalation, compact-output, and Rescue Mode rarity
+checks.
+
 ## Collaboration stance
 
 ### BMAD
@@ -112,6 +136,7 @@ Do not add:
 | Oracle | Recommended second-opinion companion for `X3/X4`, boundary decisions, and architecture review | Do not treat model advice as proof |
 | pyfallow | Recommended verification companion for Python repos | Do not make BMADX a static analyzer |
 | Guardrails.md | X4 Failure Patterns / Guardians and repo safety constraints; evaluate a thin Codex skill or MCP bridge later | Do not replace BMAD artifacts |
+| Codex OSS providers | Experimental benchmark lane for local models such as Mistral through Ollama or LM Studio | Do not make local-model behavior a release claim until it passes the same gates |
 | Semgrep / CodeQL / Gitleaks | Safety Kit or docs-level recommended checks | Do not bundle heavyweight security runtime into core |
 | GitHub Actions | Optional CI templates later | Do not turn BMADX into CI platform |
 

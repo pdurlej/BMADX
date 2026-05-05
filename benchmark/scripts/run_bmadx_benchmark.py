@@ -145,6 +145,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=f"Codex model reasoning effort (default: {DEFAULT_REASONING})",
     )
     parser.add_argument(
+        "--oss",
+        action="store_true",
+        help="Run through Codex OSS mode for local-provider experiments",
+    )
+    parser.add_argument(
+        "--local-provider",
+        choices=("ollama", "lmstudio"),
+        default=None,
+        help="Local OSS provider to pass to codex exec when --oss is used",
+    )
+    parser.add_argument(
         "--profile",
         choices=("healthy", "degraded"),
         default="healthy",
@@ -323,6 +334,14 @@ def model_slug(model: str) -> str:
     return slug or "model"
 
 
+def runner_slug(model: str, *, oss: bool = False, local_provider: str | None = None) -> str:
+    slug = model_slug(model)
+    if not oss:
+        return slug
+    provider = model_slug(local_provider or "local")
+    return f"{provider}-{slug}"
+
+
 def summary_path_for(date_stamp: str, model_slug_value: str, profile: str) -> Path:
     return BENCHMARK_ROOT / f"summary-{date_stamp}-{model_slug_value}-{profile}-bmadx.json"
 
@@ -412,8 +431,17 @@ def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path
     validate_warmup_payload(profile, parse_json_report(result.stdout))
 
 
-def build_codex_command(prompt: str, workdir: Path, codex_home: Path, *, model: str, reasoning: str) -> list[str]:
-    return [
+def build_codex_command(
+    prompt: str,
+    workdir: Path,
+    codex_home: Path,
+    *,
+    model: str,
+    reasoning: str,
+    oss: bool = False,
+    local_provider: str | None = None,
+) -> list[str]:
+    command = [
         "codex",
         "exec",
         "--ignore-user-config",
@@ -427,8 +455,6 @@ def build_codex_command(prompt: str, workdir: Path, codex_home: Path, *, model: 
         "general_analytics",
         "-m",
         model,
-        "-c",
-        f'model_reasoning_effort="{reasoning}"',
         "-C",
         str(workdir),
         "--add-dir",
@@ -440,6 +466,15 @@ def build_codex_command(prompt: str, workdir: Path, codex_home: Path, *, model: 
         "never",
         prompt,
     ]
+    if not oss:
+        model_index = command.index("-C")
+        command[model_index:model_index] = ["-c", f'model_reasoning_effort="{reasoning}"']
+    if oss:
+        command.insert(command.index("-m"), "--oss")
+        if local_provider:
+            command.insert(command.index("-m"), local_provider)
+            command.insert(command.index(local_provider), "--local-provider")
+    return command
 
 
 def run_case(
@@ -452,11 +487,21 @@ def run_case(
     *,
     model: str,
     reasoning: str,
+    oss: bool,
+    local_provider: str | None,
     model_slug_value: str,
 ) -> dict:
     scenario_path = Path(spec["path"])
     prompt = build_prompt(scenario_path)
-    command = build_codex_command(prompt, workdir, codex_home, model=model, reasoning=reasoning)
+    command = build_codex_command(
+        prompt,
+        workdir,
+        codex_home,
+        model=model,
+        reasoning=reasoning,
+        oss=oss,
+        local_provider=local_provider,
+    )
     result = subprocess.run(
         command,
         capture_output=True,
@@ -484,6 +529,8 @@ def run_case(
         "tokens": tokens,
         "model": model,
         "reasoning": reasoning,
+        "provider": "oss" if oss else "openai",
+        "local_provider": local_provider,
         "mcp_startup": "no servers",
         "response_first_line": lines[0] if lines else "",
         "response_chars": len(stdout),
@@ -512,6 +559,8 @@ def build_summary(
     *,
     model: str,
     reasoning: str,
+    oss: bool = False,
+    local_provider: str | None = None,
 ) -> dict:
     non_technical_cases = non_technical_cases or []
     token_values = [case["tokens"] for case in core_cases]
@@ -522,6 +571,9 @@ def build_summary(
         "runner": {
             "model": model,
             "reasoning": reasoning,
+            "provider": "oss" if oss else "openai",
+            "local_provider": local_provider,
+            "reasoning_applied": not oss,
             "mcp_startup": "no servers",
         },
         "baselines": {
@@ -559,7 +611,9 @@ def build_summary(
 
 def main() -> int:
     args = parse_args()
-    model_slug_value = model_slug(args.model)
+    if args.local_provider and not args.oss:
+        raise SystemExit("--local-provider requires --oss")
+    model_slug_value = runner_slug(args.model, oss=args.oss, local_provider=args.local_provider)
     RAW_ROOT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="bmadx-benchmark-") as tmpdir:
         tmp_root = Path(tmpdir)
@@ -584,6 +638,8 @@ def main() -> int:
                     healthy_release_fixture,
                     model=args.model,
                     reasoning=args.reasoning,
+                    oss=args.oss,
+                    local_provider=args.local_provider,
                     model_slug_value=model_slug_value,
                 )
             )
@@ -599,6 +655,8 @@ def main() -> int:
                     healthy_release_fixture,
                     model=args.model,
                     reasoning=args.reasoning,
+                    oss=args.oss,
+                    local_provider=args.local_provider,
                     model_slug_value=model_slug_value,
                 )
             )
@@ -614,6 +672,8 @@ def main() -> int:
                     healthy_release_fixture,
                     model=args.model,
                     reasoning=args.reasoning,
+                    oss=args.oss,
+                    local_provider=args.local_provider,
                     model_slug_value=model_slug_value,
                 )
             )
@@ -626,6 +686,8 @@ def main() -> int:
         non_technical_cases,
         model=args.model,
         reasoning=args.reasoning,
+        oss=args.oss,
+        local_provider=args.local_provider,
     )
     summary_path = summary_path_for(args.date_stamp, model_slug_value, args.profile)
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

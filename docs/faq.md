@@ -24,6 +24,22 @@ Not in every case. The honest public claim is that BMADX looks strongest against
 
 Because BMADX is intentionally lighter. If you want a heavier runtime, OMX is closer to that product.
 
+## Does BMADX support Claude Code?
+
+Not currently. BMADX is Codex-first because its compact gate, skill install
+path, and benchmark runner are built around Codex. Claude Code has different
+native surfaces such as `CLAUDE.md`, hooks, subagents, MCP, plugins,
+permissions, and `claude -p`; a simple port would be misleading. The current
+stance is watch/prototype, not ship.
+
+## Can BMADX run on Mistral or other local models?
+
+Only experimentally through Codex OSS providers. If Codex can run a local model
+through Ollama or LM Studio, the benchmark runner can test BMADX routing against
+that model. Passing a local-model experiment does not make it the default
+product target; it must still pass format, routing, red-zone, and Rescue Mode
+rarity checks.
+
 ## Can I use BMADX if I am not a developer?
 
 Yes. BMADX is explicitly meant for people who understand the product problem but

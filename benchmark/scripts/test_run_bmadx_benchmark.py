@@ -22,6 +22,7 @@ from run_bmadx_benchmark import (
     model_slug,
     parse_args,
     parse_json_report,
+    runner_slug,
     parse_token_count,
     sanitize_stderr,
     summary_path_for,
@@ -133,10 +134,22 @@ tokens used
         args = parse_args(["--model", "gpt-5.4", "--reasoning", "high"])
         self.assertEqual(args.model, "gpt-5.4")
         self.assertEqual(args.reasoning, "high")
+        self.assertFalse(args.oss)
+        self.assertIsNone(args.local_provider)
+
+    def test_parse_args_supports_oss_local_provider(self) -> None:
+        args = parse_args(["--oss", "--local-provider", "ollama", "--model", "mistral"])
+        self.assertTrue(args.oss)
+        self.assertEqual(args.local_provider, "ollama")
+        self.assertEqual(args.model, "mistral")
 
     def test_model_slug_is_filename_safe(self) -> None:
         self.assertEqual(model_slug("gpt-5.5"), "gpt-5-5")
         self.assertEqual(model_slug("GPT 5.4 Pro"), "gpt-5-4-pro")
+
+    def test_runner_slug_includes_local_provider_for_oss(self) -> None:
+        self.assertEqual(runner_slug("gpt-5.5"), "gpt-5-5")
+        self.assertEqual(runner_slug("mistral", oss=True, local_provider="ollama"), "ollama-mistral")
 
     def test_non_technical_scenarios_cover_red_zones_and_rescue(self) -> None:
         self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_gear"], "X1")
@@ -183,6 +196,23 @@ tokens used
         self.assertIn("--add-dir", command)
         self.assertIn("/tmp/codex-home", command)
         self.assertIn("workspace-write", command)
+
+    def test_codex_command_supports_oss_local_provider(self) -> None:
+        command = build_codex_command(
+            "prompt",
+            Path("/tmp/workdir"),
+            Path("/tmp/codex-home"),
+            model="mistral",
+            reasoning="medium",
+            oss=True,
+            local_provider="ollama",
+        )
+        self.assertIn("--oss", command)
+        self.assertIn("--local-provider", command)
+        self.assertIn("ollama", command)
+        self.assertIn("-m", command)
+        self.assertIn("mistral", command)
+        self.assertNotIn('model_reasoning_effort="medium"', command)
 
     def test_copy_runtime_files_does_not_copy_global_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -245,11 +275,30 @@ tokens used
         )
         self.assertEqual(summary["runner"]["model"], "gpt-5.5")
         self.assertEqual(summary["runner"]["reasoning"], "medium")
+        self.assertEqual(summary["runner"]["provider"], "openai")
+        self.assertIsNone(summary["runner"]["local_provider"])
+        self.assertTrue(summary["runner"]["reasoning_applied"])
         self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
         self.assertEqual(summary["validation_failures"]["core"], [])
         self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
         self.assertEqual(summary["non_technical_readout"]["what_failed_why_it_matters"], [])
+
+    def test_summary_records_oss_provider(self) -> None:
+        summary = build_summary(
+            "2026-05-05",
+            "healthy",
+            [],
+            [],
+            [],
+            model="mistral",
+            reasoning="medium",
+            oss=True,
+            local_provider="ollama",
+        )
+        self.assertEqual(summary["runner"]["provider"], "oss")
+        self.assertEqual(summary["runner"]["local_provider"], "ollama")
+        self.assertFalse(summary["runner"]["reasoning_applied"])
 
     def test_validate_case_catches_gpt55_overreach(self) -> None:
         validation = validate_case(

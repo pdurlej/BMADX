@@ -25,6 +25,7 @@ Out of scope:
 - porting OMX,
 - adding a second durable plan store,
 - turning BMADX into a runtime platform.
+- shipping Claude Code parity or a generic multi-agent adapter layer.
 
 ## Active BMAD artifacts
 
@@ -37,6 +38,13 @@ Out of scope:
 - default benchmark reasoning: `medium`
 - BMADX does not mutate global Codex config; users choose their model outside BMADX
 - stronger models reduce prompt scaffolding, but do not bypass `BMAD > BMADX`
+- Codex remains the only supported execution surface for BMADX core
+- Claude Code is watch/prototype only because its `CLAUDE.md`, hooks, subagents,
+  MCP, plugins, permissions, and `claude -p` behavior are different enough that
+  a simple adapter would be unreliable or would create runtime-platform drift
+- local models such as Mistral may be tested only through Codex OSS-provider
+  benchmark runs and must pass the same routing and safety gates before any
+  public claim
 
 ## Routing contract
 
@@ -106,6 +114,8 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - post-release hardening: benchmark routing uses the selected `Choice:` gear, not incidental gear mentions
 - post-release hardening: future BMADX benchmark summaries use `-bmadx.json`
 - post-release hardening: installer excludes runtime `state/*.json` from copied skill trees
+- post-release hardening: benchmark runner can label primary Codex/OpenAI runs
+  separately from experimental Codex OSS-provider local-model runs
 - non-technical benchmark extension: scenarios now cover pricing copy (`X1`), onboarding email (`X2`), Google login (`X3`), subscription billing (`X3`), deleting inactive users (`X3`), and failed migration recovery (`X4`)
 - non-technical benchmark extension: summaries include `non_technical_cases` and `what_failed_why_it_matters`
 - historical baselines:
