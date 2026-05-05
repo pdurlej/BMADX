@@ -19,6 +19,7 @@ LOCAL_FILES = [
     "references/gearbox.md",
     "references/trigger-matrix.md",
     "references/bmadx-vs-bmad.md",
+    "references/architecture-guardrails.md",
     "references/subagent-policy.md",
     "references/verify-discipline.md",
     "references/fubar-bundle-spec.md",
@@ -93,6 +94,7 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "gearbox.md", "x1 x2 x3 x4\n")
     write(root / "references" / "trigger-matrix.md", "matrix\n")
     write(root / "references" / "bmadx-vs-bmad.md", "BMAD > BMADX\n")
+    write(root / "references" / "architecture-guardrails.md", "Architecture Guardrail Card\n")
     write(root / "references" / "subagent-policy.md", "policy\n")
     write(root / "references" / "verify-discipline.md", "verify\n")
     write(root / "references" / "fubar-bundle-spec.md", "spec\n")

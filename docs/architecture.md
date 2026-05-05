@@ -21,13 +21,14 @@ overbuilt framework exercise.
 ```mermaid
 flowchart TD
     U["User task in Codex"] --> C["BMADX classify: X1 / X2 / X3 / X4"]
-    C --> G["Compact gear gate via sync_bmadx.py"]
+    C --> AC["Architecture Guardrail Card"]
+    AC --> G["Compact gear gate via sync_bmadx.py"]
     G -->|X1 or X2 green / warning| E["Execute with lightweight verify"]
     G -->|X3 or X4 green| B["Enter BMAD-driven workflow"]
     G -->|X3 or X4 blocked| R["Remediate BMAD dependency"]
     B --> P["_bmad-output/project-context.md"]
     C -->|X4 only| F["Render FUBAR scaffold bundle"]
-    F --> A["AGENTS.md, matrices, rollout checklist, snippets"]
+    F --> A["AGENTS.md, matrices, rollout checklist, failure patterns, snippets"]
     R --> D["sync_bmad_method.py check/sync"]
 ```
 
@@ -53,6 +54,17 @@ BMADX classifies work into four gears:
 - `X4` for FUBAR / BMAD+ escalation
 
 The classifier is intentionally practical rather than academic.
+
+The classifier uses the Architecture Guardrail Card to avoid architecture
+guessing:
+- protected outcome,
+- owning system area,
+- existing pattern,
+- likely breakage,
+- proof a non-technical owner can understand.
+
+For `X1/X2`, this card is usually silent. For `X3/X4`, it becomes explicit and
+must tie back to BMAD artifacts.
 
 ### 3. Compact gate
 
@@ -83,6 +95,7 @@ surface inside Codex, especially when the project needs:
 - explicit ownership
 - rollout structure
 - trigger and verify matrices
+- failure patterns and guardians
 - reusable repo scaffolding
 
 The bundle is an overlay on BMAD, not a replacement for BMAD.

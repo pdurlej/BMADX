@@ -18,6 +18,11 @@ portably.
 - required `bmadx-rollout-checklist.md`,
 - required `bmadx-subagent-policy.md`.
 
+The rollout checklist includes:
+- the Architecture Guardrail Card,
+- Failure Patterns / Guardians inspired by `GUARDRAILS.md`,
+- explicit proof a non-technical owner can understand.
+
 ## When to render it
 
 Render the bundle only when:
@@ -38,6 +43,7 @@ Do not render the bundle when:
 - avoid OMX vocabulary drift,
 - state `BMAD > BMADX` explicitly,
 - point to `project-context.md` as durable technical memory,
+- keep `GUARDRAILS.md`-style content as safety constraints, not as a second plan store,
 - keep the bundle manually adoptable without an extra runtime.
 
 ## Render parameters

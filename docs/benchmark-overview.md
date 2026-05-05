@@ -6,6 +6,7 @@ The benchmark is useful for showing:
 - BMADX is much lighter than OMX in this repo’s runs
 - BMADX can stay compact for normal work while keeping BMAD-first boundaries
 - BMADX can validate more than tokens alone through format, routing, and reference-budget checks
+- BMADX can test non-technical red-zone routing, such as auth, billing, data deletion, and messy recovery tasks
 
 ## What this does not prove
 
@@ -36,6 +37,24 @@ Runner hardening after `v0.2.4`:
 - routing validation now checks the selected gear in the response contract instead of passing on incidental gear mentions
 - future BMADX benchmark summaries use a `-bmadx.json` suffix; historical files keep their original names
 - raw logs keep benchmark-relevant stderr while omitting analytics HTML noise
+- future runner summaries include `non_technical_cases` plus a plain-language `what_failed_why_it_matters` readout
+
+## Non-technical routing scenarios
+
+The runner now includes a dedicated non-technical scenario group:
+
+| Scenario | Expected routing | Why it matters |
+| --- | --- | --- |
+| pricing-page copy | `X1` | copy-only work should stay tiny |
+| onboarding email variant | `X2` | bounded product work should stay compact |
+| Google login | `X3` | auth is red-zone work |
+| subscription billing change | `X3` | billing and permissions need BMAD grounding |
+| delete inactive users | `X3` | destructive data work needs architecture and proof |
+| failed migration recovery | `X4` | messy ownership plus rollback risk needs Rescue Mode |
+
+These are not a new claim that BMADX beats every adjacent tool. They test the
+core non-technical promise: small work stays small, red-zone work escalates, and
+Rescue Mode appears only when the situation is actually rescue-shaped.
 
 ## Historical baseline
 

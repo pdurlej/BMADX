@@ -6,6 +6,7 @@ Use these as starter prompts after BMADX is installed.
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
+Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
 
 My task:
 <describe the change in plain English>
@@ -18,6 +19,7 @@ speed, clarity, and not overengineering it
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode and keep the architecture understandable.
+If the task touches auth, billing, data, permissions, secrets, or production config, escalate to BMAD instead of treating it as a quick task.
 
 My task:
 I understand the product problem, but I do not want to manually decide the technical approach.
@@ -56,6 +58,7 @@ clarity, visual polish, and keeping the diff easy to review
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode.
+If this changes data, contracts, permissions, or ownership, ask before implementing and use BMAD if needed.
 
 My task:
 Add support for a new status field across the API handler, validator, and UI label.
@@ -86,6 +89,19 @@ This project is messy, ownership is unclear, and we need a safe way to move forw
 
 What I care about:
 clear next steps, explicit ownership, rollout safety, and a scaffold if needed
+```
+
+## Red-zone task
+
+```text
+Use BMADX for this repo. This might be red-zone work, so do not use X1.
+Classify it safely, use BMAD if needed, and explain the proof in plain English.
+
+My task:
+<auth / billing / permissions / migration / data deletion / secrets / production config change>
+
+What I care about:
+not breaking users, data, security, or rollout safety
 ```
 
 ## Working from an existing BMAD story

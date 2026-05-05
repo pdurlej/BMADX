@@ -4,6 +4,16 @@ All notable changes to this repository will be documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Architecture Guardrail Card for non-technical builders, with five plain-language questions and gear-specific defaults.
+- red-zone escalation guidance for auth, billing, payments, permissions, migrations, data deletion, secrets, production config, privacy, multi-tenant access, webhooks, encryption, admin roles, and compliance.
+- `X4/FUBAR` Failure Patterns / Guardians section in the rollout checklist and sample bundle.
+- non-technical benchmark scenarios for pricing copy, onboarding email, Google login, subscription billing, data deletion, and messy migration recovery.
+- benchmark summary readout for `what_failed_why_it_matters` so failures are understandable beyond token counts.
+- public ecosystem/strategic stance doc covering Oracle, BMAD, BMADX, pyfallow, Guardrails.md, OMX, and adjacent tools.
+- explicit full-stack framing for non-technical builders: Oracle for second opinion, BMAD for process, BMADX for routing, Guardrails.md for safety memory, pyfallow for Python code intelligence, and CI/tests for proof.
+
 ### Fixed
 
 - `sync_bmadx.py check` and `report` no longer accept BMAD release/reference drift as the new baseline; only explicit `sync` or first run can do that.

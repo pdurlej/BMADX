@@ -68,6 +68,49 @@ BOUNDARY_SCENARIOS = {
         "allow_reference_reads": True,
     }
 }
+NON_TECH_SCENARIOS = {
+    "pricing-copy": {
+        "path": SCENARIO_ROOT / "scenario-nontech-pricing-copy.txt",
+        "expected_gear": "X1",
+        "forbidden_gears": ["X3", "X4"],
+        "max_lines": 5,
+        "max_chars": 650,
+        "max_tokens": 9000,
+        "allow_reference_reads": False,
+    },
+    "onboarding-email": {
+        "path": SCENARIO_ROOT / "scenario-nontech-onboarding-email.txt",
+        "expected_gear": "X2",
+        "forbidden_gears": ["X3", "X4"],
+        "max_lines": 12,
+        "max_chars": 1000,
+        "max_tokens": 10000,
+        "allow_reference_reads": False,
+    },
+    "google-login": {
+        "path": SCENARIO_ROOT / "scenario-nontech-google-login.txt",
+        "expected_gear": "X3",
+        "forbidden_gears": ["X4"],
+        "allow_reference_reads": True,
+    },
+    "subscription-billing": {
+        "path": SCENARIO_ROOT / "scenario-nontech-subscription-billing.txt",
+        "expected_gear": "X3",
+        "forbidden_gears": ["X4"],
+        "allow_reference_reads": True,
+    },
+    "delete-inactive-users": {
+        "path": SCENARIO_ROOT / "scenario-nontech-delete-inactive-users.txt",
+        "expected_gear": "X3",
+        "forbidden_gears": ["X4"],
+        "allow_reference_reads": True,
+    },
+    "messy-migration-incident": {
+        "path": SCENARIO_ROOT / "scenario-nontech-messy-migration-incident.txt",
+        "expected_gear": "X4",
+        "allow_reference_reads": True,
+    },
+}
 REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
 GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
 SELECTED_GEAR_PATTERN = re.compile(r"(?im)^\s*(?:Choice|Gear|Mode)\s*:\s*`?\s*(X[1-4])\b")
@@ -79,6 +122,14 @@ VALIDATION_CHECKS = (
     "routing_pass",
     "overreach_pass",
 )
+NON_TECH_FAILURE_REASONS = {
+    "format_pass": "The answer is too long or unstructured for a non-technical owner to act on safely.",
+    "token_count_present": "The benchmark cannot compare cost or verbosity without a token count.",
+    "token_pass": "The response exceeded the intended budget for lightweight work.",
+    "reference_budget_pass": "The agent read extra reference docs where the happy path should stay compact.",
+    "routing_pass": "The agent chose the wrong work mode, which can either overbuild a small task or underprotect a risky one.",
+    "overreach_pass": "The agent mentioned forbidden higher gears, creating unnecessary escalation noise for a bounded task.",
+}
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -244,6 +295,23 @@ def validation_failures(cases: list[dict]) -> list[dict]:
                 }
             )
     return failures
+
+
+def explain_failures_for_non_technical_users(cases: list[dict]) -> list[dict]:
+    explanations = []
+    for failure in validation_failures(cases):
+        failed_checks = failure["failed_checks"]
+        explanations.append(
+            {
+                "case": failure["case"],
+                "what_failed": failed_checks,
+                "why_it_matters": [
+                    NON_TECH_FAILURE_REASONS.get(check, "The benchmark found a validation problem.")
+                    for check in failed_checks
+                ],
+            }
+        )
+    return explanations
 
 
 def repo_relative(path: Path) -> str:
@@ -440,10 +508,12 @@ def build_summary(
     profile: str,
     core_cases: list[dict],
     boundary_cases: list[dict],
+    non_technical_cases: list[dict] | None = None,
     *,
     model: str,
     reasoning: str,
 ) -> dict:
+    non_technical_cases = non_technical_cases or []
     token_values = [case["tokens"] for case in core_cases]
     return {
         "generated_at": date_stamp,
@@ -460,6 +530,7 @@ def build_summary(
         },
         "cases": core_cases,
         "boundary_cases": boundary_cases,
+        "non_technical_cases": non_technical_cases,
         "framework_averages": {
             "bmadx": {
                 "avg_tokens": sum(token_values) / len(token_values) if token_values else 0,
@@ -471,10 +542,17 @@ def build_summary(
         "validation_summary": {
             "core": summarize_validation(core_cases),
             "boundary": summarize_validation(boundary_cases),
+            "non_technical": summarize_validation(non_technical_cases),
         },
         "validation_failures": {
             "core": validation_failures(core_cases),
             "boundary": validation_failures(boundary_cases),
+            "non_technical": validation_failures(non_technical_cases),
+        },
+        "non_technical_readout": {
+            "what_failed_why_it_matters": explain_failures_for_non_technical_users(
+                core_cases + boundary_cases + non_technical_cases
+            )
         },
     }
 
@@ -524,12 +602,28 @@ def main() -> int:
                     model_slug_value=model_slug_value,
                 )
             )
+        non_technical_cases = []
+        for scenario_key, spec in NON_TECH_SCENARIOS.items():
+            non_technical_cases.append(
+                run_case(
+                    codex_home,
+                    args.profile,
+                    scenario_key,
+                    spec,
+                    workdir,
+                    healthy_release_fixture,
+                    model=args.model,
+                    reasoning=args.reasoning,
+                    model_slug_value=model_slug_value,
+                )
+            )
 
     summary = build_summary(
         args.date_stamp,
         args.profile,
         core_cases,
         boundary_cases,
+        non_technical_cases,
         model=args.model,
         reasoning=args.reasoning,
     )
@@ -541,6 +635,7 @@ def main() -> int:
                 "summary_path": repo_relative(summary_path),
                 "core_case_count": len(core_cases),
                 "boundary_case_count": len(boundary_cases),
+                "non_technical_case_count": len(non_technical_cases),
             },
             indent=2,
         )

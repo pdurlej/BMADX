@@ -1,0 +1,2 @@
+Use the requested skill to decide the right workflow for this task and answer briefly in English.
+Task: Add a new onboarding email copy variant and include a short plan plus verification, without changing auth, billing, or data models.

@@ -40,6 +40,10 @@ Use one of the starter prompts from:
 - [What to Paste into Codex](what-to-paste-into-codex.md)
 - [5-Minute Quickstart](5-minute-quickstart.md)
 
+For risky work, read:
+- [Architecture Guardrail Card](architecture-guardrail-card.md)
+- [Ecosystem and Strategic Stance](ecosystem-and-stance.md)
+
 ## If install fails
 
 Most failures come from one of these:

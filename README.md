@@ -17,6 +17,10 @@ software architecture from AI agents without needing to become software
 architects first. BMAD provides the process backbone; BMADX keeps day-to-day
 Codex work guided, bounded, and understandable.
 
+BMADX now includes an Architecture Guardrail Card: five plain-English questions
+that help Codex protect product outcomes, system ownership, existing patterns,
+failure risk, and proof a non-technical owner can understand.
+
 BMADX `v0.2.4` is tuned for Codex on GPT-5.5. Stronger models reduce the need
 for prompt scaffolding, but they make explicit boundaries and verification more
 important: BMAD still owns process, BMADX keeps the work mode light and safe.
@@ -114,9 +118,28 @@ The internal gear model is:
 | you want a heavier runtime layer and broader orchestration | OMX | closer to that product category than BMADX |
 
 More detail:
+- [Architecture Guardrail Card](docs/architecture-guardrail-card.md)
 - [Why BMAD is required](docs/why-bmad-is-required.md)
 - [Choose BMAD vs BMADX vs OMX](docs/choose-bmad-bmadx-omx.md)
+- [Ecosystem and strategic stance](docs/ecosystem-and-stance.md)
 - [FAQ](docs/faq.md)
+
+## Recommended companion stack
+
+BMADX works best as part of a small, explicit stack:
+
+- BMAD for process and architecture source of truth
+- BMADX for lightest-safe-mode routing in Codex
+- [Oracle](https://github.com/steipete/oracle) for second-opinion reviews with the right files and stronger models when the builder does not know what to ask
+- [pyfallow](https://github.com/pdurlej/pyfallow) for Python codebase intelligence when available
+- [Guardrails.md](https://guardrails.md/) for repo-local safety constraints and repeated failure lessons
+- CI, tests, static analysis, and secret scans for hard technical facts
+
+More detail: [Ecosystem and strategic stance](docs/ecosystem-and-stance.md)
+
+In plain language: Oracle helps ask the expert second opinion, BMADX decides the
+safe work mode, BMAD owns the process, Guardrails.md remembers hard mistakes,
+pyfallow checks Python code structure, and CI/tests prove the result.
 
 ## What BMADX proves well today
 

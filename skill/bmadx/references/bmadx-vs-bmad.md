@@ -31,6 +31,17 @@ architecture. BMADX provides the tactical and operational overlay for Codex.
 - require `omx`, tmux, HUD, or a team runtime,
 - redefine BMAD phase naming.
 
+## Companion tools
+
+BMADX can recommend companion tools without owning their jobs:
+
+- Oracle for second-opinion reviews with the right files attached,
+- `pyfallow` for Python codebase intelligence and deterministic architecture signals,
+- `GUARDRAILS.md`-style files for repo-local safety constraints and repeated failure lessons,
+- CI, tests, static analysis, and secret scanning for hard technical facts.
+
+These tools strengthen verification. They do not replace BMAD artifacts.
+
 ## Operational decision rule
 
 If convenience in BMADX conflicts with a BMAD artifact:

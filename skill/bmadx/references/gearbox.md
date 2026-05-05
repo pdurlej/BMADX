@@ -24,12 +24,30 @@ and the compact gate is green.
 | `X3` | needs BMAD artifacts or workflow-map guidance | enter the real BMAD flow and work from artifacts | BMAD artifact plus code plus evidence |
 | `X4` | chaos, wide scope, risky rollout, needs scaffold bundle | BMAD flow plus bundle plus verify discipline | bundle plus operating plan plus evidence |
 
+## Architecture defaults
+
+Use the Architecture Guardrail Card as the default decision model, but expose it
+only when it helps the user:
+
+- `X1`: silent card, no user questions unless a red zone appears.
+- `X2`: silent card, short plan, key tradeoff only.
+- `X3`: explicit card, BMAD artifact alignment, hard execution gate.
+- `X4`: explicit card inside the Rescue Mode bundle, tied to owners, failure patterns, guardians, and verification.
+
+The card asks:
+
+1. What user or product outcome are we protecting?
+2. Which system area should own this change?
+3. Which existing pattern should the agent follow?
+4. What could break if this is implemented in the wrong place?
+5. What proof would convince a non-technical owner it is safe?
+
 ## Input signals
 
 ### X1
 - 1 file or very local scope,
 - no API/CLI contract changes,
-- no auth/security/schema/migration risk,
+- no auth/security/schema/migration/data/billing risk,
 - no new BMAD artifact needed.
 
 ### X2
@@ -41,7 +59,8 @@ and the compact gate is green.
 ### X3
 - new story or an existing BMAD story,
 - needs PRD, architecture, readiness, or story context,
-- the change must stay grounded in process artifacts.
+- the change must stay grounded in process artifacts,
+- touches a red-zone area unless purely textual or documentation-only.
 
 ### X4
 - the user talks about a plan, chaos, a hard project, or escalation,
@@ -53,6 +72,8 @@ and the compact gate is green.
 
 - `plan` or high ambiguity means ask questions before recommending a gear.
 - Do not escalate from `X1` to `X3` if `X2` is enough.
+- Red-zone areas are `X3` minimum unless the change is purely textual or documentation-only.
+- Red-zone areas plus messy ownership, incident recovery, destructive data risk, or unclear proof can become `X4`.
 - `X4` is not a punishment or the default. Use it only when the absence of a scaffold bundle increases decision risk.
 
 ## Exit gates

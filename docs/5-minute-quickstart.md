@@ -25,6 +25,7 @@ If that succeeds, BMADX is installed and verified.
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
+Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
 
 My task:
 <describe the change in plain English>
@@ -45,5 +46,6 @@ For a normal bounded task, BMADX should:
 ## If you want examples
 
 - [What to Paste into Codex](what-to-paste-into-codex.md)
+- [Architecture Guardrail Card](architecture-guardrail-card.md)
 - [Install for Vibe Coders](install-for-vibe-coders.md)
 - [FAQ](faq.md)

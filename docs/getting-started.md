@@ -34,6 +34,7 @@ Open Codex in your project and paste:
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
+Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
 
 My task:
 <describe the change in plain English>
@@ -47,6 +48,7 @@ Most users should not choose `X1/X2/X3/X4` manually.
 ## What to read next
 
 - [What to Paste into Codex](what-to-paste-into-codex.md)
+- [Architecture Guardrail Card](architecture-guardrail-card.md)
 - [Why BMAD is required](why-bmad-is-required.md)
 - [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
 - [Rescue Mode (`X4/FUBAR`)](x4-rescue-mode.md)

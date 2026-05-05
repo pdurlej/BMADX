@@ -17,6 +17,7 @@
     "references/gearbox.md",
     "references/trigger-matrix.md",
     "references/bmadx-vs-bmad.md",
+    "references/architecture-guardrails.md",
     "references/subagent-policy.md",
     "references/verify-discipline.md",
     "references/fubar-bundle-spec.md",

@@ -27,6 +27,23 @@ It exists for situations where BMAD alone is not enough as an operational layer 
 - verify matrix
 - rollout checklist
 - subagent policy
+- Architecture Guardrail Card
+- Failure Patterns / Guardians section inspired by Guardrails.md-style safety memory
+
+## Failure Patterns / Guardians
+
+Rescue Mode should make repeated mistakes explicit:
+
+| Trigger | Risk | Guardian |
+| --- | --- | --- |
+| auth, billing, permissions, migrations, data deletion, secrets, production config | high blast radius | `X3` minimum unless purely textual |
+| repeated failed attempts | context pollution and retry loops | stop, summarize, add a repo guardrail if appropriate |
+| unclear architecture owner | logic lands in the wrong layer | answer the Architecture Guardrail Card before implementation |
+| no proof path | false confidence for a non-technical owner | do not mark done; propose the smallest credible proof |
+
+This section is compatible with `GUARDRAILS.md`, but it does not replace BMAD.
+BMAD remains the owner of PRD, architecture, stories, and durable process
+context.
 
 ## Entry rule
 

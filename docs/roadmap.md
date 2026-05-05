@@ -29,6 +29,9 @@ What `v0.2.4` focuses on:
 
 - keep making the public surface friendlier for non-technical Codex users
 - make architecture tradeoffs understandable without teaching users the whole process model
+- ship the Architecture Guardrail Card as the default mental model for non-technical architecture risk
+- keep red-zone routing strict for auth, billing, permissions, data, secrets, production config, and privacy
+- integrate with companion guardrails such as pyfallow and Guardrails.md by recommendation, not by platform ownership
 - improve proof surfaces with better transcripts and examples
 - make Rescue Mode easier to adopt without turning it into a default mode
 - keep tightening portability and low-friction install paths

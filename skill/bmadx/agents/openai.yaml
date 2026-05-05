@@ -1,6 +1,6 @@
 interface:
   display_name: "BMADX"
   short_description: "BMAD-first Codex guardrails for low-friction architecture work"
-  default_prompt: "Use $bmadx to pick the lightest safe BMAD-backed workflow and keep the architecture understandable."
+  default_prompt: "Use $bmadx to pick the lightest safe BMAD-backed workflow, apply the Architecture Guardrail Card, and keep the architecture understandable."
 policy:
   allow_implicit_invocation: true

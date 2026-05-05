@@ -105,9 +105,37 @@ Open `gearbox.md`, `trigger-matrix.md`, or `verify-discipline.md` only if:
 - `X1/X2/X3` signals conflict,
 - the user asks for a plan but it is unclear whether this is still `X2` or full BMAD,
 - the prompt mentions BMAD story ownership, new process artifacts, rollout, schema/API/auth/perf risk,
+- the prompt touches a red-zone area: auth, billing, payments, permissions, database migrations, data deletion, secrets, production config, user data privacy, multi-tenant access, webhooks, encryption, admin roles, or legal/compliance,
 - the compact gate is red and the escalation needs explanation.
 
 Do not narrate that you are “using the skill”, “reading refs”, or “checking the gate” unless that explanation is needed.
+
+## Architecture Guardrail Card
+
+BMADX should protect non-technical builders from architecture mistakes without
+making them learn architecture jargon. Use this five-question card as the
+default mental model:
+
+1. What user or product outcome are we protecting?
+2. Which system area should own this change?
+3. Which existing pattern should the agent follow?
+4. What could break if this is implemented in the wrong place?
+5. What proof would convince a non-technical owner it is safe?
+
+Defaults by gear:
+- `X1`: answer the card silently; ask no questions unless a red-zone signal appears.
+- `X2`: answer the card silently and surface only the most important tradeoff.
+- `X3`: answer the card explicitly and ground the work in BMAD artifacts.
+- `X4`: include the card in the Rescue Mode bundle and connect it to owners, failure patterns, and verification.
+
+If classification is blocked by missing information, ask at most three concise
+clarifying questions. When the Codex structured question UI is available in
+planning mode, use it with two or three concrete options plus the free-form
+`Other` option; put the safest/recommended option first. If the UI is not
+available, ask the same questions as compact text.
+
+Details:
+- [architecture-guardrails.md](references/architecture-guardrails.md)
 
 ## Automatic gearbox
 
@@ -128,7 +156,10 @@ Selection rule:
 - if the intent is clear, choose the gear and justify it briefly
 - after classification, check only the compact gate for the chosen gear
 - for obvious `X1/X2`, do not open refs; answer directly in the short format
+- if the task touches a red-zone area, do not choose `X1`; choose `X3` minimum unless the change is purely textual or documentation-only
 - if the task depends on BMAD artifacts, `X3/X4` must stay BMAD-first
+- if the task has unclear architecture ownership, destructive data risk, or safety-critical verification gaps, it becomes BMAD work (`X3`) even when the prompt sounds small
+- if the repo is already in a failure loop, has unclear owners, or needs a scaffold bundle, choose Rescue Mode (`X4/FUBAR`)
 - if the gear is `X3/X4` but execution is blocked, keep the correct classification and report the execution block separately
 
 ## Response contract

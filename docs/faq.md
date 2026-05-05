@@ -37,6 +37,34 @@ It gives Codex architecture guardrails, not unchecked authority. Small changes
 stay compact, larger architecture-shaped work escalates to BMAD, and Rescue Mode
 exists only when a messy repo needs extra structure.
 
+## What is the Architecture Guardrail Card?
+
+It is a five-question check BMADX uses to keep Codex from guessing architecture:
+what outcome is protected, which system area owns the change, which pattern to
+follow, what could break, and what proof a non-technical owner can understand.
+For obvious `X1/X2`, BMADX should answer it silently.
+
+## When should BMADX force BMAD?
+
+Use `X3` minimum for auth, billing, payments, permissions, migrations, data
+deletion, secrets, production config, user data privacy, multi-tenant access,
+webhooks, encryption, admin roles, or compliance unless the change is purely
+textual.
+
+## Should I use pyfallow or Guardrails.md with BMADX?
+
+Yes, when they fit. `pyfallow` is a good companion for Python codebase
+intelligence. Guardrails.md-style files are useful for repo-local failure
+lessons and hard constraints. Neither replaces BMAD as the process source of
+truth.
+
+## Where does Oracle fit?
+
+Oracle is the second-opinion layer. Use it when a decision is architecture-heavy,
+ambiguous, or outside the non-technical builder's expertise. It can bundle the
+right files and ask a stronger model for review, but BMADX still has to route
+the work and verify accepted advice against BMAD artifacts and tests.
+
 ## What should I do right after install?
 
 Paste one of the prompts from [What to Paste into Codex](what-to-paste-into-codex.md).

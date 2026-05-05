@@ -6,16 +6,18 @@ Main public entry points:
 2. [5-Minute Quickstart](5-minute-quickstart.md)
 3. [What to Paste into Codex](what-to-paste-into-codex.md)
 4. [Install for Vibe Coders](install-for-vibe-coders.md)
-5. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
-6. [FAQ](faq.md)
+5. [Architecture Guardrail Card](architecture-guardrail-card.md)
+6. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
+7. [FAQ](faq.md)
 
 Deeper reading:
 
 1. [Architecture](architecture.md)
 2. [Why BMAD is required](why-bmad-is-required.md)
 3. [Rescue Mode (`X4/FUBAR`)](x4-rescue-mode.md)
-4. [Benchmark Overview](benchmark-overview.md)
-5. [Roadmap](roadmap.md)
+4. [Ecosystem and Strategic Stance](ecosystem-and-stance.md)
+5. [Benchmark Overview](benchmark-overview.md)
+6. [Roadmap](roadmap.md)
 
 Historical context:
 

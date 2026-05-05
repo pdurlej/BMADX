@@ -1,0 +1,2 @@
+Use the requested skill to decide the right workflow for this task and answer briefly in English.
+Task: A previous database migration partially failed, ownership is unclear, rollback is risky, and we need a scaffolded recovery plan with verification and rollout owners.

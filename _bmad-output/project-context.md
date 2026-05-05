@@ -14,6 +14,8 @@ Current release focus:
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - position BMADX as an architecture guardrail for people who understand the
   product problem better than the software architecture,
+- add the Architecture Guardrail Card as the default non-technical interface for architecture risk,
+- add red-zone escalation defaults so auth, billing, data, permissions, secrets, and production work enter BMAD,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
 - keep `X4/FUBAR` valuable without making it normal.
@@ -36,6 +38,30 @@ Out of scope:
 - stronger models reduce prompt scaffolding, but do not bypass `BMAD > BMADX`
 
 ## Routing contract
+
+### Architecture Guardrail Card
+
+Default questions:
+
+1. What user or product outcome are we protecting?
+2. Which system area should own this change?
+3. Which existing pattern should the agent follow?
+4. What could break if this is implemented in the wrong place?
+5. What proof would convince a non-technical owner it is safe?
+
+Gear defaults:
+- `X1`: card is silent; no questions unless a red-zone signal appears.
+- `X2`: card is silent; surface only the key tradeoff and proof.
+- `X3`: card is explicit and tied to BMAD artifacts.
+- `X4`: card goes into Rescue Mode with failure patterns, guardians, owners, and verification.
+
+Red-zone tasks are `X3` minimum unless purely textual:
+- auth, billing, payments, permissions, migrations, data deletion, secrets,
+  production config, user data privacy, multi-tenant access, webhooks,
+  encryption, admin roles, legal/compliance.
+
+Escalate to `X4` when red-zone work also has unclear ownership, repeated
+failures, rollback risk, incident recovery, or no credible verification path.
 
 ### X1/X2
 
@@ -79,6 +105,8 @@ Out of scope:
 - post-release hardening: benchmark routing uses the selected `Choice:` gear, not incidental gear mentions
 - post-release hardening: future BMADX benchmark summaries use `-bmadx.json`
 - post-release hardening: installer excludes runtime `state/*.json` from copied skill trees
+- non-technical benchmark extension: scenarios now cover pricing copy (`X1`), onboarding email (`X2`), Google login (`X3`), subscription billing (`X3`), deleting inactive users (`X3`), and failed migration recovery (`X4`)
+- non-technical benchmark extension: summaries include `non_technical_cases` and `what_failed_why_it_matters`
 - historical baselines:
   - `benchmark/summary-2026-04-04.json`
   - `benchmark/summary-2026-04-05-healthy-bmad.json`
@@ -100,3 +128,25 @@ Out of scope:
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --reasoning medium --profile healthy --date-stamp 2026-04-24`
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --reasoning medium --profile degraded --date-stamp 2026-04-24`
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.4 --reasoning medium --profile healthy --date-stamp 2026-04-24`
+
+## Ecosystem stance
+
+- Oracle: recommended second-opinion layer for architecture-heavy, ambiguous, or expert-gap decisions with selected repo files.
+- BMAD: upstream process and architecture source of truth.
+- BMADX: lightest-safe-mode routing, compact gates, Rescue Mode.
+- pyfallow: recommended companion for Python static codebase intelligence.
+- Guardrails.md: recommended pattern for repo-local safety constraints and repeated failure lessons.
+- deterministic checks: tests, CI, static analysis, secret scans, and architecture checks provide hard facts.
+
+BMADX is the connective layer: it decides when to stay compact, when to use
+BMAD, when to ask Oracle for a second opinion, when to respect repo guardrails,
+and when deterministic checks matter more than model confidence.
+
+Compete with ad-hoc prompting, architecture-blind vibe coding, and overbuilt
+runtime defaults. Do not compete with Oracle, BMAD, pyfallow, Guardrails.md,
+scanners, CI, or execution surfaces.
+
+Future product gap:
+- a product/analytics guardrail companion that checks product goals, user
+  journeys, analytics/event naming, release proof, and whether the feature
+  should be built before implementation.

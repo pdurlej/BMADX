@@ -10,6 +10,7 @@ import unittest
 from run_bmadx_benchmark import (
     DEFAULT_MODEL,
     DEFAULT_REASONING,
+    NON_TECH_SCENARIOS,
     benchmark_env,
     build_codex_command,
     build_prompt,
@@ -17,6 +18,7 @@ from run_bmadx_benchmark import (
     copy_runtime_files,
     detect_reference_reads,
     detect_selected_gear,
+    explain_failures_for_non_technical_users,
     model_slug,
     parse_args,
     parse_json_report,
@@ -136,6 +138,16 @@ tokens used
         self.assertEqual(model_slug("gpt-5.5"), "gpt-5-5")
         self.assertEqual(model_slug("GPT 5.4 Pro"), "gpt-5-4-pro")
 
+    def test_non_technical_scenarios_cover_red_zones_and_rescue(self) -> None:
+        self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_gear"], "X1")
+        self.assertEqual(NON_TECH_SCENARIOS["onboarding-email"]["expected_gear"], "X2")
+        self.assertEqual(NON_TECH_SCENARIOS["google-login"]["expected_gear"], "X3")
+        self.assertEqual(NON_TECH_SCENARIOS["subscription-billing"]["expected_gear"], "X3")
+        self.assertEqual(NON_TECH_SCENARIOS["delete-inactive-users"]["expected_gear"], "X3")
+        self.assertEqual(NON_TECH_SCENARIOS["messy-migration-incident"]["expected_gear"], "X4")
+        for spec in NON_TECH_SCENARIOS.values():
+            self.assertTrue(Path(spec["path"]).exists())
+
     def test_summary_path_uses_bmadx_suffix(self) -> None:
         self.assertEqual(
             summary_path_for("2026-05-05", "gpt-5-5", "healthy").name,
@@ -227,6 +239,7 @@ tokens used
                 }
             ],
             [],
+            [],
             model="gpt-5.5",
             reasoning="medium",
         )
@@ -235,6 +248,8 @@ tokens used
         self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
         self.assertEqual(summary["validation_failures"]["core"], [])
+        self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
+        self.assertEqual(summary["non_technical_readout"]["what_failed_why_it_matters"], [])
 
     def test_validate_case_catches_gpt55_overreach(self) -> None:
         validation = validate_case(
@@ -269,6 +284,24 @@ tokens used
                 }
             ],
         )
+
+    def test_non_technical_failure_explanations_are_plain_language(self) -> None:
+        explanations = explain_failures_for_non_technical_users(
+            [
+                {
+                    "case": "bmadx-healthy-google-login",
+                    "format_pass": True,
+                    "token_count_present": True,
+                    "token_pass": True,
+                    "reference_budget_pass": True,
+                    "routing_pass": False,
+                    "overreach_pass": True,
+                }
+            ]
+        )
+        self.assertEqual(explanations[0]["case"], "bmadx-healthy-google-login")
+        self.assertEqual(explanations[0]["what_failed"], ["routing_pass"])
+        self.assertIn("wrong work mode", explanations[0]["why_it_matters"][0])
 
 
 if __name__ == "__main__":
