@@ -1,0 +1,14 @@
+
+
+**Choice:** X2 — Regular
+
+**Why:** Bounded billing flow change with clear scope.
+
+**Plan:**
+1. Locate subscription/billing service and invoice generation code
+2. Add annual plan discount logic (e.g., 20% for yearly term)
+3. Ensure invoice items reflect account permission tier
+
+**Verify:**
+1. Run billing tests
+2. Check invoice output matches permission model

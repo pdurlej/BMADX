@@ -1,0 +1,12 @@
+**Choice: X2**
+
+**Why:** Billing change is bounded (annual discount + invoice/permission sync) with clear scope; compact gate is green.
+
+**Plan:**
+1. Locate subscription/billing service files (plans, discount, invoice generation)
+2. Add annual plan discount configuration
+3. Update invoice generation to reference current account permissions
+
+**Verify:**
+1. Verify discount applies only to annual plans
+2. Verify invoice reflects accurate account permissions

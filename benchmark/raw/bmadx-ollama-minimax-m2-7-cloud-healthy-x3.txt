@@ -1,0 +1,6 @@
+
+
+**Choice: X3**  
+**Why:** Existing BMAD story, full workflow needed.  
+**Execution gate:** ✅ OK (healthy, live)  
+**Next:** Load `project-context.md` and align with current BMAD phase/artifact state.

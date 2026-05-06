@@ -1,0 +1,5 @@
+
+
+**Choice:** X1
+**Why:** One tiny local typo fix, no risk.
+**Next step:** Find the component and patch the typo.

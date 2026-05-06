@@ -1,0 +1,16 @@
+
+
+**Choice:** X4 — Rescue Mode (BMAD+)
+
+**Why:** Unclear ownership, partial failure, risky rollback, and recovery scaffolding = high-entropy, rescue-shaped.
+
+**Rescue entry path:** `/bmad-bmm-create-prd` → `/bmad-bmm-create-architecture`
+
+**Scaffold surfaces to own:**
+- `project-context.md` — durable technical memory
+- failure log (partial migration state, last known good)
+- verification matrix (which records survived, which are orphaned)
+- rollout owners with rollback gates
+- decision hierarchy: BMAD > BMADX
+
+**Do not render until execution is requested and gate is confirmed.**

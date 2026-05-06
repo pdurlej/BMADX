@@ -1,0 +1,18 @@
+**Choice: X4 — Rescue Mode**
+
+**Why:** The request involves a "messy project" requiring scaffold bundle, AGENTS.md, .customize.yaml snippets, and verify matrix — all X4/FUBAR triggers. This is planning-only (no implementation), so defer artifact rendering until execution is explicitly requested.
+
+**Gate:** green (classification_allowed: true, execution_allowed: true)
+
+**Entry Path:**
+1. `/bmad-bmm-create-prd`
+2. `/bmad-bmm-create-architecture`
+3. Generate scaffold bundle via `render_fubar_bundle.py`
+
+**Bundle Surfaces:**
+- Scaffold bundle → `scaffold/` with project templates
+- Draft AGENTS.md → defer until execution, place at repo root
+- `.customize.yaml` snippets → defer, include codex-specific config
+- Verify matrix → connect to `verify-discipline.md` and BMAD phases
+
+**Next Step:** Confirm you want me to proceed with execution (render the bundle and draft artifacts), or do you want to iterate on the plan first?

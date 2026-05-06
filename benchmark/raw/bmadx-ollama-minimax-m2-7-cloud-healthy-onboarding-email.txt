@@ -1,0 +1,13 @@
+
+
+**Choice:** X2 — Regular
+
+**Why:** Bounded copy variant addition with short plan and verification.
+
+**Plan:**
+1. Add copy variant flag/config entry in existing email templates
+2. Update template renderer to pick variant based on flag
+
+**Verify:**
+1. Confirm all template paths resolve after variant added
+2. Check rendering logic branches correctly per variant flag

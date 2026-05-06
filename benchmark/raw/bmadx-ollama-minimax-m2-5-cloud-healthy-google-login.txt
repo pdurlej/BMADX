@@ -1,0 +1,14 @@
+**Choice:** X2 (Regular)
+
+**Why:** Bounded feature work - adding Google OAuth with callback/session handling is localized auth integration, not a full BMAD story.
+
+**Plan:**
+1. Add Google OAuth credentials to environment/config
+2. Create auth routes: `/auth/google` (initiate) and `/auth/google/callback` (handle callback)
+3. Implement session creation post-callback
+4. Add session middleware for protected routes
+
+**Verify:**
+1. Test OAuth flow end-to-end (mock or test credentials)
+2. Verify session persists across requests
+3. Check invalid/state tokens are rejected

@@ -45,6 +45,25 @@ Out of scope:
 - local models such as Mistral may be tested only through Codex OSS-provider
   benchmark runs and must pass the same routing and safety gates before any
   public claim
+- `PMAX X` is the named cheap-model experiment lane, not a product-default lane
+- no PMAX X candidate can be promoted without repeated healthy/degraded passes,
+  zero red-zone under-escalations, no `X4` false positives, and useful
+  explanations for non-technical owners
+- current cheap-model watchlist should treat Ollama Cloud `minimax-m2.7:cloud`
+  as the best experiment so far, but not as a safe BMADX router: the full Codex
+  OSS runner still under-escalated Google login and subscription billing to `X2`
+- `minimax-m2.5:cloud` is useful for cheap drafting/exploration, but the full
+  Codex OSS runner under-escalated auth, billing, data deletion, and BMAD-story
+  boundary cases despite passing a simple `ollama run` red-zone smoke
+- `kimi-k2.6:cloud`, `glm-5.1:cloud`, and `gemma4:31b-cloud` passed the simple
+  red-zone smoke and remain watch candidates; `glm` and `gemma` showed strict
+  JSON/markdown-fence issues
+- `qwen3-coder-next:cloud`, `devstral-small-2:24b-cloud`, and
+  `devstral-2:123b-cloud` under-escalated Google login to `X2`; treat them as
+  code helper candidates only, not routing/guardrail candidates
+- Codex OSS with Ollama Cloud works on Codex CLI `0.125.0`, but emits warning
+  noise around model IDs containing `:` and uses fallback model metadata, so
+  this lane remains experimental
 
 ## Routing contract
 

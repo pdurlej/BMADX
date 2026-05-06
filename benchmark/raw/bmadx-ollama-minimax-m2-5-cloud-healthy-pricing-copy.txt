@@ -1,0 +1,5 @@
+Choice: X1
+
+Why: This is a single copy change on a pricing page hero—text-only edit with no pricing logic, billing behavior, or process risk.
+
+Next step: Locate the pricing page hero copy and update the value proposition text.

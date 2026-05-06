@@ -1,0 +1,20 @@
+
+
+**Choice: Rescue Mode (X4/FUBAR)**
+**Why:** Project state unknown, messy scope, scaffold needed before execution.
+
+**Plan:**
+1. Entry: `/bmad-bmm-create-prd` then `/bmad-bmm-create-architecture`
+2. Generate scaffold bundle via render script
+3. Draft `AGENTS.md` and `.customize.yaml` snippets
+4. Define verify matrix anchored to BMAD phases
+
+**Scaffold Bundle surfaces:**
+- `_bmad-output/project-context.md`
+- `AGENTS.md` (draft)
+- `.customize.yaml` (snippets)
+- verify matrix (per phase)
+- ownership card
+- failure log
+
+**Next step:** Run render or confirm project name/path for bundle.

@@ -1,0 +1,14 @@
+
+
+**Choice:** X2 — Regular
+
+**Why:** Bounded OAuth feature with defined endpoints, follows existing auth pattern, minimal blast radius.
+
+**Plan:**
+1. Add Google OAuth route (`/auth/google`) and callback (`/auth/google/callback`)
+2. Create session middleware to persist user after callback
+3. Verify: test full OAuth flow and confirm session persists
+
+**Verify:**
+1. OAuth redirect works → callback receives code → session set
+2. Protected route accessible after login, redirect to login when unauthenticated

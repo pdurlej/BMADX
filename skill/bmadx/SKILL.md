@@ -55,6 +55,12 @@ but they are benchmark experiments, not product defaults. A local model must
 pass the same routing, compact-output, red-zone, and `X4` rarity checks before
 it is useful for BMADX.
 
+`PMAX X` is the named BMADX experiment lane for cheaper models. Treat it as
+benchmark-only unless its candidate model has repeated healthy and degraded
+passes. Cheap models may assist bounded discovery, drafting, repo mapping, diff
+review, or verification support after BMADX/GPT has classified the risk, but
+the main model keeps routing decisions, synthesis, and final responsibility.
+
 ## Dependency gate
 
 Since `v0.2.2`, BMADX follows the contract:

@@ -1,0 +1,12 @@
+
+
+```
+Choice: X2 — Regular
+Why: Bounded scope across 4 files in existing BMAD story with aligned artifacts.
+Plan:
+1. Identify the 4 backend files and the status field schema from existing BMAD story
+2. Add the field to each target following the established pattern
+Verify:
+1. Check field consistency across all 4 files
+2. Confirm alignment with existing BMAD story artifacts
+```

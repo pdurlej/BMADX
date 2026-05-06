@@ -1,0 +1,788 @@
+**Choice:** X2 (Regular)
+
+**Why:** Bounded feature work - adding Google OAuth with callback/session handling is localized auth integration, not a full BMAD story.
+
+**Plan:**
+1. Add Google OAuth credentials to environment/config
+2. Create auth routes: `/auth/google` (initiate) and `/auth/google/callback` (handle callback)
+3. Implement session creation post-callback
+4. Add session middleware for protected routes
+
+**Verify:**
+1. Test OAuth flow end-to-end (mock or test credentials)
+2. Verify session persists across requests
+3. Check invalid/state tokens are rejected
+
+--- STDERR ---
+Reading additional input from stdin...
+2026-05-05T22:16:23.024950Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 1 column 1039; body: {"object":"list","data":[{"id":"devstral-2:123b-cloud","object":"model","created":1778015249,"owned_by":"library"},{"id":"devstral-small-2:24b-cloud","object":"model","created":1778015243,"owned_by":"library"},{"id":"kimi-k2.6:cloud","object":"model","created":1778015241,"owned_by":"library"},{"id":"glm-5.1:cloud","object":"model","created":1778015239,"owned_by":"library"},{"id":"minimax-m2.7:cloud","object":"model","created":1778015236,"owned_by":"library"},{"id":"qwen3-coder-next:cloud","object":"model","created":1778015175,"owned_by":"library"},{"id":"minimax-m2.5:cloud","object":"model","created":1778015155,"owned_by":"library"},{"id":"hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M","object":"model","created":1776426008,"owned_by":"HauhauCS"},{"id":"bge-m3:latest","object":"model","created":1775684337,"owned_by":"library"},{"id":"gemma4:31b-cloud","object":"model","created":1775549316,"owned_by":"library"},{"id":"qwen3.5:35b-a3b-coding-nvfp4","object":"model","created":1775348642,"owned_by":"library"}]}
+
+2026-05-05T22:16:23.025313Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.5:cloud is used. This will use fallback model metadata.
+2026-05-05T22:16:23.025331Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.5:cloud personality=pragmatic
+2026-05-05T22:16:23.025736Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.025767Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.025769Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.025827Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.thread.started] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.028906Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.5:cloud is used. This will use fallback model metadata.
+2026-05-05T22:16:23.029062Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.5:cloud is used. This will use fallback model metadata.
+2026-05-05T22:16:23.030361Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.startup_prewarm.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+OpenAI Codex v0.125.0 (research preview)
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nnwfbcox/workdir
+model: minimax-m2.5:cloud
+provider: ollama
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nnwfbcox/codex-home, /private/var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nnwfbcox/codex-home/memories]
+reasoning effort: none
+reasoning summaries: none
+session id: 019dfa36-b6f1-7d33-920c-f6035c78474c
+--------
+user
+Use $bmadx. Compact gate only. Answer only the BMADX short contract. No analysis. For X1/X2 do not read refs. Do not implement/edit/render/inline artifacts. Task: Add Google login to the app, including callback handling and user session behavior.
+2026-05-05T22:16:23.031254Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.5:cloud is used. This will use fallback model metadata.
+2026-05-05T22:16:23.031637Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.startup_prewarm.age_at_first_turn_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.031741Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.enabled_total] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.031744Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.kept_total] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.031746Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.truncated] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.031747Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.description_truncated_chars] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.032015Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.skill.injected] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.293163Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.shell_snapshot] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.756206Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.api_request] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.756221Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.api_request.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.765479Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.765492Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780067Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780081Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780179Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780181Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780213Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780214Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780219Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780220Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.780248Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.turn.ttft.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.796176Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.796223Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.796253Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.796255Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.823864Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.823879Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.823893Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.823895Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.854811Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.854827Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.854851Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.854853Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.880819Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.880836Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.913524Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.913540Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.913555Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.913556Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.939282Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.939295Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.939308Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.939310Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.972126Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.972140Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.972155Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.972156Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.998828Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.998849Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.998954Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:23.998966Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.031346Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.031363Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.056630Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.056644Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.056661Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.056662Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.085296Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.085313Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.085330Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.085331Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.121393Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.121407Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.121423Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.121425Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.146370Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.146386Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.146400Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.146402Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.173159Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.173174Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.204390Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.204403Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.204419Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.204420Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.237942Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.237958Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.237982Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.237984Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.262077Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.262117Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.262153Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.262155Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.290090Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.290105Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.318931Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.318945Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.318961Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.318962Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.348675Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.348689Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.348705Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.348707Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.378681Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.378697Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.378714Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.378715Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.405483Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.405497Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.405513Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.405515Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.435273Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.435288Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.469421Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.469437Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.469453Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.469454Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.493795Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.493812Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.493834Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.493835Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.522297Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.522311Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.552973Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.552987Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.553006Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.553007Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.553012Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.553013Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.596675Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.596690Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.596705Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.596706Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619040Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619057Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619072Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619074Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619078Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.619079Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.648581Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.648599Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.648621Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.648622Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678046Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678064Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678082Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678083Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678087Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.678088Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.701714Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.701737Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.701760Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.701761Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.728376Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.728391Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.728406Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.735910Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.735943Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.735945Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.782761Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.782776Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.782793Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.782794Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.790483Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.790498Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.790556Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.790571Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827872Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827889Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827905Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827907Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827911Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.827912Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.846057Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.846072Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.846088Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.846089Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885744Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885762Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885827Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885832Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885837Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.885838Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.910028Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.910048Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.910066Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.910067Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.953060Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.953074Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.953089Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.953090Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.963889Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.963915Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.963932Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.963933Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997560Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997575Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997591Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997593Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997597Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:24.997598Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.021709Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.021722Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055612Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055625Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055639Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055641Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055645Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.055646Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.086014Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.086029Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.086045Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.086046Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114185Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114210Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114229Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114230Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114234Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.114235Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.138229Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.138244Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.138260Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.138262Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170278Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170292Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170307Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170309Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170312Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.170314Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.196315Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.196328Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.196343Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.196345Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.226975Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.226990Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.227005Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.227006Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.227010Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.227011Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.255246Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.255260Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.255275Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.255276Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289145Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289161Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289177Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289178Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289182Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.289183Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.313623Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.313637Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.313652Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.313654Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345698Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345712Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345730Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345732Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345735Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.345736Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.372132Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.372147Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.372163Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.372164Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402407Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402422Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402467Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402479Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402493Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.402495Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.430401Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.430417Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.430433Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.430434Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462290Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462303Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462318Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462320Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462323Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.462324Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.488583Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.488599Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.488615Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.488617Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518538Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518552Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518567Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518568Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518572Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.518573Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.547723Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.547739Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.547754Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.547756Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579417Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579439Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579459Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579461Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579465Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.579466Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.604067Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.604082Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.604099Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.604100Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637468Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637493Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637518Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637522Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637528Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.637529Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.662239Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.662252Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.662267Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.662269Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701620Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701643Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701664Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701666Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701670Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.701672Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.720726Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.720741Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.720757Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.720779Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.755338Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.755352Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.755365Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:25.755366Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389827Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389844Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389876Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389877Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389904Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389905Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389920Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389922Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389928Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389929Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389935Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.389938Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+The user wants me to use BMADX with a compact gate to classify this task. They want Google login added to the app, including callback handling and user session behavior.
+
+This is an authentication task which is a red-zone area according to BMADX. Let me classify the task first:
+
+- Adding Google login is a bounded authentication feature
+- It involves callback handling and user sessions - that's session management
+- Auth is a red-zone area
+
+This looks like X2 - it's bounded local work (adding a login provider), needs a short plan, but touches a red-zone. However, the prompt explicitly says "Do not implement/edit/render/inline artifacts" - so this is a planning/classification task only.
+
+Let me run the compact gate check.
+2026-05-05T22:16:26.397522Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.tool.unified_exec] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.439002Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.439016Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+exec
+/bin/zsh -lc 'python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X2 --compact' in /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-nnwfbcox/workdir
+2026-05-05T22:16:26.601190Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.tool.call] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.601236Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.tool.call.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:26.601553Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.5:cloud personality=pragmatic
+ succeeded in 146ms:
+{
+  "skill_version": "0.2.5",
+  "requested_gear": "X2",
+  "classification_allowed": true,
+  "execution_allowed": true,
+  "warning": null,
+  "bmad_status": "ok",
+  "cache_used": true,
+  "remediation": []
+}
+
+2026-05-05T22:16:28.314309Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.api_request] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.314324Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.api_request.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.330353Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.330368Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346702Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346717Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346814Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346817Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346832Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346840Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346845Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.346846Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.361880Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.361895Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.361909Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.361911Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427202Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427217Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427231Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427232Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427237Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.427238Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.448714Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.448729Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.477078Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.477096Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.477113Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.477115Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.510706Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.510722Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.532423Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.532439Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.532453Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.532454Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.573543Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.573558Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.590866Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.590878Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.619010Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.619025Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.619037Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.619039Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.647259Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.647274Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.676714Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.676729Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.676745Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.676747Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.705022Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.705038Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.733182Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.733197Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.733255Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.733269Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.760672Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.760685Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.790092Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.790105Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.790120Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.790121Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.819623Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.819636Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.847270Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.847285Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.847302Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.847304Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.878433Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.878446Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.903954Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.903968Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.903984Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.903985Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.933293Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.933308Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997209Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997224Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997239Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997241Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997245Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:28.997246Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.019157Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.019170Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.047189Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.047202Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.047216Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.047217Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.077241Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.077257Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.104935Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.104950Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.104965Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.104967Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.139442Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.139454Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.164213Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.164227Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.164241Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.164243Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221034Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221048Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221064Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221065Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221086Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221087Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221094Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221096Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221107Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.221108Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+The compact gate is green. X2 is the right classification - it's bounded local work, adding Google OAuth to an app, but it's not creating new BMAD artifacts.
+
+Let me provide the short contract response for X2.
+2026-05-05T22:16:29.249803Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.249819Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.279379Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.279393Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.279408Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.279410Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.320910Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.320923Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.332790Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.332804Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.332819Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.332821Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.362800Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.362815Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.390225Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.390239Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.423390Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.423405Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.423420Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.423421Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.447221Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.447235Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.480383Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.480397Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.480414Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.480415Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.510519Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.510535Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.536091Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.536106Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.536121Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.536123Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.564845Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.564861Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.590154Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.590169Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.590184Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.590186Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.622121Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.622144Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.652434Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.652448Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.652464Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.652465Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.681139Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.681153Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.705357Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.705376Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.705392Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.705393Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.737302Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.737316Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.761872Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.761885Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.790369Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.790382Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.790399Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.790403Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.819146Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.819164Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.847210Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.847225Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.847241Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.847243Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.879979Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.879992Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.905031Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.905046Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.905065Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.905067Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.939081Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.939096Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.962851Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.962863Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.962880Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.962882Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.996929Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.996944Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.996963Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:29.996964Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.020140Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.020172Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.061545Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.061560Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.061579Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.061581Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.081783Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.081796Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.112367Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.112382Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.112401Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.112403Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.135622Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.135637Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.163170Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.163183Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.190472Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.190485Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.190525Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.190530Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.220938Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.220952Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.254626Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.254642Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.254659Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.254661Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.277150Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.277165Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.277182Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.277183Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.304628Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.304642Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.337217Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.337231Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.337246Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.337247Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.362211Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.362225Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.362240Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.362242Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.395198Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.395227Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.419556Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.419570Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.419585Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.419586Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.447808Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.447823Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.479689Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.479704Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.479718Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.479720Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.508207Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.509152Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.509271Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.509273Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.534959Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.534975Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.570437Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.570449Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.570462Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.570464Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.595118Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.595158Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.619500Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.619512Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.619527Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.619528Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.653722Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.653734Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.653750Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.653751Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.677961Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.677976Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.705280Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.705295Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.705311Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.705312Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.738726Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.738740Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.762523Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.762539Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.795667Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.795680Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.795696Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.795697Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.821603Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.821617Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.854066Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.854089Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.854106Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.854107Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.882602Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.882616Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.882631Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.882633Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.939642Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.939657Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.939675Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.939677Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.964064Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.964077Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.994619Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.994636Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.994655Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:30.994656Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.023072Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.023087Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.023103Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.023105Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.050567Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.050580Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.080353Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.080367Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.080380Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.080382Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.106842Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.106856Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.154367Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.154381Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.154394Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.154396Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.172426Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.172442Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.172459Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.172460Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.193088Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.193106Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.221126Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.221140Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.221155Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.221156Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.254314Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.254335Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.279344Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.279359Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.279374Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.279375Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.307864Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.307881Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.307897Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.307898Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.336843Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.336861Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.363909Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.363925Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.396807Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.396822Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.396838Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.396856Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.421547Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.421565Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.453940Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.453958Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.453974Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.453976Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.480007Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.480022Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.507021Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.507035Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516356Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516424Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516602Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516608Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516620Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516621Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.516795Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.turn.ttfm.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+codex
+**Choice:** X2 (Regular)
+
+**Why:** Bounded feature work - adding Google OAuth with callback/session handling is localized auth integration, not a full BMAD story.
+
+**Plan:**
+1. Add Google OAuth credentials to environment/config
+2. Create auth routes: `/auth/google` (initiate) and `/auth/google/callback` (handle callback)
+3. Implement session creation post-callback
+4. Add session middleware for protected routes
+
+**Verify:**
+1. Test OAuth flow end-to-end (mock or test credentials)
+2. Verify session persists across requests
+3. Check invalid/state tokens are rejected
+2026-05-05T22:16:31.528061Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528074Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528345Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.5:cloud personality=pragmatic
+2026-05-05T22:16:31.528418Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.turn.network_proxy] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528423Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.tool.call] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528430Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528431Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528433Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528435Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528436Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528438Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.turn.memory] failed: tag value contains invalid characters: minimax-m2.5:cloud
+2026-05-05T22:16:31.528683Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.conversation.turn.count] failed: tag value contains invalid characters: minimax-m2.5:cloud
+tokens used
+24 103

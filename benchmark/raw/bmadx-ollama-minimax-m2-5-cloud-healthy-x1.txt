@@ -1,0 +1,3 @@
+Choice: X1
+Why: Simple typo fix in one React component is a bounded local change with minimal blast radius.
+Next step: Locate the React component containing the error message typo, apply the fix, and verify the change.

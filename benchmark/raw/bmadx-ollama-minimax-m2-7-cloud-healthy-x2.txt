@@ -1,0 +1,13 @@
+
+
+**Choice:** X2 — Regular
+
+**Why:** Bounded multi-file change with plan + verify requested.
+
+**Plan:**
+1. Add `status` field to each of the 4 backend files (model/schema, API, service, tests)
+2. Update related type definitions and database queries
+
+**Verify:**
+1. Run backend tests to confirm field integration
+2. Check each file for consistent field usage

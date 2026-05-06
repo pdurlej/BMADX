@@ -1,0 +1,3 @@
+Choice: X4 — Rescue Mode
+Why: Failed DB migration with unclear ownership and risky rollback requires scaffolded recovery, not simple execution
+Next step: /bmad-bmm-create-prd → /bmad-bmm-create-architecture → render FUBAR bundle with verification & rollout owners

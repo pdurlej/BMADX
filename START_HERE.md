@@ -38,9 +38,21 @@ For harder calls, the recommended stack is:
 
 ## What to do first
 
-1. Make sure BMAD is already installed in your Codex skills.
+1. Check that BMAD is already installed in your Codex skills.
 2. Run the install wrapper from [5-Minute Quickstart](docs/5-minute-quickstart.md).
 3. Paste one of the starter prompts from [What to Paste into Codex](docs/what-to-paste-into-codex.md).
+
+## Check BMAD first
+
+BMADX requires BMAD for Codex. If this file exists, the usual dependency is
+present:
+
+```bash
+ls "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/SKILL.md"
+```
+
+If it does not exist, install BMAD for Codex first. BMADX is intentionally not a
+standalone replacement for BMAD.
 
 ## Fastest install path
 
@@ -49,6 +61,10 @@ git clone https://github.com/pdurlej/BMADX.git
 cd BMADX
 python3 scripts/install_and_verify_bmadx.py --force
 ```
+
+The installer copies the BMADX skill into your Codex skills folder, verifies the
+BMAD dependency, runs the BMADX sync/check path, and prints the next prompt to
+paste into Codex. It does not edit your global Codex model config.
 
 ## First prompt to try
 
@@ -62,6 +78,18 @@ What I care about:
 speed, clarity, and not overengineering it
 ```
 
+## What a correct first answer looks like
+
+```text
+Choice: X1 / tiny local change
+Why: This is copy/UI-only and does not touch auth, billing, data, production, or migrations.
+Next step: Make the smallest page change and verify the landing page renders.
+```
+
+For a normal bounded task, expect a short `X2` plan with at most a few concrete
+steps and verification checks. You should not have to pick `X1/X2/X3/X4`
+yourself for typical work.
+
 ## Read next
 
 - [5-Minute Quickstart](docs/5-minute-quickstart.md)
@@ -69,5 +97,6 @@ speed, clarity, and not overengineering it
 - [What to Paste into Codex](docs/what-to-paste-into-codex.md)
 - [Architecture Guardrail Card](docs/architecture-guardrail-card.md)
 - [Choose BMAD vs BMADX vs OMX](docs/choose-bmad-bmadx-omx.md)
+- [Community Feedback](docs/community-feedback.md)
 - [Ecosystem and Strategic Stance](docs/ecosystem-and-stance.md)
 - [FAQ](docs/faq.md)

@@ -1,0 +1,17 @@
+
+
+**Choice:** X3 — BMAD workflow (data deletion touches red-zone)
+
+**Why:** User data deletion, paid-account protection, and audit-data preservation require durable artifacts, ownership, and verification discipline.
+
+**BMAD entry path:**
+1. Start with `/bmad-bmm-create-prd` to define what "inactive," "paid," and "audit data" mean per system
+2. Then `/bmad-bmm-create-architecture` to map where user records, subscription state, and audit logs live
+3. BMAD artifacts become the source of truth for what gets deleted, what gets exempted, and how deletion is verified
+
+**Key surfaces BMAD should lock down:**
+- `User.active_last_seen` or equivalent — defines "18 months"
+- `Subscription.status` or billing flags — defines paid/exempt
+- `AuditLog` table/schema — retention policy separate from user deletion
+- Delete query must have a dry-run gate before execution
+- Rollback or soft-delete strategy if audit data references users

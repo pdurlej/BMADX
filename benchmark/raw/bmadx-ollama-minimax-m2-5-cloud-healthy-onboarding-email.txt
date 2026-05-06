@@ -1,0 +1,8 @@
+Choice: X2
+Why: Bounded content addition with clear scope, no auth/billing/data model changes, needs short plan not full BMAD.
+Plan:
+1. Locate existing onboarding email template/content files
+2. Add new copy variant following established pattern
+Verify:
+1. Verify email renders with new variant
+2. Confirm no auth, billing, or data model changes

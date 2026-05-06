@@ -6,38 +6,22 @@
 [![BMAD-first](https://img.shields.io/badge/BMAD-first-12263A)](docs/why-bmad-is-required.md)
 [![Docs](https://img.shields.io/badge/docs-English-0A7EA4)](START_HERE.md)
 
-BMADX gives Codex a lightweight decision layer on top of BMAD. Instead of making
-you think about process weight on every task, it picks the lightest safe mode:
-tiny fixes stay tiny, normal changes stay compact, BMAD-heavy work escalates
-when it should, and messy repos can drop into a rare Rescue Mode
-(`X4/FUBAR`) with a scaffold bundle.
+BMADX is a lightweight BMAD-first guardrail for Codex.
 
-The longer-term mission is practical: help non-technical builders get better
-software architecture from AI agents without needing to become software
-architects first. BMAD provides the process backbone; BMADX keeps day-to-day
-Codex work guided, bounded, and understandable.
+It helps agentic builders choose the smallest safe workflow:
+- copy tweaks stay tiny,
+- normal product changes stay bounded,
+- auth, billing, data, and production work escalates,
+- messy repos get a rare Rescue Mode (`X4/FUBAR`).
 
-BMADX now includes an Architecture Guardrail Card: five plain-English questions
-that help Codex protect product outcomes, system ownership, existing patterns,
-failure risk, and proof a non-technical owner can understand.
+Use it when plain Codex feels too ad-hoc, but full BMAD ceremony feels too heavy
+for everyday work. Copy tweak != architecture ceremony. Auth change !=
+vibe-coded one-shot.
 
-BMADX `v0.2.5` is tuned for Codex on GPT-5.5. Stronger models reduce the need
-for prompt scaffolding, but they make explicit boundaries and verification more
-important: BMAD still owns process, BMADX keeps the work mode light and safe.
+Star this repo if you use Codex/BMAD and want pragmatic guardrails for real
+product-building tasks.
 
 ![BMADX architecture overview](docs/assets/bmadx-architecture-overview.svg)
-
-BMADX is:
-- BMAD-first
-- lighter than OMX
-- focused on low-friction day-to-day Codex work
-- opinionated about verification and escalation
-
-BMADX is not:
-- a replacement for BMAD
-- a second process system
-- a clone of the `.omx` runtime
-- a general adapter layer for every AI coding tool
 
 Current public version: `v0.2.5`
 
@@ -48,6 +32,36 @@ If this is your first time:
 1. Read [START_HERE.md](START_HERE.md)
 2. Run the install wrapper from [5-Minute Quickstart](docs/5-minute-quickstart.md)
 3. Paste one of the prompts from [What to Paste into Codex](docs/what-to-paste-into-codex.md)
+
+## Tiny demo
+
+Task:
+
+```text
+Add a pricing section to the landing page and keep the change small.
+```
+
+BMADX should keep this tiny or bounded, preserve existing page patterns, and
+avoid full BMAD ceremony unless pricing logic, billing, permissions, or
+production behavior changes.
+
+Red-zone task:
+
+```text
+Add Google login.
+```
+
+BMADX should not treat this as a normal copy/code task. Auth affects identity,
+data access, security, and failure recovery, so it should escalate to BMAD-heavy
+handling.
+
+## Known limits today
+
+- BMADX requires BMAD for Codex. If BMAD is not installed, start there first.
+- BMADX is Codex-first, not Claude Code-native.
+- BMADX adds routing and guardrails; it does not prove code quality by itself.
+- Model experiments such as `PMAX X` are benchmark probes, not support claims.
+- Tests, CI, static analysis, and human review still matter for red-zone work.
 
 ## Who this is for
 
@@ -79,6 +93,29 @@ adapter.
 Model experiments are welcome inside Codex. The benchmark runner supports the
 primary OpenAI/Codex path and can also run experimental local-model checks via
 Codex OSS providers when a local model is installed.
+
+### Model lanes
+
+- Primary lane: Codex on GPT-5.5.
+- Experiment lane: `PMAX X`, currently focused on cheaper Ollama/OpenRouter/local candidates.
+- Current best PMAX X experiment: `minimax-m2.7:cloud`, but it is not safe as the BMADX router yet.
+- Not defaults: Claude adapters, local/Ollama/OpenRouter models, and any model that fails red-zone routing.
+
+Rule: no public model claim without the same BMADX benchmark gates for routing,
+compactness, red-zone escalation, degraded BMAD behavior, and `X4` rarity.
+
+## Help test BMADX
+
+The most useful feedback is not "nice project." It is where BMADX
+over-escalated, under-escalated, or explained itself badly.
+
+Try one real Codex task and report:
+- what BMADX chose,
+- what you expected,
+- whether the result was too light or too heavy,
+- what proof would convince a non-technical owner it is safe.
+
+Feedback templates: [Community Feedback](docs/community-feedback.md)
 
 ## 5 minute quickstart
 

@@ -113,7 +113,11 @@ NON_TECH_SCENARIOS = {
 }
 REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
 GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
-SELECTED_GEAR_PATTERN = re.compile(r"(?im)^\s*(?:Choice|Gear|Mode)\s*:\s*`?\s*(X[1-4])\b")
+SELECTED_GEAR_PATTERN = re.compile(
+    r"(?im)^\s*(?:[-*]\s*)?(?:\*\*)?"
+    r"(?:Choice|Gear|Mode|Classification)(?:\*\*)?\s*:\s*"
+    r"(?:`|\*\*)?[^\\n]*?\b(X[1-4])\b"
+)
 VALIDATION_CHECKS = (
     "format_pass",
     "token_count_present",
@@ -366,11 +370,27 @@ def copy_runtime_files(codex_home: Path) -> None:
             shutil.copy2(source, codex_home / name)
 
 
+def ignore_bmadx_runtime_state(directory: str, names: list[str]) -> set[str]:
+    if Path(directory).name != "state":
+        return set()
+    return {name for name in names if name.endswith(".json")}
+
+
 def copy_skills(codex_home: Path) -> None:
     skills_dir = codex_home / "skills"
     skills_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(BMADX_SKILL_ROOT, skills_dir / "bmadx", dirs_exist_ok=True)
-    shutil.copytree(BMAD_METHOD_ROOT, skills_dir / "bmad-method-codex", dirs_exist_ok=True)
+    shutil.copytree(
+        BMADX_SKILL_ROOT,
+        skills_dir / "bmadx",
+        dirs_exist_ok=True,
+        ignore=ignore_bmadx_runtime_state,
+    )
+    shutil.copytree(
+        BMAD_METHOD_ROOT,
+        skills_dir / "bmad-method-codex",
+        dirs_exist_ok=True,
+        ignore=ignore_bmadx_runtime_state,
+    )
 
 
 def write_healthy_bmad_fixture(tmp_root: Path) -> Path:

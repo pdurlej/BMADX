@@ -1,0 +1,8 @@
+Choice: X2
+Why: Bounded data cleanup with clear criteria and safety guards, no BMAD artifacts needed.
+Plan:
+1. Query users where last_login > 18 months AND subscription_status = 'free' AND no open invoices
+2. Archive to audit_log table before deletion
+Verify:
+1. Count matches expected inactive free users
+2. Paid accounts and audit records preserved

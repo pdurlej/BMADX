@@ -15,6 +15,7 @@ from run_bmadx_benchmark import (
     build_codex_command,
     build_prompt,
     build_summary,
+    copy_skills,
     copy_runtime_files,
     detect_reference_reads,
     detect_selected_gear,
@@ -78,6 +79,9 @@ tokens used
 
     def test_detect_selected_gear_reads_choice_line(self) -> None:
         self.assertEqual(detect_selected_gear("Choice: `X2 — Regular`\nWhy: ..."), "X2")
+        self.assertEqual(detect_selected_gear("**Choice:** X3 — Complex\nWhy: ..."), "X3")
+        self.assertEqual(detect_selected_gear("**Classification: X4**\nGate: green"), "X4")
+        self.assertEqual(detect_selected_gear("**Choice: Rescue Mode (X4/FUBAR)**\nWhy: ..."), "X4")
         self.assertIsNone(detect_selected_gear("Why: This mentions X2 but does not choose it."))
 
     def test_validate_case_marks_reference_budget_failure_for_x1(self) -> None:
@@ -219,6 +223,16 @@ tokens used
             codex_home = Path(tmpdir)
             copy_runtime_files(codex_home)
             self.assertFalse(codex_home.joinpath(".codex-global-state.json").exists())
+
+    def test_copy_skills_excludes_runtime_state_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            codex_home = Path(tmpdir)
+            copy_skills(codex_home)
+            self.assertFalse(codex_home.joinpath("skills/bmadx/state/bmadx-state.json").exists())
+            self.assertTrue(codex_home.joinpath("skills/bmadx/state/.gitkeep").exists())
+            self.assertFalse(
+                codex_home.joinpath("skills/bmad-method-codex/state/bmad-release-state.json").exists()
+            )
 
     def test_healthy_profile_uses_local_release_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

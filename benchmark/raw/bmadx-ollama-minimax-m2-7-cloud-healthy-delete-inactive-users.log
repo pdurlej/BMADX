@@ -1,0 +1,197 @@
+
+
+**Choice:** X3 — BMAD workflow (data deletion touches red-zone)
+
+**Why:** User data deletion, paid-account protection, and audit-data preservation require durable artifacts, ownership, and verification discipline.
+
+**BMAD entry path:**
+1. Start with `/bmad-bmm-create-prd` to define what "inactive," "paid," and "audit data" mean per system
+2. Then `/bmad-bmm-create-architecture` to map where user records, subscription state, and audit logs live
+3. BMAD artifacts become the source of truth for what gets deleted, what gets exempted, and how deletion is verified
+
+**Key surfaces BMAD should lock down:**
+- `User.active_last_seen` or equivalent — defines "18 months"
+- `Subscription.status` or billing flags — defines paid/exempt
+- `AuditLog` table/schema — retention policy separate from user deletion
+- Delete query must have a dry-run gate before execution
+- Rollback or soft-delete strategy if audit data references users
+
+--- STDERR ---
+Reading additional input from stdin...
+2026-05-05T22:23:26.815027Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 1 column 1039; body: {"object":"list","data":[{"id":"devstral-2:123b-cloud","object":"model","created":1778015249,"owned_by":"library"},{"id":"devstral-small-2:24b-cloud","object":"model","created":1778015243,"owned_by":"library"},{"id":"kimi-k2.6:cloud","object":"model","created":1778015241,"owned_by":"library"},{"id":"glm-5.1:cloud","object":"model","created":1778015239,"owned_by":"library"},{"id":"minimax-m2.7:cloud","object":"model","created":1778015236,"owned_by":"library"},{"id":"qwen3-coder-next:cloud","object":"model","created":1778015175,"owned_by":"library"},{"id":"minimax-m2.5:cloud","object":"model","created":1778015155,"owned_by":"library"},{"id":"hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M","object":"model","created":1776426008,"owned_by":"HauhauCS"},{"id":"bge-m3:latest","object":"model","created":1775684337,"owned_by":"library"},{"id":"gemma4:31b-cloud","object":"model","created":1775549316,"owned_by":"library"},{"id":"qwen3.5:35b-a3b-coding-nvfp4","object":"model","created":1775348642,"owned_by":"library"}]}
+
+2026-05-05T22:23:26.815137Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.7:cloud is used. This will use fallback model metadata.
+2026-05-05T22:23:26.815147Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.7:cloud personality=pragmatic
+2026-05-05T22:23:26.815330Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.815335Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.815337Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.feature.state] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.815380Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.thread.started] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.817282Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.7:cloud is used. This will use fallback model metadata.
+2026-05-05T22:23:26.817391Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.7:cloud is used. This will use fallback model metadata.
+2026-05-05T22:23:26.818915Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.startup_prewarm.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+OpenAI Codex v0.125.0 (research preview)
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-13gizemq/workdir
+model: minimax-m2.7:cloud
+provider: ollama
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-13gizemq/codex-home, /private/var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-13gizemq/codex-home/memories]
+reasoning effort: none
+reasoning summaries: none
+session id: 019dfa3d-2e5f-74f0-98f6-3a0ea64315bd
+--------
+user
+Use $bmadx. Compact gate only. Answer only the BMADX short contract. No analysis. For X1/X2 do not read refs. Do not implement/edit/render/inline artifacts. Task: Delete inactive users older than 18 months and make sure we do not remove paid accounts or needed audit data.
+2026-05-05T22:23:26.819805Z  WARN codex_models_manager::model_info: Unknown model minimax-m2.7:cloud is used. This will use fallback model metadata.
+2026-05-05T22:23:26.820824Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.startup_prewarm.age_at_first_turn_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.820940Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.enabled_total] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.820945Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.kept_total] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.820946Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.truncated] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.820947Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.thread.skills.description_truncated_chars] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:26.821188Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.skill.injected] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:27.019731Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.shell_snapshot] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.011373Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.api_request] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.011386Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.api_request.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.024186Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.024202Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038166Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038180Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038292Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038297Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038340Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038344Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.038399Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.turn.ttft.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.153431Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.153480Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341871Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341884Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341916Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341918Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341944Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341946Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341954Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.341955Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+Let me analyze this task using BMADX methodology.
+
+Task: Delete inactive users older than 18 months and make sure we do not remove paid accounts or needed audit data.
+
+This involves:
+- Data deletion (user data privacy) - RED ZONE
+- Database operations with risk of permanent data loss
+- Need to protect paid accounts and audit data
+
+This is clearly an X3/X4 task due to:
+1. Data deletion in a red-zone area
+2. Production database mutation risk
+3. Need to protect audit/compliance data
+4. Need for clear verification
+
+However, the user specifically asked for:
+- Compact gate only
+- BMADX short contract
+- No analysis
+- For X1/X2 do not read refs
+- Do not implement/edit/render/inline artifacts
+
+So I need to classify and respond in the compact format. Let me think about what gear this is:
+
+This touches: user data privacy, data deletion, database operations - RED ZONE areas. This should be X3 minimum, likely X3 due to the deletion risk.
+
+Let me run the compact gate check for X3 to verify the execution state.
+2026-05-05T22:23:29.343106Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.343119Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.343130Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.343132Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.349936Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.tool.unified_exec] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.369296Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.369315Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+exec
+/bin/zsh -lc 'python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X3 --compact' in /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-13gizemq/workdir
+2026-05-05T22:23:29.629479Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.tool.call] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.629495Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.tool.call.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:29.629736Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.7:cloud personality=pragmatic
+ succeeded in 223ms:
+{
+  "skill_version": "0.2.5",
+  "requested_gear": "X3",
+  "classification_allowed": true,
+  "execution_allowed": true,
+  "warning": null,
+  "bmad_status": "ok",
+  "cache_used": false,
+  "remediation": []
+}
+
+2026-05-05T22:23:32.042315Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.api_request] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.042341Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.api_request.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.051054Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.051067Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066350Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066364Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066460Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066463Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066482Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066484Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066489Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:32.066491Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341702Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341726Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341766Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341770Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341818Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341822Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341847Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341851Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341865Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:40.341868Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+X3 gate is green. This task is data deletion in a red-zone area (user data privacy), so X3 is correct. I need to answer in the short contract for X3 per the "planning-only or benchmark prompts that say not to implement" clause.
+
+Wait, the user said "do not implement/edit/render/inline artifacts" - that's a planning-only task. I should give the X3 short contract and point to BMAD artifacts without rendering them.
+
+Actually, re-reading the X3 contract: "Do not compress these into the same limits. For X3/X4, correctness matters more than terseness" but also says "For planning-only or benchmark prompts that say not to implement, do not inline full X4 bundle files, long templates, or draft artifacts."
+
+
+So I need to provide the correct BMAD entry path for this data deletion work and outline what the BMAD artifacts should cover, but skip the actual artifact rendering and implementation details since that's not what's being asked for.
+2026-05-05T22:23:41.842706Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.842721Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.891608Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.891623Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910312Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910327Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910341Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910342Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910354Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910355Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.910412Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.turn.ttfm.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+codex
+
+
+**Choice:** X3 — BMAD workflow (data deletion touches red-zone)
+
+**Why:** User data deletion, paid-account protection, and audit-data preservation require durable artifacts, ownership, and verification discipline.
+
+**BMAD entry path:**
+1. Start with `/bmad-bmm-create-prd` to define what "inactive," "paid," and "audit data" mean per system
+2. Then `/bmad-bmm-create-architecture` to map where user records, subscription state, and audit logs live
+3. BMAD artifacts become the source of truth for what gets deleted, what gets exempted, and how deletion is verified
+
+**Key surfaces BMAD should lock down:**
+- `User.active_last_seen` or equivalent — defines "18 months"
+- `Subscription.status` or billing flags — defines paid/exempt
+- `AuditLog` table/schema — retention policy separate from user deletion
+- Delete query must have a dry-run gate before execution
+- Rollback or soft-delete strategy if audit data references users
+2026-05-05T22:23:41.922904Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.sse_event] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.922921Z  WARN codex_otel::events::session_telemetry: metrics duration [codex.sse_event.duration_ms] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923188Z  WARN codex_protocol::openai_models: Model personality requested but model_messages is missing, falling back to base instructions. model=minimax-m2.7:cloud personality=pragmatic
+2026-05-05T22:23:41.923280Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.turn.network_proxy] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923286Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.tool.call] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923296Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923297Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923299Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923301Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923302Z  WARN codex_otel::events::session_telemetry: metrics histogram [codex.turn.token_usage] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923304Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.turn.memory] failed: tag value contains invalid characters: minimax-m2.7:cloud
+2026-05-05T22:23:41.923546Z  WARN codex_otel::events::session_telemetry: metrics counter [codex.conversation.turn.count] failed: tag value contains invalid characters: minimax-m2.7:cloud
+tokens used
+23 523

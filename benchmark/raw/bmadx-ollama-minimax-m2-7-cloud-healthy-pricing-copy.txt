@@ -1,0 +1,7 @@
+
+
+**Choice:** X1 — One-shot  
+**Why:** Tiny copy-only change with no code/logic impact.  
+**Next step:** Find and update hero copy in pricing page.
+
+`src/pages/pricing.tsx` — swap headline/subhead to clarify value prop.

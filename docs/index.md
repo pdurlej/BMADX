@@ -8,7 +8,8 @@ Main public entry points:
 4. [Install for Vibe Coders](install-for-vibe-coders.md)
 5. [Architecture Guardrail Card](architecture-guardrail-card.md)
 6. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
-7. [FAQ](faq.md)
+7. [Community Feedback](community-feedback.md)
+8. [FAQ](faq.md)
 
 Deeper reading:
 
