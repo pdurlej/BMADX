@@ -18,10 +18,8 @@ Use it when plain Codex feels too ad-hoc, but full BMAD ceremony feels too heavy
 for everyday work. Copy tweak != architecture ceremony. Auth change !=
 vibe-coded one-shot.
 
-Star this repo if you use Codex/BMAD and want pragmatic guardrails for real
-product-building tasks.
-
-![BMADX architecture overview](docs/assets/bmadx-architecture-overview.svg)
+If this matches how you use Codex/BMAD, stars and misroute reports help find
+early testers.
 
 Current public version: `v0.2.5`
 
@@ -46,6 +44,13 @@ or quietly become too clever.
 
 The point is not to add ceremony. The point is to stop treating copy, auth, and
 unclear migration recovery as the same kind of work.
+
+<details>
+<summary>Visual map</summary>
+
+![BMADX architecture overview](docs/assets/bmadx-architecture-overview.svg)
+
+</details>
 
 ## Known limits today
 

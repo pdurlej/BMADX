@@ -1,100 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
-  <title id="title">BMADX non-technical builder stack</title>
-  <desc id="desc">BMADX connects Oracle, BMAD, Guardrails.md, pyfallow, and CI checks into a lightweight Codex workflow for non-technical builders.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">BMADX Codex guardrail flow</title>
+  <desc id="desc">A plain-English product task enters BMADX. BMADX chooses the lightest safe mode, keeps BMAD as the process source of truth, and asks for proof before done.</desc>
   <defs>
     <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0%" stop-color="#07111f" />
       <stop offset="58%" stop-color="#10243a" />
-      <stop offset="100%" stop-color="#1a332c" />
-    </linearGradient>
-    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.97" />
-      <stop offset="100%" stop-color="#edf6f1" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#14352f" />
     </linearGradient>
     <linearGradient id="core" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0%" stop-color="#2dd4bf" />
       <stop offset="100%" stop-color="#38bdf8" />
     </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000816" flood-opacity="0.34" />
-    </filter>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#020617" flood-opacity="0.26" />
+    <filter id="shadow" x="-10%" y="-12%" width="120%" height="124%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000816" flood-opacity="0.34" />
     </filter>
     <style>
-      .title { font: 800 44px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #f8fafc; letter-spacing: -0.03em; }
-      .subtitle { font: 500 20px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #bfd3e7; }
-      .micro { font: 700 13px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #7dd3fc; letter-spacing: 0.12em; }
-      .card-title { font: 800 22px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #0e263d; letter-spacing: -0.02em; }
-      .card-text { font: 500 16px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #33526e; }
-      .dark-title { font: 800 24px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #f8fafc; letter-spacing: -0.02em; }
-      .dark-text { font: 500 16px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #cbd5e1; }
-      .pill { font: 800 16px "Avenir Next", "Gill Sans", Verdana, sans-serif; fill: #fef3c7; }
-      .line { stroke: #5eead4; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.82; }
-      .thin { stroke: #93c5fd; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
-      .dot { fill: #5eead4; opacity: 0.9; }
+      .eyebrow { font: 800 24px "Avenir Next", "Inter", Arial, sans-serif; fill: #7dd3fc; }
+      .title { font: 900 58px "Avenir Next", "Inter", Arial, sans-serif; fill: #f8fafc; }
+      .subtitle { font: 600 27px "Avenir Next", "Inter", Arial, sans-serif; fill: #cbd5e1; }
+      .card-title { font: 900 32px "Avenir Next", "Inter", Arial, sans-serif; fill: #f8fafc; }
+      .card-text { font: 600 22px "Avenir Next", "Inter", Arial, sans-serif; fill: #cbd5e1; }
+      .core-title { font: 900 38px "Avenir Next", "Inter", Arial, sans-serif; fill: #062236; }
+      .core-text { font: 700 23px "Avenir Next", "Inter", Arial, sans-serif; fill: #0f3a4f; }
+      .small { font: 700 21px "Avenir Next", "Inter", Arial, sans-serif; fill: #fef3c7; }
+      .line { stroke: #5eead4; stroke-width: 5; fill: none; stroke-linecap: round; }
+      .muted-line { stroke: #93c5fd; stroke-width: 4; fill: none; stroke-linecap: round; opacity: 0.45; }
     </style>
   </defs>
 
-  <rect width="1280" height="720" fill="url(#bg)" />
-  <circle cx="1064" cy="88" r="240" fill="#14b8a6" opacity="0.10" />
-  <circle cx="142" cy="610" r="260" fill="#60a5fa" opacity="0.10" />
-  <path d="M-20 164 C216 62 386 72 584 154 C822 252 1022 194 1304 58" stroke="#38bdf8" stroke-width="2" opacity="0.13" fill="none" />
-  <path d="M-40 582 C210 488 432 514 634 588 C872 674 1030 610 1320 520" stroke="#5eead4" stroke-width="2" opacity="0.14" fill="none" />
+  <rect width="1280" height="640" fill="url(#bg)" />
+  <circle cx="1110" cy="70" r="230" fill="#14b8a6" opacity="0.10" />
+  <circle cx="170" cy="600" r="250" fill="#60a5fa" opacity="0.10" />
+  <path d="M-30 168 C220 62 420 82 640 164 C850 244 1040 188 1320 70" stroke="#38bdf8" stroke-width="3" opacity="0.12" fill="none" />
+  <path d="M-20 530 C230 450 472 484 690 548 C910 612 1060 578 1320 500" stroke="#5eead4" stroke-width="3" opacity="0.12" fill="none" />
 
-  <text x="70" y="92" class="micro">BMAD-FIRST CODEX GUARDRAILS</text>
-  <text x="70" y="148" class="title">Build software from product intent, not architecture guesswork.</text>
-  <text x="72" y="190" class="subtitle">BMADX connects expert review, BMAD process, lightweight routing, repo guardrails, code intelligence, and proof.</text>
+  <text x="76" y="96" class="eyebrow">BMAD-FIRST CODEX GUARDRAILS</text>
+  <text x="76" y="170" class="title">Small tasks stay small.</text>
+  <text x="76" y="222" class="subtitle">Risky work escalates. Messy repos get Rescue Mode.</text>
 
-  <rect x="72" y="242" width="248" height="118" rx="24" fill="#0f2238" stroke="#365672" stroke-width="1.5" filter="url(#soft)" />
-  <text x="104" y="282" class="micro">START</text>
-  <text x="104" y="318" class="dark-title">Plain-English task</text>
-  <text x="104" y="344" class="dark-text">A non-technical builder</text>
-  <text x="104" y="368" class="dark-text">describes the product outcome.</text>
+  <rect x="82" y="310" width="270" height="144" rx="28" fill="#0f2238" stroke="#365672" stroke-width="2" filter="url(#shadow)" />
+  <text x="118" y="364" class="card-title">Plain task</text>
+  <text x="118" y="404" class="card-text">Describe the product</text>
+  <text x="118" y="434" class="card-text">outcome in English.</text>
 
-  <rect x="386" y="220" width="238" height="128" rx="24" fill="url(#card)" filter="url(#shadow)" />
-  <text x="418" y="260" class="micro" fill="#0369a1">SECOND OPINION</text>
-  <text x="418" y="296" class="card-title">Oracle</text>
-  <text x="418" y="326" class="card-text">Ask GPT-5.5 Pro with</text>
-  <text x="418" y="350" class="card-text">the right files attached.</text>
+  <path class="line" d="M352 382 H470" />
 
-  <rect x="702" y="220" width="238" height="128" rx="24" fill="url(#card)" filter="url(#shadow)" />
-  <text x="734" y="260" class="micro">PROCESS TRUTH</text>
-  <text x="734" y="296" class="card-title">BMAD</text>
-  <text x="734" y="326" class="card-text">Owns PRD, architecture,</text>
-  <text x="734" y="350" class="card-text">stories, and workflow.</text>
+  <rect x="470" y="286" width="340" height="192" rx="34" fill="url(#core)" filter="url(#shadow)" />
+  <text x="518" y="350" class="core-title">BMADX routes</text>
+  <text x="518" y="394" class="core-text">X1 tiny fix</text>
+  <text x="518" y="426" class="core-text">X2 bounded change</text>
+  <text x="518" y="458" class="core-text">X3 BMAD work / X4 rescue</text>
 
-  <rect x="1018" y="242" width="190" height="118" rx="24" fill="#2b1d05" stroke="#f59e0b" stroke-width="1.5" filter="url(#soft)" />
-  <text x="1050" y="282" class="micro" fill="#fbbf24">BOUNDARY</text>
-  <text x="1050" y="318" class="pill">BMAD &gt; BMADX</text>
-  <text x="1050" y="346" class="dark-text">No second plan store.</text>
+  <path class="line" d="M810 382 H930" />
 
-  <rect x="402" y="430" width="476" height="154" rx="30" fill="url(#core)" filter="url(#shadow)" />
-  <text x="446" y="476" class="micro" fill="#083344">CONNECTIVE LAYER</text>
-  <text x="446" y="518" class="card-title" style="font-size:34px; fill:#062236;">BMADX Architecture Guardrail Card</text>
-  <text x="446" y="552" class="card-text" style="fill:#0f3a4f;">Classify X1/X2/X3/X4, apply red-zone defaults, gate execution, and keep Rescue Mode rare.</text>
+  <rect x="930" y="310" width="270" height="144" rx="28" fill="#2b1d05" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)" />
+  <text x="966" y="364" class="card-title">Proof before done</text>
+  <text x="966" y="404" class="card-text">BMAD owns process.</text>
+  <text x="966" y="434" class="small">BMAD &gt; BMADX</text>
 
-  <rect x="80" y="500" width="232" height="116" rx="22" fill="#10243a" stroke="#2dd4bf" stroke-width="1.5" filter="url(#soft)" />
-  <text x="110" y="538" class="micro">SAFETY MEMORY</text>
-  <text x="110" y="572" class="dark-title">Guardrails.md</text>
-  <text x="110" y="598" class="dark-text">Failure lessons and</text>
-  <text x="110" y="622" class="dark-text">forbidden moves.</text>
-
-  <rect x="956" y="500" width="244" height="116" rx="22" fill="#10243a" stroke="#60a5fa" stroke-width="1.5" filter="url(#soft)" />
-  <text x="986" y="538" class="micro">HARD FACTS</text>
-  <text x="986" y="572" class="dark-title">pyfallow + CI</text>
-  <text x="986" y="598" class="dark-text">Static code intelligence,</text>
-  <text x="986" y="622" class="dark-text">tests, scans, and proof.</text>
-
-  <path class="line" d="M320 302 H386" />
-  <path class="line" d="M624 284 H702" />
-  <path class="line" d="M940 302 H1018" />
-  <path class="thin" d="M505 348 V430" />
-  <path class="thin" d="M821 348 V430" />
-  <path class="line" d="M312 558 H402" />
-  <path class="line" d="M878 558 H956" />
-  <circle cx="640" cy="430" r="5" class="dot" />
-  <circle cx="640" cy="584" r="5" class="dot" />
-
-  <text x="72" y="674" class="subtitle">For vibe builders: tiny work stays tiny, red-zone work enters BMAD, messy repos get Rescue Mode, and claims need proof.</text>
+  <path class="muted-line" d="M640 478 V548 H220" />
+  <text x="236" y="558" class="subtitle">Keep the guardrail light until risk demands more.</text>
 </svg>
