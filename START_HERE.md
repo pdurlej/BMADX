@@ -62,6 +62,18 @@ What I care about:
 speed, clarity, and not overengineering it
 ```
 
+## Good first tests
+
+Try BMADX on one small task and one risky task before judging it:
+
+- a tiny copy or UI tweak, where the right answer is "do not add ceremony";
+- an auth, billing, data, migration, or architecture task, where the right
+  answer is "slow down and prove the change is safe."
+
+If the classification surprises you, share the prompt and expected outcome in
+[GitHub Discussions](https://github.com/pdurlej/BMADX/discussions). The project
+gets better from real misroutes, not from perfect demo prompts.
+
 ## Read next
 
 - [5-Minute Quickstart](docs/5-minute-quickstart.md)

@@ -6,11 +6,9 @@
 [![BMAD-first](https://img.shields.io/badge/BMAD-first-12263A)](docs/why-bmad-is-required.md)
 [![Docs](https://img.shields.io/badge/docs-English-0A7EA4)](START_HERE.md)
 
-BMADX gives Codex a lightweight decision layer on top of BMAD. Instead of making
-you think about process weight on every task, it picks the lightest safe mode:
-tiny fixes stay tiny, normal changes stay compact, BMAD-heavy work escalates
-when it should, and messy repos can drop into a rare Rescue Mode
-(`X4/FUBAR`) with a scaffold bundle.
+BMADX is a BMAD-first guardrail layer for Codex: small changes stay small,
+risky work escalates, and messy repos can drop into a rare Rescue Mode
+(`X4/FUBAR`) instead of improvising architecture in the dark.
 
 The longer-term mission is practical: help non-technical builders get better
 software architecture from AI agents without needing to become software
@@ -32,6 +30,7 @@ BMADX is:
 - lighter than OMX
 - focused on low-friction day-to-day Codex work
 - opinionated about verification and escalation
+- designed for product people and builders who want safer agent output, not more ceremony
 
 BMADX is not:
 - a replacement for BMAD
@@ -48,6 +47,21 @@ If this is your first time:
 1. Read [START_HERE.md](START_HERE.md)
 2. Run the install wrapper from [5-Minute Quickstart](docs/5-minute-quickstart.md)
 3. Paste one of the prompts from [What to Paste into Codex](docs/what-to-paste-into-codex.md)
+
+## Try it on a real task
+
+BMADX is easiest to judge on tasks where a coding agent can either stay useful
+or quietly become too clever.
+
+| Task you give Codex | BMADX should do |
+| --- | --- |
+| "Fix this typo in the pricing copy" | keep it tiny (`X1`) |
+| "Add Google login without breaking existing auth" | slow down, identify the owner and proof (`X3`) |
+| "This repo is messy and I need a migration plan" | use Rescue Mode only if the entropy is real (`X4/FUBAR`) |
+
+If that routing feels useful in your repo, a star helps me find early testers.
+If it misroutes, open a [Discussion](https://github.com/pdurlej/BMADX/discussions)
+or issue with the task prompt and what you expected instead.
 
 ## Who this is for
 
@@ -230,3 +244,14 @@ Public onboarding comes first. Contributor and internal guidance lives here:
 - [CHANGELOG.md](CHANGELOG.md)
 - [docs/architecture.md](docs/architecture.md)
 - [_bmad-output/project-context.md](_bmad-output/project-context.md)
+
+## Feedback wanted
+
+The most useful feedback right now is concrete:
+- a real Codex task where BMADX picked the wrong mode,
+- a non-technical builder question that the README still does not answer,
+- a messy-repo case that might deserve Rescue Mode,
+- a cheaper/local model run that passes the same routing expectations.
+
+Humans and agents are both welcome to test it. Please include the prompt,
+expected mode, observed mode, and any safety concern you noticed.
