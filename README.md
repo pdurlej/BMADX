@@ -35,25 +35,17 @@ If this is your first time:
 
 ## Tiny demo
 
-Task:
+BMADX is easiest to judge on tasks where a coding agent can either stay useful
+or quietly become too clever.
 
-```text
-Add a pricing section to the landing page and keep the change small.
-```
+| Task you give Codex | BMADX should do |
+| --- | --- |
+| `Fix this typo in the pricing copy.` | keep it tiny (`X1`) |
+| `Add Google login without breaking existing auth.` | slow down, identify ownership and proof (`X3`) |
+| `This repo is messy and I need a migration recovery plan.` | use Rescue Mode only if the entropy is real (`X4/FUBAR`) |
 
-BMADX should keep this tiny or bounded, preserve existing page patterns, and
-avoid full BMAD ceremony unless pricing logic, billing, permissions, or
-production behavior changes.
-
-Red-zone task:
-
-```text
-Add Google login.
-```
-
-BMADX should not treat this as a normal copy/code task. Auth affects identity,
-data access, security, and failure recovery, so it should escalate to BMAD-heavy
-handling.
+The point is not to add ceremony. The point is to stop treating copy, auth, and
+unclear migration recovery as the same kind of work.
 
 ## Known limits today
 
