@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for benchmark validation helpers."""
+"""Unit tests for BMADX benchmark runner seams."""
 
 from __future__ import annotations
 
@@ -7,32 +7,36 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from bmadx_benchmark_scenarios import (
+    HANDOFF_SCENARIOS,
+    NON_TECH_SCENARIOS,
+)
+from bmadx_benchmark_validation import (
+    detect_handoff,
+    detect_reference_reads,
+    detect_selected_gear,
+    explain_failures_for_non_technical_users,
+    parse_token_count,
+    sanitize_stderr,
+    validate_case,
+    validate_handoff_runtime_drift,
+    validation_failures,
+)
 from run_bmadx_benchmark import (
     DEFAULT_MODEL,
     DEFAULT_REASONING,
-    HANDOFF_SCENARIOS,
-    NON_TECH_SCENARIOS,
     benchmark_env,
     build_codex_command,
     build_prompt,
     build_summary,
     copy_skills,
     copy_runtime_files,
-    detect_handoff,
-    detect_reference_reads,
-    detect_selected_gear,
-    explain_failures_for_non_technical_users,
     model_slug,
     parse_args,
     parse_json_report,
     runner_slug,
-    parse_token_count,
-    sanitize_stderr,
     summary_path_for,
-    validate_case,
-    validate_handoff_runtime_drift,
     validate_warmup_payload,
-    validation_failures,
     write_healthy_bmad_fixture,
     write_config,
 )
@@ -96,11 +100,17 @@ tokens used
         self.assertEqual(detect_selected_gear("**Choice: Rescue Mode (X4/FUBAR)**\nWhy: ..."), "X4")
         self.assertIsNone(detect_selected_gear("Why: This mentions X2 but does not choose it."))
 
+    def test_detect_selected_gear_does_not_cross_lines(self) -> None:
+        self.assertIsNone(detect_selected_gear("Choice:\nWhy: mentions X2 incidentally.\n"))
+
     def test_detect_handoff_reads_contract_line(self) -> None:
         self.assertTrue(detect_handoff("Choice: X3\nHandoff: yes — broad review useful\n"))
         self.assertFalse(detect_handoff("Choice: X3\nHandoff: no — BMADX is enough\n"))
         self.assertTrue(detect_handoff("**Handoff:** recommended\n"))
         self.assertIsNone(detect_handoff("No handoff language here."))
+
+    def test_detect_handoff_does_not_cross_lines(self) -> None:
+        self.assertIsNone(detect_handoff("Handoff:\nNo, not in contract form.\n"))
 
     def test_validate_handoff_runtime_drift_blocks_runtime_details(self) -> None:
         clean = validate_handoff_runtime_drift("Handoff: yes — broad review is useful.")

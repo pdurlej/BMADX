@@ -500,6 +500,67 @@ def build_remediation(*, requested_gear: str | None, execution_allowed: bool, de
     return []
 
 
+def build_gate_decision(
+    *,
+    requested_gear: str | None,
+    local_blockers: List[str],
+    dependency_blockers: List[str],
+    use_fast_path: bool,
+    bmad: dict,
+    cached_healthy_bmad: dict,
+    warnings: List[str],
+) -> dict:
+    classification_allowed = len(local_blockers) == 0
+    hard_dependency_blockers = list(dependency_blockers)
+    if use_fast_path:
+        hard_dependency_blockers.append(FAST_PATH_HARD_BLOCKER)
+
+    execution_gate, execution_allowed = build_execution_gate(
+        classification_allowed=classification_allowed,
+        requested_gear=requested_gear,
+        local_blockers=local_blockers,
+        hard_dependency_blockers=hard_dependency_blockers,
+    )
+    requested_execution_blockers = execution_gate[requested_gear]["blockers"] if requested_gear else []
+    warning_summary = summarize_warning(
+        classification_allowed=classification_allowed,
+        requested_gear=requested_gear,
+        execution_allowed=execution_allowed,
+        bmad=bmad,
+        cached_healthy_bmad=cached_healthy_bmad,
+        execution_blockers=requested_execution_blockers,
+        warnings=warnings,
+    )
+    bmad_status = determine_bmad_status(
+        bmad=bmad,
+        requested_gear=requested_gear,
+        execution_allowed=execution_allowed,
+    )
+    remediation = build_remediation(
+        requested_gear=requested_gear,
+        execution_allowed=execution_allowed,
+        dependency_blockers=dependency_blockers,
+    )
+
+    action = "ok"
+    if not classification_allowed or (requested_gear and not execution_allowed):
+        action = "needs_attention"
+    elif warnings or warning_summary:
+        action = "warning"
+
+    return {
+        "classification_allowed": classification_allowed,
+        "execution_allowed": execution_allowed,
+        "execution_gate": execution_gate,
+        "requested_execution_blockers": requested_execution_blockers,
+        "warning_summary": warning_summary,
+        "bmad_status": bmad_status,
+        "remediation": remediation,
+        "action": action,
+        "current_bmad_ready": bool(bmad.get("checked_live", True) and not dependency_blockers),
+    }
+
+
 def parse_args(argv: List[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check BMADX health and dependency status")
     parser.add_argument(
@@ -595,42 +656,22 @@ def main(argv: List[str] | None = None) -> int:
         mode=args.mode,
         first_bmad_run=first_bmad_run,
     )
-    classification_allowed = len(local_blockers) == 0
-    hard_dependency_blockers = list(dependency_blockers)
-    if use_fast_path:
-        hard_dependency_blockers.append(FAST_PATH_HARD_BLOCKER)
-    execution_gate, execution_allowed = build_execution_gate(
-        classification_allowed=classification_allowed,
+    gate_decision = build_gate_decision(
         requested_gear=args.gear,
         local_blockers=local_blockers,
-        hard_dependency_blockers=hard_dependency_blockers,
-    )
-    requested_execution_blockers = execution_gate[args.gear]["blockers"] if args.gear else []
-    warning_summary = summarize_warning(
-        classification_allowed=classification_allowed,
-        requested_gear=args.gear,
-        execution_allowed=execution_allowed,
+        dependency_blockers=dependency_blockers,
+        use_fast_path=use_fast_path,
         bmad=bmad,
         cached_healthy_bmad=cached_healthy_bmad,
-        execution_blockers=requested_execution_blockers,
         warnings=warnings,
     )
-    bmad_status = determine_bmad_status(
-        bmad=bmad,
-        requested_gear=args.gear,
-        execution_allowed=execution_allowed,
-    )
-    remediation = build_remediation(
-        requested_gear=args.gear,
-        execution_allowed=execution_allowed,
-        dependency_blockers=dependency_blockers,
-    )
-
-    action = "ok"
-    if not classification_allowed or (args.gear and not execution_allowed):
-        action = "needs_attention"
-    elif warnings or warning_summary:
-        action = "warning"
+    classification_allowed = gate_decision["classification_allowed"]
+    execution_allowed = gate_decision["execution_allowed"]
+    execution_gate = gate_decision["execution_gate"]
+    warning_summary = gate_decision["warning_summary"]
+    bmad_status = gate_decision["bmad_status"]
+    remediation = gate_decision["remediation"]
+    action = gate_decision["action"]
 
     current_checked_at = _now_iso()
     next_cached_healthy_bmad = dict(cached_healthy_bmad)
@@ -664,7 +705,6 @@ def main(argv: List[str] | None = None) -> int:
         "last_healthy_bmad": next_cached_healthy_bmad,
     }
     state_write_warning = try_write_json(STATE_FILE, state_payload)
-    current_bmad_ready = bool(bmad.get("checked_live", True) and not dependency_blockers)
 
     report = {
         "mode": args.mode,
@@ -698,7 +738,7 @@ def main(argv: List[str] | None = None) -> int:
             },
         },
         "execution_gate": {
-            "current_bmad_ready": current_bmad_ready,
+            "current_bmad_ready": gate_decision["current_bmad_ready"],
             "soft_gears": sorted(SOFT_GATE_GEARS),
             "hard_gears": sorted(HARD_GATE_GEARS),
             "by_gear": execution_gate,

@@ -13,6 +13,12 @@ from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve().with_name("sync_bmadx.py")
 
+from sync_bmadx import (  # noqa: E402
+    FAST_PATH_HARD_BLOCKER,
+    FAST_PATH_WARNING,
+    build_gate_decision,
+)
+
 LOCAL_FILES = [
     "SKILL.md",
     "agents/openai.yaml",
@@ -168,6 +174,48 @@ def make_bmad_skill(
 
 
 class SyncBmadxTests(unittest.TestCase):
+    def test_gate_decision_preserves_x2_soft_fast_path(self) -> None:
+        decision = build_gate_decision(
+            requested_gear="X2",
+            local_blockers=[],
+            dependency_blockers=[],
+            use_fast_path=True,
+            bmad={
+                "available": False,
+                "healthy": False,
+                "checked_live": False,
+                "cache_used": False,
+            },
+            cached_healthy_bmad={},
+            warnings=[FAST_PATH_WARNING],
+        )
+        self.assertTrue(decision["classification_allowed"])
+        self.assertTrue(decision["execution_allowed"])
+        self.assertEqual(decision["action"], "warning")
+        self.assertEqual(decision["warning_summary"], FAST_PATH_WARNING)
+        self.assertIn(FAST_PATH_HARD_BLOCKER, decision["execution_gate"]["X3"]["blockers"])
+
+    def test_gate_decision_preserves_x3_hard_dependency_block(self) -> None:
+        decision = build_gate_decision(
+            requested_gear="X3",
+            local_blockers=[],
+            dependency_blockers=["The current BMAD check is not healthy."],
+            use_fast_path=False,
+            bmad={
+                "available": True,
+                "healthy": False,
+                "checked_live": True,
+                "cache_used": False,
+            },
+            cached_healthy_bmad={},
+            warnings=["The current BMAD check is not healthy."],
+        )
+        self.assertTrue(decision["classification_allowed"])
+        self.assertFalse(decision["execution_allowed"])
+        self.assertEqual(decision["action"], "needs_attention")
+        self.assertEqual(decision["bmad_status"], "needs_attention")
+        self.assertEqual(len(decision["remediation"]), 2)
+
     def run_sync(
         self,
         root: Path,

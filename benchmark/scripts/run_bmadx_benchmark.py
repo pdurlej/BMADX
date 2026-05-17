@@ -14,10 +14,24 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
+from bmadx_benchmark_scenarios import (
+    BOUNDARY_SCENARIOS,
+    CORE_SCENARIOS,
+    HANDOFF_SCENARIOS,
+    NON_TECH_SCENARIOS,
+)
+from bmadx_benchmark_validation import (
+    explain_failures_for_non_technical_users,
+    parse_token_count,
+    sanitize_stderr,
+    summarize_validation,
+    validate_case,
+    validation_failures,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BENCHMARK_ROOT = REPO_ROOT / "benchmark"
 RAW_ROOT = BENCHMARK_ROOT / "raw"
-SCENARIO_ROOT = BENCHMARK_ROOT / "scenarios"
 BMADX_SKILL_ROOT = REPO_ROOT / "skill" / "bmadx"
 BMAD_METHOD_ROOT = Path.home() / ".codex" / "skills" / "bmad-method-codex"
 DEFAULT_MODEL = "gpt-5.5"
@@ -29,154 +43,6 @@ HEALTHY_BMAD_RELEASE = {
     "html_url": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.3.0",
     "body": "Benchmark fixture for deterministic healthy BMAD profile.",
 }
-
-CORE_SCENARIOS = {
-    "x1": {
-        "path": SCENARIO_ROOT / "scenario-x1.txt",
-        "expected_gear": "X1",
-        "forbidden_gears": ["X3", "X4"],
-        "max_lines": 5,
-        "max_chars": 650,
-        "max_tokens": 9000,
-        "allow_reference_reads": False,
-    },
-    "x2": {
-        "path": SCENARIO_ROOT / "scenario-x2.txt",
-        "expected_gear": "X2",
-        "forbidden_gears": ["X3", "X4"],
-        "max_lines": 12,
-        "max_chars": 1000,
-        "max_tokens": 10000,
-        "allow_reference_reads": False,
-    },
-    "x3": {
-        "path": SCENARIO_ROOT / "scenario-x3.txt",
-        "expected_gear": "X3",
-        "forbidden_gears": ["X4"],
-        "allow_reference_reads": True,
-    },
-    "x4": {
-        "path": SCENARIO_ROOT / "scenario-x4.txt",
-        "expected_gear": "X4",
-        "allow_reference_reads": True,
-    },
-}
-BOUNDARY_SCENARIOS = {
-    "x2x3-boundary": {
-        "path": SCENARIO_ROOT / "scenario-x2x3-boundary.txt",
-        "expected_gear": "X3",
-        "allow_reference_reads": True,
-    }
-}
-NON_TECH_SCENARIOS = {
-    "pricing-copy": {
-        "path": SCENARIO_ROOT / "scenario-nontech-pricing-copy.txt",
-        "expected_gear": "X1",
-        "forbidden_gears": ["X3", "X4"],
-        "max_lines": 5,
-        "max_chars": 650,
-        "max_tokens": 9000,
-        "allow_reference_reads": False,
-    },
-    "onboarding-email": {
-        "path": SCENARIO_ROOT / "scenario-nontech-onboarding-email.txt",
-        "expected_gear": "X2",
-        "forbidden_gears": ["X3", "X4"],
-        "max_lines": 12,
-        "max_chars": 1000,
-        "max_tokens": 10000,
-        "allow_reference_reads": False,
-    },
-    "google-login": {
-        "path": SCENARIO_ROOT / "scenario-nontech-google-login.txt",
-        "expected_gear": "X3",
-        "forbidden_gears": ["X4"],
-        "allow_reference_reads": True,
-    },
-    "subscription-billing": {
-        "path": SCENARIO_ROOT / "scenario-nontech-subscription-billing.txt",
-        "expected_gear": "X3",
-        "forbidden_gears": ["X4"],
-        "allow_reference_reads": True,
-    },
-    "delete-inactive-users": {
-        "path": SCENARIO_ROOT / "scenario-nontech-delete-inactive-users.txt",
-        "expected_gear": "X3",
-        "forbidden_gears": ["X4"],
-        "allow_reference_reads": True,
-    },
-    "messy-migration-incident": {
-        "path": SCENARIO_ROOT / "scenario-nontech-messy-migration-incident.txt",
-        "expected_gear": "X4",
-        "allow_reference_reads": True,
-    },
-}
-HANDOFF_SCENARIOS = {
-    "x3-auth-review-handoff": {
-        "path": SCENARIO_ROOT / "scenario-handoff-x3-auth-review.txt",
-        "expected_gear": "X3",
-        "expected_handoff": True,
-        "forbidden_gears": ["X4"],
-        "allow_reference_reads": True,
-    },
-    "x4-migration-review-handoff": {
-        "path": SCENARIO_ROOT / "scenario-handoff-x4-migration-review.txt",
-        "expected_gear": "X4",
-        "expected_handoff": True,
-        "allow_reference_reads": True,
-    },
-}
-REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
-GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
-SELECTED_GEAR_PATTERN = re.compile(
-    r"(?im)^\s*(?:[-*]\s*)?(?:\*\*)?"
-    r"(?:Choice|Gear|Mode|Classification)(?:\*\*)?\s*:\s*"
-    r"(?:`|\*\*)?[^\\n]*?\b(X[1-4])\b"
-)
-HANDOFF_PATTERN = re.compile(
-    r"(?im)^\s*(?:[-*]\s*)?(?:\*\*)?Handoff(?:\*\*)?\s*:\s*"
-    r"(?:`|\*\*)?\s*(yes|no|recommended|not recommended|none)\b"
-)
-FORBIDDEN_HANDOFF_RUNTIME_PATTERNS = {
-    "no_worker_lane_pass": re.compile(r"\b(primary_worker|secondary_workers|worker lane|model lane|lane:)\b", re.I),
-    "no_model_name_pass": re.compile(
-        r"\b(gpt-oss|kimi|glm|deepseek|minimax|qwen|devstral|gemma|mistral-large|claude|opus)\b",
-        re.I,
-    ),
-    "no_dispatch_command_pass": re.compile(r"\b(dispatch|ollama run|codex exec --oss|run_id|runtime state)\b", re.I),
-    "no_platform_surface_pass": re.compile(r"\b(MCP|hook|plugin|subagent|agent zoo)\b", re.I),
-}
-VALIDATION_CHECKS = (
-    "format_pass",
-    "token_count_present",
-    "token_pass",
-    "reference_budget_pass",
-    "routing_pass",
-    "overreach_pass",
-)
-HANDOFF_VALIDATION_CHECKS = VALIDATION_CHECKS + (
-    "handoff_routing_pass",
-    "handoff_not_runtime_pass",
-    "no_worker_lane_pass",
-    "no_model_name_pass",
-    "no_dispatch_command_pass",
-    "no_platform_surface_pass",
-)
-NON_TECH_FAILURE_REASONS = {
-    "format_pass": "The answer is too long or unstructured for a non-technical owner to act on safely.",
-    "token_count_present": "The benchmark cannot compare cost or verbosity without a token count.",
-    "token_pass": "The response exceeded the intended budget for lightweight work.",
-    "reference_budget_pass": "The agent read extra reference docs where the happy path should stay compact.",
-    "routing_pass": "The agent chose the wrong work mode, which can either overbuild a small task or underprotect a risky one.",
-    "overreach_pass": "The agent mentioned forbidden higher gears, creating unnecessary escalation noise for a bounded task.",
-    "handoff_routing_pass": "The agent did not make the expected broad-orchestrator handoff decision for this risk shape.",
-    "handoff_not_runtime_pass": "The agent leaked orchestration runtime details instead of staying inside the BMADX handoff packet contract.",
-    "no_worker_lane_pass": "The handoff suggested worker lanes, which would make BMADX behave like a runtime orchestrator.",
-    "no_model_name_pass": "The handoff named specific models, which should remain a receiving orchestrator decision.",
-    "no_dispatch_command_pass": "The handoff included dispatch/runtime commands instead of a portable risk-and-proof packet.",
-    "no_platform_surface_pass": "The handoff mentioned platform surfaces such as MCP, hooks, plugins, or subagents that BMADX must not install or require.",
-}
-
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run BMADX benchmark scenarios in a clean CODEX_HOME")
@@ -233,186 +99,6 @@ def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
             "Do not name models, worker lanes, arbiters, dispatch commands, MCP, hooks, plugins, subagents, or runtime state. "
         )
     return prompt + f"Task: {task}"
-
-
-def parse_token_count(stderr: str) -> int | None:
-    match = re.search(r"tokens used\s*\n([0-9 \u00a0]+)", stderr, re.IGNORECASE)
-    if not match:
-        return None
-    digits = match.group(1).replace("\u00a0", "").replace(" ", "")
-    return int(digits) if digits.isdigit() else None
-
-
-def sanitize_stderr(stderr: str) -> str:
-    lines = stderr.splitlines()
-    sanitized: list[str] = []
-    skipping_analytics = False
-    resume_prefixes = ("exec", "codex", "tokens used", "thinking", "user", "assistant")
-    for line in lines:
-        if "codex_analytics::client: events failed" in line:
-            sanitized.append("[analytics warning omitted]")
-            skipping_analytics = True
-            continue
-        if skipping_analytics:
-            if line.startswith(resume_prefixes):
-                skipping_analytics = False
-            else:
-                continue
-        sanitized.append(line)
-    return "\n".join(sanitized).rstrip()
-
-
-def detect_reference_reads(text: str) -> list[str]:
-    seen = []
-    for match in REFERENCE_READ_PATTERN.findall(text):
-        if match not in seen:
-            seen.append(match)
-    return seen
-
-
-def detect_observed_gears(stdout: str) -> list[str]:
-    seen = []
-    for digit in GEAR_PATTERN.findall(stdout):
-        gear = f"X{digit}"
-        if gear not in seen:
-            seen.append(gear)
-    return seen
-
-
-def detect_selected_gear(stdout: str) -> str | None:
-    match = SELECTED_GEAR_PATTERN.search(stdout)
-    return match.group(1).upper() if match else None
-
-
-def detect_handoff(stdout: str) -> bool | None:
-    match = HANDOFF_PATTERN.search(stdout)
-    if not match:
-        return None
-    value = match.group(1).strip().lower()
-    if value in {"yes", "recommended"}:
-        return True
-    if value in {"no", "not recommended", "none"}:
-        return False
-    return None
-
-
-def validate_handoff_runtime_drift(stdout: str) -> dict:
-    result = {}
-    for key, pattern in FORBIDDEN_HANDOFF_RUNTIME_PATTERNS.items():
-        result[key] = pattern.search(stdout) is None
-    result["handoff_not_runtime_pass"] = all(result.values())
-    return result
-
-
-def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> dict:
-    response = stdout.strip()
-    lines = [line for line in response.splitlines() if line.strip()]
-    observed_gears = detect_observed_gears(stdout)
-    selected_gear = detect_selected_gear(stdout)
-    reference_reads = detect_reference_reads(stderr)
-    expected_gear = str(spec.get("expected_gear") or "")
-    forbidden_gears = set(spec.get("forbidden_gears") or [])
-    expected_handoff = spec.get("expected_handoff")
-    token_count_present = tokens is not None
-
-    format_pass = True
-    if spec.get("max_lines") is not None:
-        format_pass = format_pass and len(lines) <= int(spec["max_lines"])
-    if spec.get("max_chars") is not None:
-        format_pass = format_pass and len(response) <= int(spec["max_chars"])
-
-    token_pass = token_count_present
-    if spec.get("max_tokens") is not None:
-        token_pass = token_pass and int(tokens) <= int(spec["max_tokens"])
-
-    allow_reference_reads = bool(spec.get("allow_reference_reads", True))
-    reference_budget_pass = allow_reference_reads or not reference_reads
-    routing_pass = selected_gear == expected_gear if expected_gear else True
-    overreach_pass = not any(gear in forbidden_gears for gear in observed_gears)
-    observed_handoff = detect_handoff(stdout)
-    handoff_routing_pass = (
-        observed_handoff == bool(expected_handoff)
-        if expected_handoff is not None
-        else True
-    )
-    handoff_runtime = validate_handoff_runtime_drift(stdout) if expected_handoff is not None else {
-        "handoff_not_runtime_pass": True,
-        "no_worker_lane_pass": True,
-        "no_model_name_pass": True,
-        "no_dispatch_command_pass": True,
-        "no_platform_surface_pass": True,
-    }
-
-    return {
-        "expected_gear": expected_gear,
-        "selected_gear": selected_gear,
-        "observed_gears": observed_gears,
-        "reference_reads": reference_reads,
-        "format_pass": format_pass,
-        "token_count_present": token_count_present,
-        "token_pass": token_pass,
-        "reference_budget_pass": reference_budget_pass,
-        "routing_pass": routing_pass,
-        "overreach_pass": overreach_pass,
-        "expected_handoff": expected_handoff,
-        "observed_handoff": observed_handoff,
-        "handoff_routing_pass": handoff_routing_pass,
-        **handoff_runtime,
-    }
-
-
-def summarize_validation(cases: list[dict]) -> dict:
-    if not cases:
-        return {
-            "case_count": 0,
-            "format_pass_count": 0,
-            "token_count_present_count": 0,
-            "token_pass_count": 0,
-            "reference_budget_pass_count": 0,
-            "routing_pass_count": 0,
-            "overreach_pass_count": 0,
-        }
-    return {
-        "case_count": len(cases),
-        "format_pass_count": sum(1 for case in cases if case["format_pass"]),
-        "token_count_present_count": sum(1 for case in cases if case.get("token_count_present")),
-        "token_pass_count": sum(1 for case in cases if case["token_pass"]),
-        "reference_budget_pass_count": sum(1 for case in cases if case["reference_budget_pass"]),
-        "routing_pass_count": sum(1 for case in cases if case["routing_pass"]),
-        "overreach_pass_count": sum(1 for case in cases if case["overreach_pass"]),
-    }
-
-
-def validation_failures(cases: list[dict]) -> list[dict]:
-    failures = []
-    for case in cases:
-        checks = HANDOFF_VALIDATION_CHECKS if case.get("expected_handoff") is not None else VALIDATION_CHECKS
-        failed_checks = [check for check in checks if not case.get(check)]
-        if failed_checks:
-            failures.append(
-                {
-                    "case": case.get("case", "unknown"),
-                    "failed_checks": failed_checks,
-                }
-            )
-    return failures
-
-
-def explain_failures_for_non_technical_users(cases: list[dict]) -> list[dict]:
-    explanations = []
-    for failure in validation_failures(cases):
-        failed_checks = failure["failed_checks"]
-        explanations.append(
-            {
-                "case": failure["case"],
-                "what_failed": failed_checks,
-                "why_it_matters": [
-                    NON_TECH_FAILURE_REASONS.get(check, "The benchmark found a validation problem.")
-                    for check in failed_checks
-                ],
-            }
-        )
-    return explanations
 
 
 def repo_relative(path: Path) -> str:
@@ -664,6 +350,37 @@ def run_case(
     }
 
 
+def run_scenario_group(
+    scenarios: dict[str, dict],
+    codex_home: Path,
+    profile: str,
+    workdir: Path,
+    healthy_release_fixture: Path | None,
+    *,
+    model: str,
+    reasoning: str,
+    oss: bool,
+    local_provider: str | None,
+    model_slug_value: str,
+) -> list[dict]:
+    return [
+        run_case(
+            codex_home,
+            profile,
+            scenario_key,
+            spec,
+            workdir,
+            healthy_release_fixture,
+            model=model,
+            reasoning=reasoning,
+            oss=oss,
+            local_provider=local_provider,
+            model_slug_value=model_slug_value,
+        )
+        for scenario_key, spec in scenarios.items()
+    ]
+
+
 def build_summary(
     date_stamp: str,
     profile: str,
@@ -753,74 +470,45 @@ def main() -> int:
         healthy_release_fixture = write_healthy_bmad_fixture(tmp_root) if args.profile == "healthy" else None
         warmup_profile(codex_home, args.profile, healthy_release_fixture)
 
-        core_cases = []
-        for scenario_key, spec in CORE_SCENARIOS.items():
-            core_cases.append(
-                run_case(
-                    codex_home,
-                    args.profile,
-                    scenario_key,
-                    spec,
-                    workdir,
-                    healthy_release_fixture,
-                    model=args.model,
-                    reasoning=args.reasoning,
-                    oss=args.oss,
-                    local_provider=args.local_provider,
-                    model_slug_value=model_slug_value,
-                )
-            )
-        boundary_cases = []
-        for scenario_key, spec in BOUNDARY_SCENARIOS.items():
-            boundary_cases.append(
-                run_case(
-                    codex_home,
-                    args.profile,
-                    scenario_key,
-                    spec,
-                    workdir,
-                    healthy_release_fixture,
-                    model=args.model,
-                    reasoning=args.reasoning,
-                    oss=args.oss,
-                    local_provider=args.local_provider,
-                    model_slug_value=model_slug_value,
-                )
-            )
-        non_technical_cases = []
-        for scenario_key, spec in NON_TECH_SCENARIOS.items():
-            non_technical_cases.append(
-                run_case(
-                    codex_home,
-                    args.profile,
-                    scenario_key,
-                    spec,
-                    workdir,
-                    healthy_release_fixture,
-                    model=args.model,
-                    reasoning=args.reasoning,
-                    oss=args.oss,
-                    local_provider=args.local_provider,
-                    model_slug_value=model_slug_value,
-                )
-            )
-        handoff_cases = []
-        for scenario_key, spec in HANDOFF_SCENARIOS.items():
-            handoff_cases.append(
-                run_case(
-                    codex_home,
-                    args.profile,
-                    scenario_key,
-                    spec,
-                    workdir,
-                    healthy_release_fixture,
-                    model=args.model,
-                    reasoning=args.reasoning,
-                    oss=args.oss,
-                    local_provider=args.local_provider,
-                    model_slug_value=model_slug_value,
-                )
-            )
+        run_group_kwargs = {
+            "model": args.model,
+            "reasoning": args.reasoning,
+            "oss": args.oss,
+            "local_provider": args.local_provider,
+            "model_slug_value": model_slug_value,
+        }
+        core_cases = run_scenario_group(
+            CORE_SCENARIOS,
+            codex_home,
+            args.profile,
+            workdir,
+            healthy_release_fixture,
+            **run_group_kwargs,
+        )
+        boundary_cases = run_scenario_group(
+            BOUNDARY_SCENARIOS,
+            codex_home,
+            args.profile,
+            workdir,
+            healthy_release_fixture,
+            **run_group_kwargs,
+        )
+        non_technical_cases = run_scenario_group(
+            NON_TECH_SCENARIOS,
+            codex_home,
+            args.profile,
+            workdir,
+            healthy_release_fixture,
+            **run_group_kwargs,
+        )
+        handoff_cases = run_scenario_group(
+            HANDOFF_SCENARIOS,
+            codex_home,
+            args.profile,
+            workdir,
+            healthy_release_fixture,
+            **run_group_kwargs,
+        )
 
     summary = build_summary(
         args.date_stamp,
