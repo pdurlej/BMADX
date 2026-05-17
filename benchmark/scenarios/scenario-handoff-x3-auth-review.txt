@@ -1,0 +1,2 @@
+Scenario: X3 broad handoff candidate
+Task: Add Google login, but the repo has two auth systems, session ownership is unclear, and the operator wants a broad architecture review before implementation.

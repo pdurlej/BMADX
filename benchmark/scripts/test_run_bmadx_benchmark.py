@@ -10,6 +10,7 @@ import unittest
 from run_bmadx_benchmark import (
     DEFAULT_MODEL,
     DEFAULT_REASONING,
+    HANDOFF_SCENARIOS,
     NON_TECH_SCENARIOS,
     benchmark_env,
     build_codex_command,
@@ -17,6 +18,7 @@ from run_bmadx_benchmark import (
     build_summary,
     copy_skills,
     copy_runtime_files,
+    detect_handoff,
     detect_reference_reads,
     detect_selected_gear,
     explain_failures_for_non_technical_users,
@@ -28,6 +30,7 @@ from run_bmadx_benchmark import (
     sanitize_stderr,
     summary_path_for,
     validate_case,
+    validate_handoff_runtime_drift,
     validate_warmup_payload,
     validation_failures,
     write_healthy_bmad_fixture,
@@ -69,6 +72,15 @@ tokens used
             self.assertIn("Do not implement/edit/render/inline artifacts.", prompt)
             self.assertIn("Task: Create a rescue bundle.", prompt)
 
+    def test_build_prompt_can_request_handoff_line(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            scenario = Path(tmpdir) / "scenario.txt"
+            scenario.write_text("Task: Ask for broad architecture review.\n", encoding="utf-8")
+            prompt = build_prompt(scenario, include_handoff=True)
+            self.assertIn("Handoff: yes/no", prompt)
+            self.assertIn("Do not name models", prompt)
+            self.assertIn("Task: Ask for broad architecture review.", prompt)
+
     def test_detect_reference_reads_returns_unique_paths(self) -> None:
         stderr = """
         exec /bin/zsh -lc "sed -n '1,220p' /tmp/codex-home/skills/bmadx/references/gearbox.md"
@@ -83,6 +95,21 @@ tokens used
         self.assertEqual(detect_selected_gear("**Classification: X4**\nGate: green"), "X4")
         self.assertEqual(detect_selected_gear("**Choice: Rescue Mode (X4/FUBAR)**\nWhy: ..."), "X4")
         self.assertIsNone(detect_selected_gear("Why: This mentions X2 but does not choose it."))
+
+    def test_detect_handoff_reads_contract_line(self) -> None:
+        self.assertTrue(detect_handoff("Choice: X3\nHandoff: yes — broad review useful\n"))
+        self.assertFalse(detect_handoff("Choice: X3\nHandoff: no — BMADX is enough\n"))
+        self.assertTrue(detect_handoff("**Handoff:** recommended\n"))
+        self.assertIsNone(detect_handoff("No handoff language here."))
+
+    def test_validate_handoff_runtime_drift_blocks_runtime_details(self) -> None:
+        clean = validate_handoff_runtime_drift("Handoff: yes — broad review is useful.")
+        self.assertTrue(clean["handoff_not_runtime_pass"])
+        dirty = validate_handoff_runtime_drift("Handoff: yes. Use primary_worker glm-5.1 and dispatch.")
+        self.assertFalse(dirty["handoff_not_runtime_pass"])
+        self.assertFalse(dirty["no_worker_lane_pass"])
+        self.assertFalse(dirty["no_model_name_pass"])
+        self.assertFalse(dirty["no_dispatch_command_pass"])
 
     def test_validate_case_marks_reference_budget_failure_for_x1(self) -> None:
         stdout = "Choice: `X1 — One-shot`.\nWhy: ...\nNext step: ...\n"
@@ -117,6 +144,28 @@ tokens used
         self.assertEqual(validation["selected_gear"], "X2")
         self.assertIn("X3", validation["observed_gears"])
         self.assertFalse(validation["routing_pass"])
+
+    def test_validate_case_checks_handoff_without_runtime_details(self) -> None:
+        validation = validate_case(
+            "Choice: X3\nWhy: Auth ownership is unclear.\nHandoff: yes — broad architecture review is useful.\n",
+            "",
+            1000,
+            {"expected_gear": "X3", "expected_handoff": True, "allow_reference_reads": True},
+        )
+        self.assertTrue(validation["routing_pass"])
+        self.assertTrue(validation["handoff_routing_pass"])
+        self.assertTrue(validation["handoff_not_runtime_pass"])
+
+    def test_validate_case_fails_handoff_runtime_drift(self) -> None:
+        validation = validate_case(
+            "Choice: X3\nHandoff: yes — ask Opus and dispatch a worker lane with glm-5.1.\n",
+            "",
+            1000,
+            {"expected_gear": "X3", "expected_handoff": True, "allow_reference_reads": True},
+        )
+        self.assertTrue(validation["handoff_routing_pass"])
+        self.assertFalse(validation["handoff_not_runtime_pass"])
+        self.assertFalse(validation["no_model_name_pass"])
 
     def test_validate_case_fails_token_pass_when_count_is_missing(self) -> None:
         validation = validate_case(
@@ -163,6 +212,14 @@ tokens used
         self.assertEqual(NON_TECH_SCENARIOS["delete-inactive-users"]["expected_gear"], "X3")
         self.assertEqual(NON_TECH_SCENARIOS["messy-migration-incident"]["expected_gear"], "X4")
         for spec in NON_TECH_SCENARIOS.values():
+            self.assertTrue(Path(spec["path"]).exists())
+
+    def test_handoff_scenarios_cover_x3_and_x4(self) -> None:
+        self.assertEqual(HANDOFF_SCENARIOS["x3-auth-review-handoff"]["expected_gear"], "X3")
+        self.assertTrue(HANDOFF_SCENARIOS["x3-auth-review-handoff"]["expected_handoff"])
+        self.assertEqual(HANDOFF_SCENARIOS["x4-migration-review-handoff"]["expected_gear"], "X4")
+        self.assertTrue(HANDOFF_SCENARIOS["x4-migration-review-handoff"]["expected_handoff"])
+        for spec in HANDOFF_SCENARIOS.values():
             self.assertTrue(Path(spec["path"]).exists())
 
     def test_summary_path_uses_bmadx_suffix(self) -> None:
@@ -284,6 +341,7 @@ tokens used
             ],
             [],
             [],
+            [],
             model="gpt-5.5",
             reasoning="medium",
         )
@@ -296,12 +354,14 @@ tokens used
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
         self.assertEqual(summary["validation_failures"]["core"], [])
         self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
+        self.assertEqual(summary["validation_summary"]["handoff"]["case_count"], 0)
         self.assertEqual(summary["non_technical_readout"]["what_failed_why_it_matters"], [])
 
     def test_summary_records_oss_provider(self) -> None:
         summary = build_summary(
             "2026-05-05",
             "healthy",
+            [],
             [],
             [],
             [],

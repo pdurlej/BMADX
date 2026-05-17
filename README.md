@@ -21,7 +21,7 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.2.5`
+Current public version: `v0.2.6`
 
 ## Start here
 
@@ -59,6 +59,13 @@ unclear migration recovery as the same kind of work.
 - BMADX adds routing and guardrails; it does not prove code quality by itself.
 - Model experiments such as `PMAX X` are benchmark probes, not support claims.
 - Tests, CI, static analysis, and human review still matter for red-zone work.
+
+BMADX can also emit a broad-orchestrator handoff packet for tasks that are too
+judgment-heavy, long-context, privacy-sensitive, or multi-system for the narrow
+Codex lane. This is a schema, not a runtime: it can cooperate with broad
+orchestration models such as Gastown-style workflows without shipping worker
+dispatch, model lanes, arbiters, hooks, MCP, plugins, subagents, or persistent
+state. See [Broad Orchestrator Handoff](docs/broad-orchestrator-handoff.md).
 
 ## Who this is for
 
@@ -175,6 +182,7 @@ More detail:
 - [Why BMAD is required](docs/why-bmad-is-required.md)
 - [Choose BMAD vs BMADX vs OMX](docs/choose-bmad-bmadx-omx.md)
 - [Ecosystem and strategic stance](docs/ecosystem-and-stance.md)
+- [Broad orchestrator handoff](docs/broad-orchestrator-handoff.md)
 - [Model experiments](docs/model-experiments.md)
 - [FAQ](docs/faq.md)
 

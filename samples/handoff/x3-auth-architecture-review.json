@@ -1,0 +1,46 @@
+{
+  "schema_version": "bmadx_handoff.v1",
+  "origin": "bmadx",
+  "task_summary": "Add Google login while the existing auth ownership and callback/session strategy are unclear.",
+  "gear": "X3",
+  "gear_label": "Complex / BMAD-heavy",
+  "bmad_gate_status": "allowed",
+  "handoff_recommended": true,
+  "handoff_reason_codes": [
+    "architecture_ownership_unclear",
+    "red_zone_auth",
+    "external_api_integration",
+    "proof_path_unclear"
+  ],
+  "red_zone_flags": [
+    "auth",
+    "external_api_integration",
+    "user_data_privacy"
+  ],
+  "privacy_guess": "internal",
+  "reversibility_guess": "unknown",
+  "hard_stop_candidates": [
+    "external_api_integration",
+    "breaking_deploy"
+  ],
+  "bmad_artifact_refs": [
+    "_bmad-output/project-context.md",
+    "_bmad-output/architecture-*.md"
+  ],
+  "proof_required": [
+    "auth flow tests",
+    "session and callback verification",
+    "rollback plan",
+    "human review for provider setup"
+  ],
+  "forbidden_changes": [
+    "no production deploy",
+    "no secret creation or rotation",
+    "no OAuth app creation without operator approval"
+  ],
+  "open_questions": [
+    "Which auth system owns login and session state?",
+    "Is Google OAuth already represented in BMAD architecture artifacts?",
+    "What proof would convince a non-technical owner this is safe?"
+  ]
+}

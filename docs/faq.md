@@ -10,7 +10,15 @@ Usually no. The normal use pattern is to describe the task in plain language and
 
 ## Does BMADX require GPT-5.5?
 
-No. BMADX `v0.2.5` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
+No. BMADX `v0.2.6` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
+
+## Does BMADX work with broad orchestrators?
+
+Yes, through a packet contract. BMADX can export gear, BMAD gate state, risk
+flags, privacy guess, proof needs, forbidden changes, and open questions to a
+separate broad orchestrator. This works with Gastown-style orchestration models
+or private review stacks, but BMADX does not ship worker dispatch, model lanes,
+arbiters, MCP, hooks, plugins, subagents, or runtime state.
 
 ## When does `X4/FUBAR` happen?
 

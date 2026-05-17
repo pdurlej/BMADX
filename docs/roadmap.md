@@ -7,9 +7,14 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.5`
+- `v0.2.6`
 
-What `v0.2.5` focuses on:
+What `v0.2.6` focuses on:
+- broad-orchestrator handoff as a packet schema, not runtime integration
+- cooperation with Gastown-style broad orchestration models without naming or depending on a private orchestrator
+- preserving BMADX as the narrow Codex-first lane while allowing explicit handoff for broad, judgment-heavy, or long-context work
+
+What `v0.2.5` focused on:
 - tuning BMADX for Codex on GPT-5.5
 - keeping GPT-5.5 from bypassing BMAD boundaries or Rescue Mode discipline
 - model-aware benchmark artifacts that do not overwrite historical GPT-5.4 runs

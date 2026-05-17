@@ -17,7 +17,7 @@ do not necessarily understand software architecture get safer, clearer Codex
 workflows. It should translate plain-language intent into the lightest safe mode
 without exposing more process machinery than the task needs.
 
-Since `v0.2.5`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
+Since `v0.2.6`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
 better executors, not as permission to skip boundaries: BMADX remains a
 boundary and verification layer, not a substitute for BMAD process ownership.
 
@@ -184,6 +184,35 @@ Selection rule:
 - if the repo is already in a failure loop, has unclear owners, or needs a scaffold bundle, choose Rescue Mode (`X4/FUBAR`)
 - if the gear is `X3/X4` but execution is blocked, keep the correct classification and report the execution block separately
 
+## Broad orchestrator handoff
+
+BMADX may recommend handoff when a task is too broad for the narrow Codex lane:
+domain-heavy, long-context, privacy-sensitive, judgment-heavy, multi-system, or
+explicitly asking for multi-model review.
+
+The public contract is a schema, not an integration. It should work with broad
+orchestration models such as Gastown-style workflows, team-specific review
+systems, or private arbitration stacks. BMADX does not ship or depend on those
+systems.
+
+Rules:
+- handoff is not `X5`
+- `X4/FUBAR` remains Rescue Mode, not automatic handoff
+- handoff does not change the gear: a task can be `X3` with or without handoff,
+  or `X4` with or without handoff
+- BMADX may emit only risk, proof, BMAD gate state, and open questions
+- BMADX must not dispatch workers, choose model lanes, assign arbiters, create
+  runtime state, install MCP/hooks/plugins/subagents, or produce a second plan store
+
+For normal answers, use a compact line only when relevant:
+
+```text
+Handoff: yes — broad architecture review is useful because ownership and proof are unclear.
+```
+
+Details:
+- [broad-handoff.md](references/broad-handoff.md)
+
 ## Response contract
 
 ### `X1` obvious happy path
@@ -310,9 +339,15 @@ Details:
 
 BMADX promotes capability-based subagent usage.
 
+- optimize operator time-to-value: the main model keeps moving while helpers
+  answer independent side questions
 - smaller/faster models: bounded discovery, repo mapping, diff review support, verification support
 - main model: decisions, synthesis, integration, final responsibility
 - avoid hardcoding one model or one vendor
+- `X1`: usually no helper; one read-only helper is acceptable for batch copy,
+  duplicated UI text, or quick verification if it does not block the patch
+- `X2`: prefer one bounded helper when repo discovery, pattern lookup, or
+  verification can run in parallel
 
 Details:
 - [subagent-policy.md](references/subagent-policy.md)

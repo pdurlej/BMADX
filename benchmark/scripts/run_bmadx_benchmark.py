@@ -111,6 +111,21 @@ NON_TECH_SCENARIOS = {
         "allow_reference_reads": True,
     },
 }
+HANDOFF_SCENARIOS = {
+    "x3-auth-review-handoff": {
+        "path": SCENARIO_ROOT / "scenario-handoff-x3-auth-review.txt",
+        "expected_gear": "X3",
+        "expected_handoff": True,
+        "forbidden_gears": ["X4"],
+        "allow_reference_reads": True,
+    },
+    "x4-migration-review-handoff": {
+        "path": SCENARIO_ROOT / "scenario-handoff-x4-migration-review.txt",
+        "expected_gear": "X4",
+        "expected_handoff": True,
+        "allow_reference_reads": True,
+    },
+}
 REFERENCE_READ_PATTERN = re.compile(r"/skills/bmadx/references/([^\s\"']+)")
 GEAR_PATTERN = re.compile(r"\bX([1-4])\b")
 SELECTED_GEAR_PATTERN = re.compile(
@@ -118,6 +133,19 @@ SELECTED_GEAR_PATTERN = re.compile(
     r"(?:Choice|Gear|Mode|Classification)(?:\*\*)?\s*:\s*"
     r"(?:`|\*\*)?[^\\n]*?\b(X[1-4])\b"
 )
+HANDOFF_PATTERN = re.compile(
+    r"(?im)^\s*(?:[-*]\s*)?(?:\*\*)?Handoff(?:\*\*)?\s*:\s*"
+    r"(?:`|\*\*)?\s*(yes|no|recommended|not recommended|none)\b"
+)
+FORBIDDEN_HANDOFF_RUNTIME_PATTERNS = {
+    "no_worker_lane_pass": re.compile(r"\b(primary_worker|secondary_workers|worker lane|model lane|lane:)\b", re.I),
+    "no_model_name_pass": re.compile(
+        r"\b(gpt-oss|kimi|glm|deepseek|minimax|qwen|devstral|gemma|mistral-large|claude|opus)\b",
+        re.I,
+    ),
+    "no_dispatch_command_pass": re.compile(r"\b(dispatch|ollama run|codex exec --oss|run_id|runtime state)\b", re.I),
+    "no_platform_surface_pass": re.compile(r"\b(MCP|hook|plugin|subagent|agent zoo)\b", re.I),
+}
 VALIDATION_CHECKS = (
     "format_pass",
     "token_count_present",
@@ -126,6 +154,14 @@ VALIDATION_CHECKS = (
     "routing_pass",
     "overreach_pass",
 )
+HANDOFF_VALIDATION_CHECKS = VALIDATION_CHECKS + (
+    "handoff_routing_pass",
+    "handoff_not_runtime_pass",
+    "no_worker_lane_pass",
+    "no_model_name_pass",
+    "no_dispatch_command_pass",
+    "no_platform_surface_pass",
+)
 NON_TECH_FAILURE_REASONS = {
     "format_pass": "The answer is too long or unstructured for a non-technical owner to act on safely.",
     "token_count_present": "The benchmark cannot compare cost or verbosity without a token count.",
@@ -133,6 +169,12 @@ NON_TECH_FAILURE_REASONS = {
     "reference_budget_pass": "The agent read extra reference docs where the happy path should stay compact.",
     "routing_pass": "The agent chose the wrong work mode, which can either overbuild a small task or underprotect a risky one.",
     "overreach_pass": "The agent mentioned forbidden higher gears, creating unnecessary escalation noise for a bounded task.",
+    "handoff_routing_pass": "The agent did not make the expected broad-orchestrator handoff decision for this risk shape.",
+    "handoff_not_runtime_pass": "The agent leaked orchestration runtime details instead of staying inside the BMADX handoff packet contract.",
+    "no_worker_lane_pass": "The handoff suggested worker lanes, which would make BMADX behave like a runtime orchestrator.",
+    "no_model_name_pass": "The handoff named specific models, which should remain a receiving orchestrator decision.",
+    "no_dispatch_command_pass": "The handoff included dispatch/runtime commands instead of a portable risk-and-proof packet.",
+    "no_platform_surface_pass": "The handoff mentioned platform surfaces such as MCP, hooks, plugins, or subagents that BMADX must not install or require.",
 }
 
 
@@ -173,19 +215,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def build_prompt(scenario_path: Path) -> str:
+def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
     content = scenario_path.read_text(encoding="utf-8")
     task_line = next(
         (line for line in content.splitlines() if line.strip().startswith("Task:")),
         "",
     )
     task = task_line.partition("Task:")[2].strip()
-    return (
+    prompt = (
         "Use $bmadx. Compact gate only. Answer only the BMADX short contract. "
         "No analysis. For X1/X2 do not read refs. "
         "Do not implement/edit/render/inline artifacts. "
-        f"Task: {task}"
     )
+    if include_handoff:
+        prompt += (
+            "If broad orchestrator handoff is relevant, include exactly one `Handoff: yes/no` line. "
+            "Do not name models, worker lanes, arbiters, dispatch commands, MCP, hooks, plugins, subagents, or runtime state. "
+        )
+    return prompt + f"Task: {task}"
 
 
 def parse_token_count(stderr: str) -> int | None:
@@ -237,6 +284,26 @@ def detect_selected_gear(stdout: str) -> str | None:
     return match.group(1).upper() if match else None
 
 
+def detect_handoff(stdout: str) -> bool | None:
+    match = HANDOFF_PATTERN.search(stdout)
+    if not match:
+        return None
+    value = match.group(1).strip().lower()
+    if value in {"yes", "recommended"}:
+        return True
+    if value in {"no", "not recommended", "none"}:
+        return False
+    return None
+
+
+def validate_handoff_runtime_drift(stdout: str) -> dict:
+    result = {}
+    for key, pattern in FORBIDDEN_HANDOFF_RUNTIME_PATTERNS.items():
+        result[key] = pattern.search(stdout) is None
+    result["handoff_not_runtime_pass"] = all(result.values())
+    return result
+
+
 def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> dict:
     response = stdout.strip()
     lines = [line for line in response.splitlines() if line.strip()]
@@ -245,6 +312,7 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
     reference_reads = detect_reference_reads(stderr)
     expected_gear = str(spec.get("expected_gear") or "")
     forbidden_gears = set(spec.get("forbidden_gears") or [])
+    expected_handoff = spec.get("expected_handoff")
     token_count_present = tokens is not None
 
     format_pass = True
@@ -261,6 +329,19 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
     reference_budget_pass = allow_reference_reads or not reference_reads
     routing_pass = selected_gear == expected_gear if expected_gear else True
     overreach_pass = not any(gear in forbidden_gears for gear in observed_gears)
+    observed_handoff = detect_handoff(stdout)
+    handoff_routing_pass = (
+        observed_handoff == bool(expected_handoff)
+        if expected_handoff is not None
+        else True
+    )
+    handoff_runtime = validate_handoff_runtime_drift(stdout) if expected_handoff is not None else {
+        "handoff_not_runtime_pass": True,
+        "no_worker_lane_pass": True,
+        "no_model_name_pass": True,
+        "no_dispatch_command_pass": True,
+        "no_platform_surface_pass": True,
+    }
 
     return {
         "expected_gear": expected_gear,
@@ -273,6 +354,10 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "reference_budget_pass": reference_budget_pass,
         "routing_pass": routing_pass,
         "overreach_pass": overreach_pass,
+        "expected_handoff": expected_handoff,
+        "observed_handoff": observed_handoff,
+        "handoff_routing_pass": handoff_routing_pass,
+        **handoff_runtime,
     }
 
 
@@ -301,7 +386,8 @@ def summarize_validation(cases: list[dict]) -> dict:
 def validation_failures(cases: list[dict]) -> list[dict]:
     failures = []
     for case in cases:
-        failed_checks = [check for check in VALIDATION_CHECKS if not case.get(check)]
+        checks = HANDOFF_VALIDATION_CHECKS if case.get("expected_handoff") is not None else VALIDATION_CHECKS
+        failed_checks = [check for check in checks if not case.get(check)]
         if failed_checks:
             failures.append(
                 {
@@ -512,7 +598,7 @@ def run_case(
     model_slug_value: str,
 ) -> dict:
     scenario_path = Path(spec["path"])
-    prompt = build_prompt(scenario_path)
+    prompt = build_prompt(scenario_path, include_handoff=spec.get("expected_handoff") is not None)
     command = build_codex_command(
         prompt,
         workdir,
@@ -564,6 +650,14 @@ def run_case(
         "reference_budget_pass": validation["reference_budget_pass"],
         "routing_pass": validation["routing_pass"],
         "overreach_pass": validation["overreach_pass"],
+        "expected_handoff": validation["expected_handoff"],
+        "observed_handoff": validation["observed_handoff"],
+        "handoff_routing_pass": validation["handoff_routing_pass"],
+        "handoff_not_runtime_pass": validation["handoff_not_runtime_pass"],
+        "no_worker_lane_pass": validation["no_worker_lane_pass"],
+        "no_model_name_pass": validation["no_model_name_pass"],
+        "no_dispatch_command_pass": validation["no_dispatch_command_pass"],
+        "no_platform_surface_pass": validation["no_platform_surface_pass"],
         "reference_reads": validation["reference_reads"],
         "raw_txt": repo_relative(raw_base.with_suffix(".txt")),
         "raw_log": repo_relative(raw_base.with_suffix(".log")),
@@ -576,6 +670,7 @@ def build_summary(
     core_cases: list[dict],
     boundary_cases: list[dict],
     non_technical_cases: list[dict] | None = None,
+    handoff_cases: list[dict] | None = None,
     *,
     model: str,
     reasoning: str,
@@ -583,6 +678,7 @@ def build_summary(
     local_provider: str | None = None,
 ) -> dict:
     non_technical_cases = non_technical_cases or []
+    handoff_cases = handoff_cases or []
     token_values = [case["tokens"] for case in core_cases]
     return {
         "generated_at": date_stamp,
@@ -603,6 +699,7 @@ def build_summary(
         "cases": core_cases,
         "boundary_cases": boundary_cases,
         "non_technical_cases": non_technical_cases,
+        "handoff_cases": handoff_cases,
         "framework_averages": {
             "bmadx": {
                 "avg_tokens": sum(token_values) / len(token_values) if token_values else 0,
@@ -615,15 +712,25 @@ def build_summary(
             "core": summarize_validation(core_cases),
             "boundary": summarize_validation(boundary_cases),
             "non_technical": summarize_validation(non_technical_cases),
+            "handoff": summarize_validation(handoff_cases)
+            | {
+                "handoff_routing_pass_count": sum(1 for case in handoff_cases if case["handoff_routing_pass"]),
+                "handoff_not_runtime_pass_count": sum(1 for case in handoff_cases if case["handoff_not_runtime_pass"]),
+                "no_worker_lane_pass_count": sum(1 for case in handoff_cases if case["no_worker_lane_pass"]),
+                "no_model_name_pass_count": sum(1 for case in handoff_cases if case["no_model_name_pass"]),
+                "no_dispatch_command_pass_count": sum(1 for case in handoff_cases if case["no_dispatch_command_pass"]),
+                "no_platform_surface_pass_count": sum(1 for case in handoff_cases if case["no_platform_surface_pass"]),
+            },
         },
         "validation_failures": {
             "core": validation_failures(core_cases),
             "boundary": validation_failures(boundary_cases),
             "non_technical": validation_failures(non_technical_cases),
+            "handoff": validation_failures(handoff_cases),
         },
         "non_technical_readout": {
             "what_failed_why_it_matters": explain_failures_for_non_technical_users(
-                core_cases + boundary_cases + non_technical_cases
+                core_cases + boundary_cases + non_technical_cases + handoff_cases
             )
         },
     }
@@ -697,6 +804,23 @@ def main() -> int:
                     model_slug_value=model_slug_value,
                 )
             )
+        handoff_cases = []
+        for scenario_key, spec in HANDOFF_SCENARIOS.items():
+            handoff_cases.append(
+                run_case(
+                    codex_home,
+                    args.profile,
+                    scenario_key,
+                    spec,
+                    workdir,
+                    healthy_release_fixture,
+                    model=args.model,
+                    reasoning=args.reasoning,
+                    oss=args.oss,
+                    local_provider=args.local_provider,
+                    model_slug_value=model_slug_value,
+                )
+            )
 
     summary = build_summary(
         args.date_stamp,
@@ -704,6 +828,7 @@ def main() -> int:
         core_cases,
         boundary_cases,
         non_technical_cases,
+        handoff_cases,
         model=args.model,
         reasoning=args.reasoning,
         oss=args.oss,
@@ -718,6 +843,7 @@ def main() -> int:
                 "core_case_count": len(core_cases),
                 "boundary_case_count": len(boundary_cases),
                 "non_technical_case_count": len(non_technical_cases),
+                "handoff_case_count": len(handoff_cases),
             },
             indent=2,
         )

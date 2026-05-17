@@ -11,6 +11,11 @@ behavior probes until they pass the same BMADX gates.
 `PMAX X` is the BMADX cheap-model experiment lane. It is not a product-default
 lane and it must not weaken `BMAD > BMADX`.
 
+`PMAX X` is not the broad orchestrator lane. It tests whether cheaper models can
+assist bounded BMADX stages inside Codex benchmarks. It does not authorize
+BMADX to dispatch workers, choose multi-model lanes, or claim broad
+orchestration support.
+
 Clean rule:
 - `gpt-5.5` remains the primary BMADX lane for routing, red-zone decisions,
   `X3/X4`, Rescue Mode, and final synthesis,

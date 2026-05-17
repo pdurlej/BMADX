@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BMADX Broad Orchestrator Handoff Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "origin",
+    "task_summary",
+    "gear",
+    "bmad_gate_status",
+    "handoff_recommended",
+    "handoff_reason_codes",
+    "red_zone_flags",
+    "privacy_guess",
+    "reversibility_guess",
+    "proof_required",
+    "forbidden_changes",
+    "open_questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "bmadx_handoff.v1"
+    },
+    "origin": {
+      "const": "bmadx"
+    },
+    "task_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gear": {
+      "enum": ["X1", "X2", "X3", "X4"]
+    },
+    "gear_label": {
+      "type": "string"
+    },
+    "bmad_gate_status": {
+      "enum": ["allowed", "warning", "blocked"]
+    },
+    "handoff_recommended": {
+      "type": "boolean"
+    },
+    "handoff_reason_codes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "architecture_ownership_unclear",
+          "broad_context",
+          "external_api_integration",
+          "judgment_heavy",
+          "long_context",
+          "multi_system",
+          "privacy_sensitive",
+          "production_or_rollout_risk",
+          "proof_path_unclear",
+          "public_artifact",
+          "red_zone_auth",
+          "red_zone_billing",
+          "red_zone_data",
+          "red_zone_migration",
+          "rollback_unclear",
+          "user_requested_broad_review"
+        ]
+      }
+    },
+    "red_zone_flags": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "auth",
+          "billing",
+          "payments",
+          "permissions",
+          "database_migrations",
+          "data_deletion",
+          "secrets",
+          "production_config",
+          "user_data_privacy",
+          "multi_tenant_access",
+          "webhooks",
+          "encryption",
+          "admin_roles",
+          "legal_compliance",
+          "external_api_integration",
+          "public_artifact"
+        ]
+      }
+    },
+    "privacy_guess": {
+      "enum": ["public", "internal", "confidential", "secret", "unknown"]
+    },
+    "reversibility_guess": {
+      "enum": ["obvious", "needs_rollback_plan", "unknown", "irreversible_risk"]
+    },
+    "hard_stop_candidates": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "production_state_mutation",
+          "secret_rotation",
+          "breaking_deploy",
+          "paid_service_charge",
+          "public_artifact_under_operator_name",
+          "external_api_integration",
+          "cross_agent_governance",
+          "safety_no_prod_mutation"
+        ]
+      }
+    },
+    "bmad_artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "proof_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbidden_changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "not": {
+    "anyOf": [
+      {"required": ["model"]},
+      {"required": ["models"]},
+      {"required": ["primary_worker"]},
+      {"required": ["secondary_workers"]},
+      {"required": ["worker_lane"]},
+      {"required": ["worker_lanes"]},
+      {"required": ["arbiter"]},
+      {"required": ["opus"]},
+      {"required": ["dispatch_command"]},
+      {"required": ["mcp"]},
+      {"required": ["hooks"]},
+      {"required": ["plugins"]},
+      {"required": ["subagents"]},
+      {"required": ["run_id"]},
+      {"required": ["runtime_state_path"]}
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "bmadx_handoff.v1",
+  "origin": "bmadx",
+  "task_summary": "Recover from a failed migration with unclear rollback ownership and large logs that need broad review.",
+  "gear": "X4",
+  "gear_label": "Rescue Mode / X4-FUBAR",
+  "bmad_gate_status": "allowed",
+  "handoff_recommended": true,
+  "handoff_reason_codes": [
+    "long_context",
+    "production_or_rollout_risk",
+    "rollback_unclear",
+    "proof_path_unclear",
+    "user_requested_broad_review"
+  ],
+  "red_zone_flags": [
+    "database_migrations",
+    "data_deletion",
+    "production_config"
+  ],
+  "privacy_guess": "confidential",
+  "reversibility_guess": "irreversible_risk",
+  "hard_stop_candidates": [
+    "production_state_mutation",
+    "breaking_deploy"
+  ],
+  "bmad_artifact_refs": [
+    "_bmad-output/project-context.md",
+    "_bmad-output/architecture-*.md"
+  ],
+  "proof_required": [
+    "migration state inventory",
+    "rollback owner and rollback command",
+    "backup/recovery evidence",
+    "staging reproduction or explanation why it is impossible"
+  ],
+  "forbidden_changes": [
+    "no production database mutation before explicit operator approval",
+    "no deploy or service restart",
+    "no destructive repair command"
+  ],
+  "open_questions": [
+    "What exactly failed during migration?",
+    "Who owns rollback?",
+    "Which data is at risk?",
+    "What evidence proves recovery is safe enough to proceed?"
+  ]
+}

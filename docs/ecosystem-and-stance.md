@@ -81,6 +81,35 @@ as Codex OSS-provider benchmarks. They are not the default product target until
 they pass routing, red-zone escalation, compact-output, and Rescue Mode rarity
 checks.
 
+## Broad orchestration boundary
+
+BMADX can cooperate with external broad orchestration systems by exporting a
+small handoff packet. This works with orchestration models such as
+Gastown-style multi-model workflows, team-specific review systems, or private
+arbitration stacks.
+
+The broad orchestrator may consume:
+- BMADX gear,
+- BMAD gate state,
+- red-zone flags,
+- privacy and reversibility guesses,
+- proof requirements,
+- forbidden changes,
+- open questions.
+
+BMADX does not import or execute:
+- model lanes,
+- worker dispatch,
+- arbitration,
+- hooks,
+- MCP,
+- plugins,
+- subagents,
+- runtime state.
+
+Handoff is not `X5`. `X4/FUBAR` remains Rescue Mode and should not become the
+default path into broad orchestration.
+
 ## Collaboration stance
 
 ### BMAD
@@ -134,6 +163,7 @@ Do not add:
 | Candidate | Near-term BMADX fit | Boundary |
 | --- | --- | --- |
 | Oracle | Recommended second-opinion companion for `X3/X4`, boundary decisions, and architecture review | Do not treat model advice as proof |
+| Broad orchestrators | Packet-based handoff when work is too broad, judgment-heavy, or long-context for the narrow Codex lane | Do not ship model lanes, workers, arbiters, or runtime state |
 | pyfallow | Recommended verification companion for Python repos | Do not make BMADX a static analyzer |
 | Guardrails.md | X4 Failure Patterns / Guardians and repo safety constraints; evaluate a thin Codex skill or MCP bridge later | Do not replace BMAD artifacts |
 | Codex OSS providers | Experimental benchmark lane for local models such as Mistral through Ollama or LM Studio | Do not make local-model behavior a release claim until it passes the same gates |

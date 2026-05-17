@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.5
+# Project Context — BMADX v0.2.6
 
 ## Scope
 
@@ -10,13 +10,19 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
-- publish `v0.2.5` as the public release for the non-technical architecture guardrail stack,
+- publish `v0.2.6` as the public release for the broad-orchestrator handoff contract,
 - tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - position BMADX as an architecture guardrail for people who understand the
   product problem better than the software architecture,
 - add the Architecture Guardrail Card as the default non-technical interface for architecture risk,
 - add red-zone escalation defaults so auth, billing, data, permissions, secrets, and production work enter BMAD,
+- add an explicit packet-based handoff surface for work that should move from
+  the narrow Codex-first lane into a broad orchestration workflow,
+- document cooperation with broad orchestration models such as Gastown-style
+  workflows without naming, depending on, or copying private orchestrators,
+- improve subagent guidance for operator time-to-value while keeping final
+  responsibility in the main BMADX/Codex lane,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
 - keep `X4/FUBAR` valuable without making it normal.
@@ -24,13 +30,15 @@ Current release focus:
 Out of scope:
 - porting OMX,
 - adding a second durable plan store,
-- turning BMADX into a runtime platform.
+- turning BMADX into a runtime platform,
 - shipping Claude Code parity or a generic multi-agent adapter layer.
+- dispatching workers, choosing model lanes, assigning arbiters, installing
+  hooks/MCP/plugins/subagents, or creating runtime state for broad orchestration.
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.5.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.5.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.6.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.6.md`
 
 ## Model target
 
@@ -91,6 +99,23 @@ Red-zone tasks are `X3` minimum unless purely textual:
 Escalate to `X4` when red-zone work also has unclear ownership, repeated
 failures, rollback risk, incident recovery, or no credible verification path.
 
+### Broad-orchestrator handoff
+
+- Handoff is a packet contract, not a new gear and not `X5`.
+- `X4/FUBAR` remains Rescue Mode, not automatic broad orchestration.
+- BMADX may recommend handoff for domain-heavy, judgment-heavy, long-context,
+  privacy-sensitive, multi-system, public-artifact, or explicitly requested
+  broad-review work.
+- BMADX may export only gear, BMAD gate state, red-zone flags, privacy and
+  reversibility guesses, proof requirements, forbidden changes, open questions,
+  and BMAD artifact references.
+- BMADX must not export model choices, worker lanes, arbiters, dispatch
+  commands, MCP/hooks/plugins/subagent setup, persistent run IDs, or runtime
+  state.
+- Public docs may name only generic broad orchestration examples such as
+  Gastown-style workflows, team-specific review systems, or private arbitration
+  stacks.
+
 ### X1/X2
 
 - classify first,
@@ -98,6 +123,9 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - use the cached healthy BMAD state when available,
 - warn instead of blocking when there is no fresh healthy BMAD snapshot,
 - keep the response compact in the obvious happy path.
+- default subagent stance: do not spawn for most `X1`; for `X2`, one bounded
+  read-only helper can improve time-to-value when it checks independent repo
+  patterns, duplicate text, or verification while the main lane keeps moving.
 
 ### X3/X4
 
@@ -123,6 +151,11 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - profiles: `healthy`, `degraded`
 - mixed metrics: token budget, response format, routing, reference-read budget
 - model-aware artifacts use the model slug in raw and summary file names
+- broad-handoff benchmark extension: scenarios now cover an `X3` auth
+  architecture review handoff and an `X4` migration recovery handoff
+- broad-handoff benchmark extension: summaries include `handoff_cases`,
+  handoff routing, and runtime-drift checks that reject worker lanes, model
+  names, dispatch commands, and platform-surface leakage
 - current `v0.2.4` GPT-5.5 healthy result: `6302.0` average tokens, all core validation gates passed
 - current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
 - current GPT-5.4 healthy comparison: `12370.75` average tokens

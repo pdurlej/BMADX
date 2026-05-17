@@ -6,6 +6,22 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.2.6] - 2026-05-17
+
+### Added
+
+- Broad Orchestrator Handoff contract for exporting BMADX gear, BMAD gate state, risk flags, proof needs, and open questions to external orchestration systems.
+- `bmadx_handoff.v1` JSON schema and sample handoff packets for `X3` auth architecture review and `X4` migration recovery review.
+- Skill reference for broad handoff boundaries, including `X3/X4` with and without handoff.
+- Public docs explaining that the handoff schema can cooperate with broad orchestration models such as Gastown-style workflows without making BMADX a runtime platform.
+- Benchmark validation hooks for handoff cases and runtime-drift checks.
+
+### Changed
+
+- BMADX public positioning now separates the narrow Codex-first lane from broad orchestration handoff.
+- `PMAX X` is clarified as a model-experiment lane, not broad orchestration support.
+- Subagent guidance now optimizes for operator time-to-value: no default helpers for simple `X1`, and one bounded read-only helper when `X2` discovery or verification can run in parallel.
+
 ## [0.2.5] - 2026-05-05
 
 ### Added

@@ -1,0 +1,2 @@
+Scenario: X4 broad handoff candidate
+Task: Recover from a failed migration with unclear rollback ownership, large logs, production risk, and an explicit request for broad review before any repair commands.

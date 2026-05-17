@@ -7,6 +7,7 @@ The benchmark is useful for showing:
 - BMADX can stay compact for normal work while keeping BMAD-first boundaries
 - BMADX can validate more than tokens alone through format, routing, and reference-budget checks
 - BMADX can test non-technical red-zone routing, such as auth, billing, data deletion, and messy recovery tasks
+- BMADX can detect whether broad-orchestrator handoff stays a small risk/proof packet instead of drifting into runtime orchestration
 
 ## What this does not prove
 
@@ -40,6 +41,7 @@ Runner hardening after `v0.2.4`:
 - raw logs keep benchmark-relevant stderr while omitting analytics HTML noise
 - future runner summaries include `non_technical_cases` plus a plain-language `what_failed_why_it_matters` readout
 - runner summaries record whether the run used the primary Codex/OpenAI path or an experimental OSS local provider
+- `v0.2.6` runner summaries include `handoff_cases` and runtime-drift checks that reject worker lanes, model names, dispatch commands, MCP, hooks, plugins, subagents, and runtime state
 
 ## Model and provider experiments
 
@@ -79,6 +81,19 @@ The runner now includes a dedicated non-technical scenario group:
 These are not a new claim that BMADX beats every adjacent tool. They test the
 core non-technical promise: small work stays small, red-zone work escalates, and
 Rescue Mode appears only when the situation is actually rescue-shaped.
+
+## Broad handoff scenarios
+
+The runner now includes a small handoff scenario group:
+
+| Scenario | Expected routing | Expected handoff | Why it matters |
+| --- | --- | --- | --- |
+| auth architecture review | `X3` | yes | unclear auth ownership may deserve broad review, but it is not Rescue Mode by default |
+| migration recovery review | `X4` | yes | rollback uncertainty and long-context recovery can justify external broad orchestration |
+
+These cases do not benchmark an external orchestrator. They only verify that
+BMADX can say “handoff useful” without naming models, workers, arbiters, hooks,
+MCP, plugins, subagents, dispatch commands, or runtime state.
 
 ## Historical baseline
 
