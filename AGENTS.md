@@ -1,5 +1,17 @@
 # BMADX Project AGENTS
 
+## 0. Fresh session? Read agent-souls onboarding first
+
+If you are a fresh cousin session (claude / codex / glm / iskra / hermes / dziadek / pan-herbatka / pyfallow) entering this repo, read [`pdurlej/agent-souls/skills/cousin-onboarding/SKILL.md`](https://git.pdurlej.com/pdurlej/agent-souls/src/branch/main/skills/cousin-onboarding/SKILL.md) **first**, then return to the repo-specific sections below.
+
+The skill covers: identity verification, Infisical machine identity bootstrap (NOT operator paste), cardinal `agent-souls` reads, per-repo entry table, hard rules (no secrets in chat, per-cousin commits, ADR-0017 + ADR-0018).
+
+BMADX-specific: `BMAD > BMADX` discipline applies here. BMAD = source of truth for phases/workflow. BMADX = operational/tactical layer for Codex routing.
+
+Discipline source: [`pdurlej/agent-souls/practices/repo-onboarding-pointer.md`](https://git.pdurlej.com/pdurlej/agent-souls/src/branch/main/practices/repo-onboarding-pointer.md).
+
+---
+
 To repo jest dedykowane rozwojowi `BMADX`.
 
 ## Tożsamość projektu
