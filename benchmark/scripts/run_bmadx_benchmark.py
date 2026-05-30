@@ -90,6 +90,7 @@ def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
     task = task_line.partition("Task:")[2].strip()
     prompt = (
         "Use $bmadx. Compact gate only. Answer only the BMADX short contract. "
+        "Include exactly one `Thinking: <low|medium|high|xhigh> — suggestion only` line. "
         "No analysis. For X1/X2 do not read refs. "
         "Do not implement/edit/render/inline artifacts. "
     )
@@ -339,6 +340,12 @@ def run_case(
         "expected_handoff": validation["expected_handoff"],
         "observed_handoff": validation["observed_handoff"],
         "handoff_routing_pass": validation["handoff_routing_pass"],
+        "expected_reasoning_effort": validation["expected_reasoning_effort"],
+        "observed_reasoning_effort": validation["observed_reasoning_effort"],
+        "thinking_budget_present": validation["thinking_budget_present"],
+        "thinking_budget_pass": validation["thinking_budget_pass"],
+        "thinking_budget_no_mutation_pass": validation["thinking_budget_no_mutation_pass"],
+        "thinking_budget_supported_value_pass": validation["thinking_budget_supported_value_pass"],
         "handoff_not_runtime_pass": validation["handoff_not_runtime_pass"],
         "no_worker_lane_pass": validation["no_worker_lane_pass"],
         "no_model_name_pass": validation["no_model_name_pass"],

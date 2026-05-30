@@ -21,6 +21,11 @@ HANDOFF_PATTERN = re.compile(
     r"Handoff(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
     r"(yes|no|recommended|not recommended|none)\b"
 )
+THINKING_PATTERN = re.compile(
+    r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
+    r"Thinking(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
+    r"(?:`|\*\*)?[ \t]*(minimal|low|medium|high|xhigh|extra[_ -]?high|x[_ -]?high|[a-z][a-z0-9_-]*)\b"
+)
 FORBIDDEN_HANDOFF_RUNTIME_PATTERNS = {
     "no_worker_lane_pass": re.compile(r"\b(primary_worker|secondary_workers|worker lane|model lane|lane:)\b", re.I),
     "no_model_name_pass": re.compile(
@@ -30,6 +35,13 @@ FORBIDDEN_HANDOFF_RUNTIME_PATTERNS = {
     "no_dispatch_command_pass": re.compile(r"\b(dispatch|ollama run|codex exec --oss|run_id|runtime state)\b", re.I),
     "no_platform_surface_pass": re.compile(r"\b(MCP|hook|plugin|subagent|agent zoo)\b", re.I),
 }
+FORBIDDEN_THINKING_MUTATION_PATTERN = re.compile(
+    r"(~/.codex/config\.toml|CODEX_HOME.*/config\.toml|"
+    r"persist(?:ent|ently)?.*reasoning|write_config|set.*default.*reasoning|"
+    r"mutate.*config|edit.*config\.toml)",
+    re.I,
+)
+SUPPORTED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh"}
 VALIDATION_CHECKS = (
     "format_pass",
     "token_count_present",
@@ -37,6 +49,9 @@ VALIDATION_CHECKS = (
     "reference_budget_pass",
     "routing_pass",
     "overreach_pass",
+    "thinking_budget_pass",
+    "thinking_budget_no_mutation_pass",
+    "thinking_budget_supported_value_pass",
 )
 HANDOFF_VALIDATION_CHECKS = VALIDATION_CHECKS + (
     "handoff_routing_pass",
@@ -53,6 +68,9 @@ NON_TECH_FAILURE_REASONS = {
     "reference_budget_pass": "The agent read extra reference docs where the happy path should stay compact.",
     "routing_pass": "The agent chose the wrong work mode, which can either overbuild a small task or underprotect a risky one.",
     "overreach_pass": "The agent mentioned forbidden higher gears, creating unnecessary escalation noise for a bounded task.",
+    "thinking_budget_pass": "The suggested reasoning effort does not match the task's risk and process weight.",
+    "thinking_budget_no_mutation_pass": "The answer tried to make reasoning effort a persistent config change instead of a per-task suggestion.",
+    "thinking_budget_supported_value_pass": "The answer used a non-canonical reasoning effort instead of minimal, low, medium, high, or xhigh.",
     "handoff_routing_pass": "The agent did not make the expected broad-orchestrator handoff decision for this risk shape.",
     "handoff_not_runtime_pass": "The agent leaked orchestration runtime details instead of staying inside the BMADX handoff packet contract.",
     "no_worker_lane_pass": "The handoff suggested worker lanes, which would make BMADX behave like a runtime orchestrator.",
@@ -123,6 +141,23 @@ def detect_handoff(stdout: str) -> bool | None:
     return None
 
 
+def normalize_reasoning_effort(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().lower().replace("-", "_").replace(" ", "_")
+    return {
+        "extra_high": "xhigh",
+        "x_high": "xhigh",
+    }.get(normalized, normalized)
+
+
+def detect_thinking_effort(stdout: str) -> str | None:
+    match = THINKING_PATTERN.search(stdout)
+    if not match:
+        return None
+    return normalize_reasoning_effort(match.group(1))
+
+
 def validate_handoff_runtime_drift(stdout: str) -> dict:
     result = {}
     for key, pattern in FORBIDDEN_HANDOFF_RUNTIME_PATTERNS.items():
@@ -140,6 +175,8 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
     expected_gear = str(spec.get("expected_gear") or "")
     forbidden_gears = set(spec.get("forbidden_gears") or [])
     expected_handoff = spec.get("expected_handoff")
+    expected_reasoning_effort = normalize_reasoning_effort(spec.get("expected_reasoning_effort"))
+    observed_reasoning_effort = detect_thinking_effort(stdout)
     token_count_present = tokens is not None
 
     format_pass = True
@@ -169,6 +206,18 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "no_dispatch_command_pass": True,
         "no_platform_surface_pass": True,
     }
+    thinking_budget_present = observed_reasoning_effort is not None
+    thinking_budget_supported_value_pass = (
+        observed_reasoning_effort in SUPPORTED_REASONING_EFFORTS
+        if thinking_budget_present
+        else expected_reasoning_effort is None
+    )
+    thinking_budget_pass = (
+        observed_reasoning_effort == expected_reasoning_effort
+        if expected_reasoning_effort
+        else True
+    )
+    thinking_budget_no_mutation_pass = FORBIDDEN_THINKING_MUTATION_PATTERN.search(stdout) is None
 
     return {
         "expected_gear": expected_gear,
@@ -184,6 +233,12 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "expected_handoff": expected_handoff,
         "observed_handoff": observed_handoff,
         "handoff_routing_pass": handoff_routing_pass,
+        "expected_reasoning_effort": expected_reasoning_effort,
+        "observed_reasoning_effort": observed_reasoning_effort,
+        "thinking_budget_present": thinking_budget_present,
+        "thinking_budget_pass": thinking_budget_pass,
+        "thinking_budget_no_mutation_pass": thinking_budget_no_mutation_pass,
+        "thinking_budget_supported_value_pass": thinking_budget_supported_value_pass,
         **handoff_runtime,
     }
 
@@ -198,6 +253,10 @@ def summarize_validation(cases: list[dict]) -> dict:
             "reference_budget_pass_count": 0,
             "routing_pass_count": 0,
             "overreach_pass_count": 0,
+            "thinking_budget_present_count": 0,
+            "thinking_budget_pass_count": 0,
+            "thinking_budget_no_mutation_pass_count": 0,
+            "thinking_budget_supported_value_pass_count": 0,
         }
     return {
         "case_count": len(cases),
@@ -207,6 +266,14 @@ def summarize_validation(cases: list[dict]) -> dict:
         "reference_budget_pass_count": sum(1 for case in cases if case["reference_budget_pass"]),
         "routing_pass_count": sum(1 for case in cases if case["routing_pass"]),
         "overreach_pass_count": sum(1 for case in cases if case["overreach_pass"]),
+        "thinking_budget_present_count": sum(1 for case in cases if case.get("thinking_budget_present")),
+        "thinking_budget_pass_count": sum(1 for case in cases if case.get("thinking_budget_pass")),
+        "thinking_budget_no_mutation_pass_count": sum(
+            1 for case in cases if case.get("thinking_budget_no_mutation_pass")
+        ),
+        "thinking_budget_supported_value_pass_count": sum(
+            1 for case in cases if case.get("thinking_budget_supported_value_pass")
+        ),
     }
 
 

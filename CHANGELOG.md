@@ -6,6 +6,20 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.2.7] - 2026-05-30
+
+### Added
+
+- Thinking Budget Advisor for per-task Codex reasoning-effort recommendations.
+- Public and skill docs for canonical reasoning values: `minimal`, `low`, `medium`, `high`, and `xhigh`.
+- Benchmark parsing and validation for `Thinking:` lines, including checks that reject persistent Codex config mutation guidance.
+
+### Changed
+
+- BMADX now treats thinking budget as advisory output after gear classification and compact gate checks.
+- Benchmark scenarios now carry expected thinking-budget values alongside expected gears.
+- Public docs clarify that BMADX can suggest fit-for-purpose reasoning effort without editing global Codex config.
+
 ## [0.2.6] - 2026-05-17
 
 ### Added

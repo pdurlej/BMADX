@@ -21,7 +21,7 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.2.6`
+Current public version: `v0.2.7`
 
 ## Start here
 
@@ -57,6 +57,7 @@ unclear migration recovery as the same kind of work.
 - BMADX requires BMAD for Codex. If BMAD is not installed, start there first.
 - BMADX is Codex-first, not Claude Code-native.
 - BMADX adds routing and guardrails; it does not prove code quality by itself.
+- BMADX can recommend per-task Codex thinking budget, but it does not edit your global Codex config.
 - Model experiments such as `PMAX X` are benchmark probes, not support claims.
 - Tests, CI, static analysis, and human review still matter for red-zone work.
 
@@ -98,6 +99,11 @@ Model experiments are welcome inside Codex. The benchmark runner supports the
 primary OpenAI/Codex path and can also run experimental local-model checks via
 Codex OSS providers when a local model is installed.
 
+BMADX can also suggest a fit-for-purpose thinking budget for the current run:
+`low` for tiny local work, `medium` for bounded normal changes, `high` for
+BMAD-heavy/red-zone work, and `xhigh` only for real Rescue Mode execution. See
+[Thinking Budget Advisor](docs/thinking-budget-advisor.md).
+
 ### Model lanes
 
 - Primary lane: Codex on GPT-5.5.
@@ -137,6 +143,7 @@ Then open Codex in your project and paste:
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
 Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 <describe the change in plain English>

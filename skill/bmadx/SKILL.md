@@ -20,6 +20,9 @@ without exposing more process machinery than the task needs.
 Since `v0.2.6`, BMADX is tuned for Codex on GPT-5.5. Treat stronger models as
 better executors, not as permission to skip boundaries: BMADX remains a
 boundary and verification layer, not a substitute for BMAD process ownership.
+Since `v0.2.7`, BMADX may also recommend a per-task thinking budget so the
+operator can buy the right amount of reasoning without changing global Codex
+configuration.
 
 Non-negotiable rule:
 - `BMAD > BMADX`
@@ -183,6 +186,41 @@ Selection rule:
 - if the task has unclear architecture ownership, destructive data risk, or safety-critical verification gaps, it becomes BMAD work (`X3`) even when the prompt sounds small
 - if the repo is already in a failure loop, has unclear owners, or needs a scaffold bundle, choose Rescue Mode (`X4/FUBAR`)
 - if the gear is `X3/X4` but execution is blocked, keep the correct classification and report the execution block separately
+
+## Thinking Budget Advisor
+
+BMADX may recommend a Codex reasoning effort for the current task or benchmark
+run. This is advisory only: it never changes the gear, never bypasses BMAD, and
+must not mutate global Codex config.
+
+Order:
+1. classify gear,
+2. check the compact gate,
+3. recommend thinking budget for the current run.
+
+Defaults:
+- `X1`: `low`, fallback `medium`
+- `X2`: `medium`
+- `X2/X3` boundary: `high`
+- `X3`: `high`
+- `X4`: `xhigh` for real rescue execution; `high` is acceptable for classification-only prompts
+
+Rules:
+- emit canonical values only: `minimal`, `low`, `medium`, `high`, or `xhigh`
+- do not emit `extra_high`; normalize it to `xhigh` if the user says it
+- do not show the line for obvious `X1/X2` unless asked, benchmarked, or the recommendation matters
+- for `X3/X4`, show the recommendation because cost and hard gates matter
+- if the selected provider does not support the recommended effort, use the closest lower supported value and say so briefly
+- never write or instruct edits to `~/.codex/config.toml` as part of BMADX routing
+
+Visible line when needed:
+
+```text
+Thinking: high — suggestion only for this Codex run.
+```
+
+Details:
+- [thinking-budget.md](references/thinking-budget.md)
 
 ## Broad orchestrator handoff
 

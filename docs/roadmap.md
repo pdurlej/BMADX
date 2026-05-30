@@ -7,9 +7,16 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.6`
+- `v0.2.7`
 
-What `v0.2.6` focuses on:
+What `v0.2.7` focuses on:
+- Thinking Budget Advisor: per-task Codex reasoning-effort recommendations
+  that follow the selected gear without changing global Codex config
+- benchmark validation for `Thinking:` lines and guardrails against persistent
+  reasoning config mutation
+- preserving `v0.2.6` broad-orchestrator handoff as a packet schema, not runtime integration
+
+What `v0.2.6` focused on:
 - broad-orchestrator handoff as a packet schema, not runtime integration
 - cooperation with Gastown-style broad orchestration models without naming or depending on a private orchestrator
 - preserving BMADX as the narrow Codex-first lane while allowing explicit handoff for broad, judgment-heavy, or long-context work
@@ -38,6 +45,7 @@ What `v0.2.5` focused on:
 - ship the Architecture Guardrail Card as the default mental model for non-technical architecture risk
 - keep red-zone routing strict for auth, billing, permissions, data, secrets, production config, and privacy
 - integrate with companion guardrails such as pyfallow and Guardrails.md by recommendation, not by platform ownership
+- validate whether advisor-selected reasoning levels reduce token spend without weakening red-zone routing or `X4` rarity
 - keep BMADX Codex-first; do not spend near-term roadmap on Claude Code parity
 - add experimental Codex OSS-provider benchmark lanes for local models such as Mistral, without turning them into default claims
 - improve proof surfaces with better transcripts and examples

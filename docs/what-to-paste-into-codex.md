@@ -7,6 +7,7 @@ Use these as starter prompts after BMADX is installed.
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
 Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 <describe the change in plain English>
@@ -20,6 +21,7 @@ speed, clarity, and not overengineering it
 ```text
 Use BMADX for this repo. Pick the lightest safe mode and keep the architecture understandable.
 If the task touches auth, billing, data, permissions, secrets, or production config, escalate to BMAD instead of treating it as a quick task.
+Recommend the thinking budget for this run, but do not change global Codex config.
 
 My task:
 I understand the product problem, but I do not want to manually decide the technical approach.

@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.6
+# Project Context — BMADX v0.2.7
 
 ## Scope
 
@@ -10,7 +10,7 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
-- publish `v0.2.6` as the public release for the broad-orchestrator handoff contract,
+- publish `v0.2.7` as the public release for the Thinking Budget Advisor,
 - tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - position BMADX as an architecture guardrail for people who understand the
@@ -23,6 +23,8 @@ Current release focus:
   workflows without naming, depending on, or copying private orchestrators,
 - improve subagent guidance for operator time-to-value while keeping final
   responsibility in the main BMADX/Codex lane,
+- recommend fit-for-purpose Codex reasoning effort per task without mutating
+  global Codex config,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
 - keep `X4/FUBAR` valuable without making it normal.
@@ -37,14 +39,19 @@ Out of scope:
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.6.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.6.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.7.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.7.md`
 
 ## Model target
 
 - target Codex model: `gpt-5.5`
 - default benchmark reasoning: `medium`
 - BMADX does not mutate global Codex config; users choose their model outside BMADX
+- Thinking Budget Advisor may recommend `low`, `medium`, `high`, or `xhigh`
+  per run, but this is advisory and follows gear/risk/phase after
+  classification and gate checks
+- canonical highest-effort label is `xhigh`; normalize `extra_high` wording to
+  `xhigh` in public and benchmark surfaces
 - stronger models reduce prompt scaffolding, but do not bypass `BMAD > BMADX`
 - Codex remains the only supported execution surface for BMADX core
 - Claude Code is watch/prototype only because its `CLAUDE.md`, hooks, subagents,
@@ -116,6 +123,17 @@ failures, rollback risk, incident recovery, or no credible verification path.
   Gastown-style workflows, team-specific review systems, or private arbitration
   stacks.
 
+### Thinking Budget Advisor
+
+- Thinking budget is not a new gear and not a router.
+- Default mapping: `X1=low`, `X2=medium`, `X2/X3 boundary=high`,
+  `X3=high`, `X4=xhigh` for rescue execution.
+- `X4` classification-only prompts may stay at `high` while naming `xhigh` for
+  real execution.
+- The advisor must not write or instruct edits to `~/.codex/config.toml`.
+- Benchmark validation should reject non-canonical effort values and persistent
+  config mutation language.
+
 ### X1/X2
 
 - classify first,
@@ -156,6 +174,9 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - broad-handoff benchmark extension: summaries include `handoff_cases`,
   handoff routing, and runtime-drift checks that reject worker lanes, model
   names, dispatch commands, and platform-surface leakage
+- thinking-budget benchmark extension: scenarios include
+  `expected_reasoning_effort`, summaries count `thinking_budget_*` checks, and
+  validation rejects global Codex config mutation language
 - current `v0.2.4` GPT-5.5 healthy result: `6302.0` average tokens, all core validation gates passed
 - current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
 - current GPT-5.4 healthy comparison: `12370.75` average tokens

@@ -8,6 +8,8 @@ import tempfile
 import unittest
 
 from bmadx_benchmark_scenarios import (
+    BOUNDARY_SCENARIOS,
+    CORE_SCENARIOS,
     HANDOFF_SCENARIOS,
     NON_TECH_SCENARIOS,
 )
@@ -15,7 +17,9 @@ from bmadx_benchmark_validation import (
     detect_handoff,
     detect_reference_reads,
     detect_selected_gear,
+    detect_thinking_effort,
     explain_failures_for_non_technical_users,
+    normalize_reasoning_effort,
     parse_token_count,
     sanitize_stderr,
     validate_case,
@@ -72,6 +76,7 @@ tokens used
             prompt = build_prompt(scenario)
             self.assertIn("Use $bmadx.", prompt)
             self.assertIn("Compact gate only.", prompt)
+            self.assertIn("Thinking: <low|medium|high|xhigh>", prompt)
             self.assertIn("No analysis. For X1/X2 do not read refs.", prompt)
             self.assertIn("Do not implement/edit/render/inline artifacts.", prompt)
             self.assertIn("Task: Create a rescue bundle.", prompt)
@@ -111,6 +116,14 @@ tokens used
 
     def test_detect_handoff_does_not_cross_lines(self) -> None:
         self.assertIsNone(detect_handoff("Handoff:\nNo, not in contract form.\n"))
+
+    def test_detect_thinking_effort_reads_contract_line(self) -> None:
+        self.assertEqual(detect_thinking_effort("Choice: X3\nThinking: high — suggestion only.\n"), "high")
+        self.assertEqual(detect_thinking_effort("**Thinking:** `xhigh` — suggestion only.\n"), "xhigh")
+
+    def test_detect_thinking_effort_normalizes_extra_high(self) -> None:
+        self.assertEqual(normalize_reasoning_effort("extra_high"), "xhigh")
+        self.assertEqual(detect_thinking_effort("Thinking: extra high — suggestion only.\n"), "xhigh")
 
     def test_validate_handoff_runtime_drift_blocks_runtime_details(self) -> None:
         clean = validate_handoff_runtime_drift("Handoff: yes — broad review is useful.")
@@ -166,6 +179,38 @@ tokens used
         self.assertTrue(validation["handoff_routing_pass"])
         self.assertTrue(validation["handoff_not_runtime_pass"])
 
+    def test_validate_case_checks_expected_thinking_budget(self) -> None:
+        validation = validate_case(
+            "Choice: X3\nThinking: high — suggestion only.\nWhy: Auth ownership is unclear.\n",
+            "",
+            1000,
+            {"expected_gear": "X3", "expected_reasoning_effort": "high", "allow_reference_reads": True},
+        )
+        self.assertTrue(validation["thinking_budget_present"])
+        self.assertTrue(validation["thinking_budget_pass"])
+        self.assertTrue(validation["thinking_budget_no_mutation_pass"])
+        self.assertTrue(validation["thinking_budget_supported_value_pass"])
+
+    def test_validate_case_blocks_global_config_mutation(self) -> None:
+        validation = validate_case(
+            "Choice: X2\nThinking: medium — edit ~/.codex/config.toml to make this global.\n",
+            "",
+            1000,
+            {"expected_gear": "X2", "expected_reasoning_effort": "medium", "allow_reference_reads": False},
+        )
+        self.assertTrue(validation["thinking_budget_pass"])
+        self.assertFalse(validation["thinking_budget_no_mutation_pass"])
+
+    def test_validate_case_rejects_unsupported_thinking_value(self) -> None:
+        validation = validate_case(
+            "Choice: X2\nThinking: ultra — suggestion only.\n",
+            "",
+            1000,
+            {"expected_gear": "X2", "expected_reasoning_effort": "medium", "allow_reference_reads": False},
+        )
+        self.assertFalse(validation["thinking_budget_pass"])
+        self.assertFalse(validation["thinking_budget_supported_value_pass"])
+
     def test_validate_case_fails_handoff_runtime_drift(self) -> None:
         validation = validate_case(
             "Choice: X3\nHandoff: yes — ask Opus and dispatch a worker lane with glm-5.1.\n",
@@ -215,12 +260,21 @@ tokens used
         self.assertEqual(runner_slug("mistral", oss=True, local_provider="ollama"), "ollama-mistral")
 
     def test_non_technical_scenarios_cover_red_zones_and_rescue(self) -> None:
+        self.assertEqual(CORE_SCENARIOS["x1"]["expected_reasoning_effort"], "low")
+        self.assertEqual(CORE_SCENARIOS["x2"]["expected_reasoning_effort"], "medium")
+        self.assertEqual(CORE_SCENARIOS["x3"]["expected_reasoning_effort"], "high")
+        self.assertEqual(CORE_SCENARIOS["x4"]["expected_reasoning_effort"], "xhigh")
+        self.assertEqual(BOUNDARY_SCENARIOS["x2x3-boundary"]["expected_reasoning_effort"], "high")
         self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_gear"], "X1")
+        self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_reasoning_effort"], "low")
         self.assertEqual(NON_TECH_SCENARIOS["onboarding-email"]["expected_gear"], "X2")
+        self.assertEqual(NON_TECH_SCENARIOS["onboarding-email"]["expected_reasoning_effort"], "medium")
         self.assertEqual(NON_TECH_SCENARIOS["google-login"]["expected_gear"], "X3")
+        self.assertEqual(NON_TECH_SCENARIOS["google-login"]["expected_reasoning_effort"], "high")
         self.assertEqual(NON_TECH_SCENARIOS["subscription-billing"]["expected_gear"], "X3")
         self.assertEqual(NON_TECH_SCENARIOS["delete-inactive-users"]["expected_gear"], "X3")
         self.assertEqual(NON_TECH_SCENARIOS["messy-migration-incident"]["expected_gear"], "X4")
+        self.assertEqual(NON_TECH_SCENARIOS["messy-migration-incident"]["expected_reasoning_effort"], "xhigh")
         for spec in NON_TECH_SCENARIOS.values():
             self.assertTrue(Path(spec["path"]).exists())
 
@@ -347,6 +401,10 @@ tokens used
                     "reference_budget_pass": True,
                     "routing_pass": True,
                     "overreach_pass": True,
+                    "thinking_budget_present": True,
+                    "thinking_budget_pass": True,
+                    "thinking_budget_no_mutation_pass": True,
+                    "thinking_budget_supported_value_pass": True,
                 }
             ],
             [],
@@ -362,6 +420,7 @@ tokens used
         self.assertTrue(summary["runner"]["reasoning_applied"])
         self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
+        self.assertEqual(summary["validation_summary"]["core"]["thinking_budget_pass_count"], 1)
         self.assertEqual(summary["validation_failures"]["core"], [])
         self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
         self.assertEqual(summary["validation_summary"]["handoff"]["case_count"], 0)
@@ -405,6 +464,9 @@ tokens used
                     "reference_budget_pass": True,
                     "routing_pass": False,
                     "overreach_pass": True,
+                    "thinking_budget_pass": True,
+                    "thinking_budget_no_mutation_pass": True,
+                    "thinking_budget_supported_value_pass": True,
                 }
             ]
         )
@@ -429,6 +491,9 @@ tokens used
                     "reference_budget_pass": True,
                     "routing_pass": False,
                     "overreach_pass": True,
+                    "thinking_budget_pass": True,
+                    "thinking_budget_no_mutation_pass": True,
+                    "thinking_budget_supported_value_pass": True,
                 }
             ]
         )

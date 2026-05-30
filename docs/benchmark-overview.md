@@ -8,6 +8,7 @@ The benchmark is useful for showing:
 - BMADX can validate more than tokens alone through format, routing, and reference-budget checks
 - BMADX can test non-technical red-zone routing, such as auth, billing, data deletion, and messy recovery tasks
 - BMADX can detect whether broad-orchestrator handoff stays a small risk/proof packet instead of drifting into runtime orchestration
+- BMADX can validate fit-for-purpose thinking-budget recommendations without treating them as routing decisions
 
 ## What this does not prove
 
@@ -42,6 +43,29 @@ Runner hardening after `v0.2.4`:
 - future runner summaries include `non_technical_cases` plus a plain-language `what_failed_why_it_matters` readout
 - runner summaries record whether the run used the primary Codex/OpenAI path or an experimental OSS local provider
 - `v0.2.6` runner summaries include `handoff_cases` and runtime-drift checks that reject worker lanes, model names, dispatch commands, MCP, hooks, plugins, subagents, and runtime state
+- `v0.2.7` runner validation can parse `Thinking:` lines, compare them with expected reasoning effort, and reject global Codex config mutation language
+
+## Thinking budget validation
+
+The benchmark can now ask BMADX to include a compact line such as:
+
+```text
+Thinking: high — suggestion only.
+```
+
+Expected defaults:
+
+| Scenario shape | Expected thinking |
+| --- | --- |
+| `X1` tiny local work | `low` |
+| `X2` bounded normal work | `medium` |
+| `X2/X3` boundary | `high` |
+| `X3` red-zone or BMAD-heavy work | `high` |
+| `X4` Rescue Mode execution | `xhigh` |
+
+This is advisory. The benchmark must not treat higher thinking as permission to
+skip BMAD, and it must not accept answers that tell users to mutate global Codex
+config as part of normal BMADX routing.
 
 ## Model and provider experiments
 

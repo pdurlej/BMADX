@@ -35,6 +35,7 @@ Test whether a model can:
 - keep `X1/X2` compact,
 - route red-zone work to `X3` minimum,
 - keep `X4/FUBAR` rare,
+- recommend the expected thinking budget without treating it as a second router,
 - avoid reading reference docs on obvious happy paths,
 - separate classification from execution permission,
 - explain failures in language a non-technical owner can use.
@@ -58,6 +59,7 @@ Minimum for `L2`:
 - zero `X4` false positives on ordinary `X1/X2/X3` work,
 - `X4` only for rescue-shaped cases,
 - `X1/X2` compactness and reference-budget pass,
+- thinking-budget validation pass,
 - healthy and degraded profile pass,
 - explanation useful to a non-technical owner.
 

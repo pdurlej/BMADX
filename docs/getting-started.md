@@ -35,6 +35,7 @@ Open Codex in your project and paste:
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
 Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 <describe the change in plain English>

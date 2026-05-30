@@ -41,6 +41,19 @@ documentation-only:
 Escalate to `X4` when the red-zone task also has unclear ownership, repeated
 failures, rollback risk, incident recovery, or no credible verification path.
 
+## Thinking budget
+
+BMADX may recommend Codex reasoning effort after classification:
+
+- `X1`: `low`
+- `X2`: `medium`
+- `X2/X3` boundary: `high`
+- `X3`: `high`
+- `X4`: `xhigh` for rescue execution
+
+This recommendation is a cost-control hint for the current run, not a new gate
+and not a global Codex config change. Details: [thinking-budget.md](thinking-budget.md)
+
 ## Architecture Guardrail Card
 
 For boundary cases, answer five questions before final classification:

@@ -42,6 +42,19 @@ The card asks:
 4. What could break if this is implemented in the wrong place?
 5. What proof would convince a non-technical owner it is safe?
 
+## Thinking budget defaults
+
+Thinking budget is advisory and follows the chosen gear; it must not change the
+gear or mutate global Codex config.
+
+- `X1`: `low`, fallback `medium`.
+- `X2`: `medium`.
+- `X2/X3` boundary: `high`.
+- `X3`: `high`.
+- `X4`: `xhigh` for rescue execution; `high` can be enough for classification-only prompts.
+
+Details: [thinking-budget.md](thinking-budget.md)
+
 ## Input signals
 
 ### X1

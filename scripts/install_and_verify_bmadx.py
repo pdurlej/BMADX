@@ -20,6 +20,7 @@ from install_bmadx import (
 CANONICAL_NEXT_PROMPT = """Use BMADX for this repo. Pick the lightest safe mode.
 Keep it lightweight unless BMAD is truly needed.
 Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 <describe the change in plain English>
@@ -27,7 +28,7 @@ My task:
 What I care about:
 <speed / clarity / safety / cleanup / shipping>
 """
-MODEL_NOTE = "BMADX is tuned for Codex on GPT-5.5. This installer does not change your Codex model config."
+MODEL_NOTE = "BMADX is tuned for Codex on GPT-5.5. This installer does not change your Codex model or thinking config."
 VERIFY_TIMEOUT_SECONDS = 60
 
 

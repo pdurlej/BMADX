@@ -64,12 +64,13 @@ python3 scripts/install_and_verify_bmadx.py --force
 
 The installer copies the BMADX skill into your Codex skills folder, verifies the
 BMAD dependency, runs the BMADX sync/check path, and prints the next prompt to
-paste into Codex. It does not edit your global Codex model config.
+paste into Codex. It does not edit your global Codex model or thinking config.
 
 ## First prompt to try
 
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 Add a pricing section to the landing page and keep the change small.

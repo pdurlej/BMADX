@@ -8,7 +8,7 @@ BMAD must already be installed in your Codex skills.
 
 BMADX depends on `bmad-method-codex`. It does not replace it.
 
-BMADX `v0.2.6` is tuned for Codex on GPT-5.5. The installer does not edit your
+BMADX `v0.2.7` is tuned for Codex on GPT-5.5. The installer does not edit your
 Codex model configuration; choose GPT-5.5 in Codex if it is available to you.
 
 Check the BMAD dependency:
@@ -66,6 +66,7 @@ Extra fields are normal.
 ```text
 Use BMADX for this repo. Pick the lightest safe mode. Keep it lightweight unless BMAD is truly needed.
 Use the Architecture Guardrail Card silently unless a risk changes the safe mode.
+Suggest the thinking budget only if it matters for this task.
 
 My task:
 <describe the change in plain English>
