@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: Tiny local text fix in one React component, no architecture or process risk.
+Next step: I would locate the component, correct the typo in the error message, then run the narrowest relevant check.

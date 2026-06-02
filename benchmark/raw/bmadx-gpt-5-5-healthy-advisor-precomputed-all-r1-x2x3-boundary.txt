@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: The code change is bounded, but it must stay aligned with an existing BMAD story and process artifacts, so BMAD ownership is part of the work.  
+Gate: classification allowed; execution allowed; BMAD ok; warnings none.  
+Next step: proceed under the existing BMAD story, update the 4 backend files, and verify both behavior and artifact alignment before marking complete.

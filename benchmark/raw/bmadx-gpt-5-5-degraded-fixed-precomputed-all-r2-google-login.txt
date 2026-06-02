@@ -1,0 +1,15 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Google login touches auth, callback handling, sessions, and likely secrets/config, so it is a red-zone change requiring BMAD ownership and verification.
+
+Gate: classification allowed; execution blocked.
+
+Blocker: Classification is still allowed, but execution for `X3` is blocked because the current BMAD check is not healthy. The BMAD health check returned a non-zero exit code.
+
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

@@ -1,0 +1,47 @@
+Choice: X4 — Rescue Mode / FUBAR
+Thinking: xhigh — suggestion only.
+
+Why: Partial migration failure, unclear ownership, risky rollback, and recovery planning are rescue-shaped data/rollout work.
+
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+
+Recovery scaffold:
+1. Assign owners: database owner, application owner, rollout owner, incident commander, verifier.
+2. Freeze related deploys and writes if needed; document current migration state and affected tables.
+3. Build a forward-fix plan first; treat rollback as last resort with explicit blast-radius approval.
+4. Define verification: schema diff, row counts, constraints/index state, application smoke tests, audit queries.
+5. Stage rollout: dry run, limited production validation, monitored execution, rollback/stop criteria.
+6. Record final state, owner signoff, and follow-up prevention items.
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.134.0
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-4q232g7d/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-4q232g7d/codex-home]
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e8788-ae34-7742-b7c9-b0991823da9a
+--------
+user
+Use $bmadx. Classify only; use precomputed compact gate; do not run tools. Gate: gear=X4 class=true exec=true bmad=ok cache=false warn=none. Start with `Choice: X...`, not Phase/Gate/FAZA/WYKONANE. Add `Thinking: <low|medium|high|xhigh> — suggestion only`. Map X1/X2=medium, X3=high, X4=xhigh. X2: 2 Plan + 2 Verify lines. X1/X2: no refs. No edits. Task: A previous database migration partially failed, ownership is unclear, rollback is risky, and we need a scaffolded recovery plan with verification and rollout owners.
+codex
+Choice: X4 — Rescue Mode / FUBAR
+Thinking: xhigh — suggestion only.
+
+Why: Partial migration failure, unclear ownership, risky rollback, and recovery planning are rescue-shaped data/rollout work.
+
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+
+Recovery scaffold:
+1. Assign owners: database owner, application owner, rollout owner, incident commander, verifier.
+2. Freeze related deploys and writes if needed; document current migration state and affected tables.
+3. Build a forward-fix plan first; treat rollback as last resort with explicit blast-radius approval.
+4. Define verification: schema diff, row counts, constraints/index state, application smoke tests, audit queries.
+5. Stage rollout: dry run, limited production validation, monitored execution, rollback/stop criteria.
+6. Record final state, owner signoff, and follow-up prevention items.
+tokens used
+3405

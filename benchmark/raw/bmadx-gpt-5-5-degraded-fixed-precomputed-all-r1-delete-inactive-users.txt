@@ -1,0 +1,13 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: This is red-zone data deletion with billing and audit-retention constraints, so it needs BMAD ownership, explicit policy rules, and strong verification before execution.
+
+Execution: blocked. Classification is allowed, but execution for `X3` is blocked because the BMAD health check is not healthy.
+
+Remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Billing plus account permissions are red-zone areas; annual discount changes must preserve invoice correctness and authorization boundaries.
+
+Gate: classification allowed, execution allowed, BMAD ok, no warnings.
+
+Next step: use BMAD-owned billing/account-permissions context before implementation, then verify discount calculation, invoice generation, and permission-matching behavior end to end.

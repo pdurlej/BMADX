@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Billing, discounts, invoices, and account permissions are red-zone areas with contract and access-control risk.  
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.  
+Next step: execute under BMAD ownership with focused verification for annual discount calculation, invoice totals, and permission-scoped invoice visibility.

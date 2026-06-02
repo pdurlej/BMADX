@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: adding a status field across 4 backend files must stay aligned with an existing BMAD story and process artifacts.
+Compact check: gear=X3, classification=true, execution=true, BMAD=ok, cache=false, warn=none.
+Next step: proceed under the existing story, keeping code changes and artifact updates synchronized.
+Verify: backend behavior for the new status field plus BMAD story/artifact consistency.

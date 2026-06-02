@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only
+Why: Google login touches auth, session ownership, and architecture boundaries, with two existing auth systems creating ownership risk.
+Gate: classification allowed; execution blocked because the current BMAD check is not healthy.
+Handoff: yes
+Next step: broad architecture review first, then define the owning auth/session path before implementation.

@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files with clear scope and normal verification.
+Plan:
+1. Identify the existing status handling pattern and add the new field consistently across the 4 backend files.
+2. Update validation/serialization/business logic paths so the field is accepted, persisted, and returned as expected.
+Verify:
+1. Run focused backend tests covering status input/output behavior.
+2. Add or update a regression test for the new status field across the touched flow.

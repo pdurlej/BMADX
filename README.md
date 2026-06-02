@@ -21,7 +21,7 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.2.8`
+Current public version: `v0.2.9`
 
 ## Start here
 

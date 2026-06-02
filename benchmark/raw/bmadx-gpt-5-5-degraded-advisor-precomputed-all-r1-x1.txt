@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: A typo fix in one React component error message is a tiny local textual change with no architecture or process risk; gate warning is soft for X1.
+Next step: I will locate that component, correct only the error-message typo, then do a focused check of the touched file.

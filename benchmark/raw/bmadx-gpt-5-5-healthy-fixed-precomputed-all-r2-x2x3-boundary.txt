@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: The change spans 4 backend files and must align with an existing BMAD story/process artifacts, so BMAD ownership and artifact consistency matter.
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.
+Next step: Keep implementation under the existing story, update only the status-field touchpoints required by that story, and verify behavior plus artifact alignment before execution.

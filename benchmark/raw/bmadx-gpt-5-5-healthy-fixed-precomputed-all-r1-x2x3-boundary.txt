@@ -1,0 +1,8 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+
+Why: touching a new backend status field across 4 files while staying aligned with an existing BMAD story makes this process-owned implementation work, not a standalone bounded change.
+
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.
+
+Next step: execute under the existing BMAD story, update/verify the relevant process artifacts, then validate backend behavior and story acceptance criteria before closing.

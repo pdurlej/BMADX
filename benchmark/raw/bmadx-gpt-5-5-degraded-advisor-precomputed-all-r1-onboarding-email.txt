@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: Bounded copy/content change with explicit red-zone exclusions; gate allows classification/execution with warning: No fresh healthy BMAD snapshot is available.
+Plan:
+1. Add the onboarding email copy variant in the existing email copy/template location.
+2. Keep scope limited to copy selection/content, with no auth, billing, or data model changes.
+Verify:
+1. Confirm the new variant renders or is selectable through the existing email path.
+2. Check the diff touches only email copy/template files and no red-zone modules.

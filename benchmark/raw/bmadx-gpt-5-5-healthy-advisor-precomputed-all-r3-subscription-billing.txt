@@ -1,0 +1,8 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.
+
+Why: subscription billing, discounts, invoices, and account permissions cross billing and permissions red zones, so this needs BMAD-owned workflow and careful verification.
+
+Gate: `class=true`, `exec=true`, `bmad=ok`, `cache=false`, `warn=none`.
+
+No edits performed.

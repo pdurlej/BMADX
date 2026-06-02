@@ -1,0 +1,13 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+
+Why: The request is scaffold-shaped for a messy project and asks for planning, AGENTS.md, customization snippets, and a verify matrix, which fits X4 ownership/recovery workflow.
+
+Execution: blocked. Classification is allowed, but execution for `X4` is blocked because the BMAD check is not healthy and returned a non-zero exit code.
+
+Required remediation:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

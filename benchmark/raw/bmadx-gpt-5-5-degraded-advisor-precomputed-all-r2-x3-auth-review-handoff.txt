@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Google login is auth red-zone work, and two existing auth systems plus unclear session ownership require architecture and ownership review before implementation.
+Execution: blocked because the current BMAD check is not healthy; classification only is allowed.
+Handoff: yes
+Next step: review auth/session ownership and choose the canonical integration path before planning code changes.

@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files, with no red-zone or architecture risk indicated.
+Plan:
+1. Identify the existing status/data flow pattern and add the new field consistently across the 4 backend files.
+2. Keep changes scoped to parsing, persistence/transport, validation, and response shape as applicable.
+Verify:
+1. Run focused backend tests covering the affected status field behavior.
+2. Check one representative request/response or fixture path confirms the new field is accepted and returned.

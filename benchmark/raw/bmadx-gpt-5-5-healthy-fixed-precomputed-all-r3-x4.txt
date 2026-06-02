@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: Messy project planning plus scaffold bundle, `AGENTS.md`, `.customize.yaml`, and verify matrix is rescue-shaped ownership/scaffolding work.
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+Next step: proceed with BMAD-first rescue planning and render the requested bundle only if asked to execute.

@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded copy/content addition with explicit red-zone exclusions; compact gate allows classification and execution.
+Plan:
+1. Add the onboarding email copy variant in the existing email copy/template pattern.
+2. Keep scope limited to copy selection/content; do not touch auth, billing, or data models.
+Verify:
+1. Confirm the new variant renders with expected subject/body copy.
+2. Check no auth, billing, migration, schema, or model files changed.

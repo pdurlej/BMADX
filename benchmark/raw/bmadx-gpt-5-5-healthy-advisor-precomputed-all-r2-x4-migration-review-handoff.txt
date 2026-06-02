@@ -1,0 +1,6 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only
+Why: failed migration, unclear rollback ownership, production risk, large logs, and requested broad review fit rescue-shaped incident recovery.
+Gate: classification allowed; execution allowed; BMAD ok; warnings none.
+Handoff: yes
+Next step: establish ownership, current state, rollback or forward-fix path, log evidence, and verification criteria before any repair commands.

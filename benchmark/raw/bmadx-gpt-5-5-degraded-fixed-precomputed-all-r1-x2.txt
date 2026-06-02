@@ -1,0 +1,10 @@
+Choice: X2 — Regular  
+Thinking: medium — suggestion only.  
+Why: Bounded backend change across 4 files with explicit plan and verification, no red-zone scope indicated.  
+Warning: No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state.  
+Plan:  
+1. Locate the existing status/data flow pattern across the 4 backend files and add the new field consistently.  
+2. Update validation, serialization, persistence, and response handling only where that field crosses boundaries.  
+Verify:  
+1. Run the focused backend tests covering the changed status flow.  
+2. Add or update a regression test proving the new status field is accepted and returned correctly.

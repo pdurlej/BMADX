@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Google login touches auth, permissions, sessions, and ownership boundaries; two auth systems plus unclear session ownership require architecture review before implementation.
+Status: class=true exec=true bmad=ok cache=false warn=none.
+Handoff: yes
+Next step: review auth ownership, session lifecycle, identity linking, rollout risk, and verification criteria before edits.

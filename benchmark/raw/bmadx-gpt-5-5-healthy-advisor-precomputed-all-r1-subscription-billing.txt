@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Subscription billing plus account permissions touches billing, invoices, and authorization consistency, which are BMADX red zones.  
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.  
+Execution: allowed by gate, but not performed because request is classify only.  
+Verify focus: annual discount pricing rules, invoice totals/tax/ledger consistency, permission-derived invoice visibility, regression coverage for monthly plans and account role boundaries.

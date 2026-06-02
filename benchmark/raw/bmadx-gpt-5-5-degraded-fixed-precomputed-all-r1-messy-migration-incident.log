@@ -1,0 +1,47 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+
+Why: partially failed database migration, unclear ownership, risky rollback, and recovery scaffolding with rollout owners are rescue-shaped and include migration/data risk.
+
+Gate: classification allowed; execution blocked for `X4`.
+
+Blocker: BMAD needs attention. Current BMAD check is not healthy, and the health check returned a non-zero exit code.
+
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.134.0
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-mkbfbi4_/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-mkbfbi4_/codex-home]
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e8790-9867-7191-9752-6924bfbf8f1b
+--------
+user
+Use $bmadx. Classify only; use precomputed compact gate; do not run tools. Gate: gear=X4 class=true exec=false bmad=needs_attention cache=false warn=Classification is still allowed, but execution for `X4` is blocked: The current BMAD check is not healthy.; The BMAD health check returned a non-zero exit code.. Start with `Choice: X...`, not Phase/Gate/FAZA/WYKONANE. Add `Thinking: <low|medium|high|xhigh> — suggestion only`. Map X1/X2=medium, X3=high, X4=xhigh. X2: 2 Plan + 2 Verify lines. X1/X2: no refs. No edits. Task: A previous database migration partially failed, ownership is unclear, rollback is risky, and we need a scaffolded recovery plan with verification and rollout owners.
+codex
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+
+Why: partially failed database migration, unclear ownership, risky rollback, and recovery scaffolding with rollout owners are rescue-shaped and include migration/data risk.
+
+Gate: classification allowed; execution blocked for `X4`.
+
+Blocker: BMAD needs attention. Current BMAD check is not healthy, and the health check returned a non-zero exit code.
+
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```
+tokens used
+3484

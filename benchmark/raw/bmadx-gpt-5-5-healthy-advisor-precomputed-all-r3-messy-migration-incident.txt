@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: partial migration failure, unclear ownership, risky rollback, and recovery planning with verification/rollout owners are rescue-shaped data-risk work.
+Compact gate: gear=X4, classification=true, execution=true, bmad=ok, cache=false, warn=none.
+Next step: scaffold BMAD-first recovery plan from PRD/architecture ownership, with explicit verification evidence and rollout owner assignments.

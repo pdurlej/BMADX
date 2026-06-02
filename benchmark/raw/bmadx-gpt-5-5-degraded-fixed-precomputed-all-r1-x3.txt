@@ -1,0 +1,10 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Existing BMAD story implementation must preserve BMAD ownership, process artifacts, and verification alignment.
+Gate: classification allowed; execution blocked because BMAD health is not healthy.
+Execution block: `X3` execution is blocked until BMAD check is remediated.
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

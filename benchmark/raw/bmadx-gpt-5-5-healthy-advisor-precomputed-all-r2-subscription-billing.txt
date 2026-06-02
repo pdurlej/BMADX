@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Subscription billing, annual-plan discounts, invoices, and account permissions cross billing and permissions red zones.
+
+Gate: classification_allowed=true, execution_allowed=true, bmad=ok, cache=false, warn=none.
+
+Next step: Use BMAD-owned billing and permission flows, then verify discount calculations, invoice generation, and permission-scoped invoice visibility before execution.

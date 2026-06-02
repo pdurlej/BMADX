@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: Tiny localized pricing hero copy change; billing logic and pricing behavior are explicitly out of scope.
+Next step: Edit only the hero text, then verify the pricing page still renders with no logic or billing-path changes.

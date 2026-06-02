@@ -6,6 +6,29 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.2.9] - 2026-06-02
+
+### Added
+
+- Performance verifier for BMADX benchmark summaries with separate baseline and claim modes.
+- Verifier coverage checks for required profiles, policies, group scope, repeat count, token caps, latency fields, routing gates, thinking-budget gates, and handoff drift gates.
+- `execution-boundaries.md` reference for Codex-first, Claude Code, PMAX X, local-model, and platform-drift details.
+- Benchmark `--gate-mode precomputed|in-session`; performance baselines now validate compact gates in the harness instead of forcing in-session tool calls.
+- GPT-5.5 performance baseline summary for `2026-06-02`.
+
+### Changed
+
+- `SKILL.md` is now much smaller and keeps only the core routing, compact gate, response, thinking-budget, and Rescue Mode contract in the activation path.
+- Execution-surface and model-experiment details moved out of the happy path to references.
+- Performance verifier baseline mode reports `X1/X2` token cap overages as warnings; `claim` mode and `--token-cap-mode strict` keep token caps as hard failures.
+- Current public version is `v0.2.9`.
+
+### Benchmarks
+
+- Full GPT-5.5 `precomputed` baseline passed automated baseline verification across healthy/degraded and fixed/advisor policies.
+- Claim verification failed because advisor policy was slower and more expensive than fixed-medium in this run.
+- Token cap warnings remain visible for several `X1` cases; no public savings claim is made from this baseline.
+
 ## [0.2.8] - 2026-06-02
 
 ### Added

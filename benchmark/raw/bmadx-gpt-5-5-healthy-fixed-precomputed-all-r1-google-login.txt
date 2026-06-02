@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Google login touches auth, callback handling, sessions, redirects, secrets, and user identity behavior, which are red-zone concerns.  
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.  
+Next step: proceed under BMAD ownership with explicit auth/session requirements, existing app patterns, and verification for login, callback failure, session persistence, logout, and CSRF/state handling.

@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Backend change is small in file count, but it belongs to an existing BMAD story and must stay aligned with process artifacts, so BMAD ownership and verification drive the workflow.
+
+Gate: classification allowed; execution allowed; BMAD ok; no warning.
+
+Next step: proceed only within the existing BMAD story scope, updating the 4 backend files and the relevant story/process artifacts together, then verify behavior and artifact alignment.

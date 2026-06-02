@@ -1,0 +1,41 @@
+Choice: X4 — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: messy project planning plus scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and verify matrix is scaffold-shaped recovery/ownership work.  
+Gate: classification allowed; execution blocked for `X4`.  
+Blocker: BMAD needs attention; health check returned a non-zero exit code.  
+Execution: no edits, no artifact rendering, no scaffold generation.  
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.134.0
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-mkbfbi4_/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-mkbfbi4_/codex-home]
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e878f-d038-72a1-941d-ac14135c7127
+--------
+user
+Use $bmadx. Classify only; use precomputed compact gate; do not run tools. Gate: gear=X4 class=true exec=false bmad=needs_attention cache=false warn=Classification is still allowed, but execution for `X4` is blocked: The current BMAD check is not healthy.; The BMAD health check returned a non-zero exit code.. Start with `Choice: X...`, not Phase/Gate/FAZA/WYKONANE. Add `Thinking: <low|medium|high|xhigh> — suggestion only`. Map X1/X2=medium, X3=high, X4=xhigh. X2: 2 Plan + 2 Verify lines. X1/X2: no refs. No edits. Task: I need a plan for a messy project, a scaffold bundle, a draft AGENTS.md, .customize.yaml snippets, and a verify matrix.
+codex
+Choice: X4 — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: messy project planning plus scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and verify matrix is scaffold-shaped recovery/ownership work.  
+Gate: classification allowed; execution blocked for `X4`.  
+Blocker: BMAD needs attention; health check returned a non-zero exit code.  
+Execution: no edits, no artifact rendering, no scaffold generation.  
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```
+tokens used
+3447

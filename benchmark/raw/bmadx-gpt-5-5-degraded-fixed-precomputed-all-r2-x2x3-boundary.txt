@@ -1,0 +1,10 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Backend changes across 4 files tied to an existing BMAD story require process-artifact alignment, so this is beyond bounded X2 work.  
+Gate: classification allowed; execution blocked.  
+Blocker: BMAD health is not healthy for `X3`; execution is blocked by the precomputed compact gate.  
+Remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

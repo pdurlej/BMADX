@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.2.8
+# Project Context — BMADX v0.2.9
 
 ## Scope
 
@@ -10,7 +10,7 @@ Non-negotiable rule:
 ## Active program
 
 Current release focus:
-- publish `v0.2.8` as the GPT-5.5 token and latency performance baseline for the Thinking Budget Advisor,
+- publish `v0.2.9` as the performance-baseline approval release after the `v0.2.8` canary,
 - tune BMADX for Codex on GPT-5.5 without changing core routing semantics,
 - make BMADX genuinely usable for non-technical, low-friction Codex users,
 - position BMADX as an architecture guardrail for people who understand the
@@ -27,6 +27,10 @@ Current release focus:
   global Codex config,
 - measure fixed-medium reasoning against advisor-selected reasoning before
   making any public token-savings claim,
+- reduce hidden activation cost by keeping `SKILL.md` to the core contract and
+  moving execution-surface/model-experiment details to references,
+- use `benchmark/scripts/verify_bmadx_performance.py` to approve full
+  baselines mechanically instead of relying on manual summary inspection,
 - keep BMAD as the process owner,
 - make public install, activation, and proof surfaces portable and easier to trust,
 - keep `X4/FUBAR` valuable without making it normal.
@@ -39,11 +43,13 @@ Out of scope:
 - dispatching workers, choosing model lanes, assigning arbiters, installing
   hooks/MCP/plugins/subagents, or creating runtime state for broad orchestration.
 - publishing a savings claim from a single performance run.
+- approving a full baseline by relaxing token, routing, reference, thinking, or
+  handoff gates.
 
 ## Active BMAD artifacts
 
-- PRD: `_bmad-output/prd-bmadx-v0.2.8.md`
-- Architecture: `_bmad-output/architecture-bmadx-v0.2.8.md`
+- PRD: `_bmad-output/prd-bmadx-v0.2.9.md`
+- Architecture: `_bmad-output/architecture-bmadx-v0.2.9.md`
 
 ## Model target
 
@@ -200,6 +206,28 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - `2026-06-01` full baseline decision: do not run or publish full
   healthy/degraded performance baselines until obvious `X1/X2` hidden token
   cost is reduced
+- `v0.2.9` approval harness: `verify_bmadx_performance.py` baseline mode exits
+  `0` only if summaries pass token presence, duration presence, routing,
+  reference budget, thinking budget, handoff drift, required profile/policy
+  coverage, group scope, and repeat count checks
+- `v0.2.9` approval harness: baseline mode reports `X1/X2` token cap overages
+  as warnings because Codex/GPT-5.5 token accounting is not deterministic for
+  compact `X1`; `--token-cap-mode strict` and claim mode keep token caps as hard
+  failures
+- `v0.2.9` approval harness: claim mode additionally requires advisor metrics
+  to improve or hold fixed-medium metrics for total tokens, average tokens,
+  average latency, p95 latency, and max latency
+- `v0.2.9` benchmark runner: `--gate-mode precomputed|in-session` separates
+  benchmark compact-gate validation from in-session tool-call cost; performance
+  baseline uses `precomputed`
+- `2026-06-02` GPT-5.5 full baseline result: healthy/degraded, fixed/advisor,
+  `precomputed`, full groups, repeat `3/2`; automated baseline verification
+  passed with zero baseline failures
+- `2026-06-02` GPT-5.5 full baseline result: claim verification failed because
+  advisor was slower and more expensive than fixed; no public savings claim
+- `2026-06-02` GPT-5.5 full baseline token warnings: several `X1` runs exceeded
+  the old `9000` total-token cap despite correct compact output, no references,
+  and no in-session tool calls
 - current `v0.2.4` GPT-5.5 healthy result: `6302.0` average tokens, all core validation gates passed
 - current `v0.2.4` GPT-5.5 degraded result: `8918.5` average tokens, X3/X4 hard-gate semantics preserved
 - current GPT-5.4 healthy comparison: `12370.75` average tokens
@@ -230,6 +258,7 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - `python3 scripts/test_install_bmadx.py`
 - `python3 scripts/test_install_and_verify_bmadx.py`
 - `python3 benchmark/scripts/test_run_bmadx_benchmark.py`
+- `python3 benchmark/scripts/test_verify_bmadx_performance.py`
 - `python3 skill/bmadx/scripts/sync_bmadx.py check --json`
 - `python3 skill/bmadx/scripts/render_fubar_bundle.py --project-name BMADX --project-path "$PWD" --output-dir samples/fubar-bundle --include-architect --public-sample`
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --reasoning medium --profile healthy --date-stamp 2026-04-24`
@@ -237,6 +266,10 @@ failures, rollback risk, incident recovery, or no credible verification path.
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.4 --reasoning medium --profile healthy --date-stamp 2026-04-24`
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning medium --reasoning-policy fixed --groups core,boundary --repeat 1 --date-stamp 2026-06-01`
 - `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning-policy advisor --groups core,boundary --repeat 1 --date-stamp 2026-06-01`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning medium --reasoning-policy fixed --gate-mode precomputed --repeat 3 --date-stamp 2026-06-02`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning-policy advisor --gate-mode precomputed --repeat 3 --date-stamp 2026-06-02`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning medium --reasoning-policy fixed --gate-mode precomputed --repeat 2 --date-stamp 2026-06-02`
+- `python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning-policy advisor --gate-mode precomputed --repeat 2 --date-stamp 2026-06-02`
 
 ## Ecosystem stance
 

@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded copy-only onboarding email variant; explicitly avoids auth, billing, and data-model areas.
+Plan:
+1. Add the new onboarding email copy variant in the existing email/template location.
+2. Wire it only through existing copy-variant selection patterns, with no schema or service-boundary changes.
+Verify:
+1. Check the rendered onboarding email output for the new variant.
+2. Confirm no auth, billing, migration, or data-model files changed.

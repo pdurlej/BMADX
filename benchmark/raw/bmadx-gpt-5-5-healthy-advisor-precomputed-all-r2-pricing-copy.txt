@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: Tiny local copy-only change in the pricing hero; billing/pricing behavior stays untouched.
+Next step: Update only the hero text and verify the page renders with no logic changes.

@@ -1,0 +1,9 @@
+Choice: X4 — Rescue/FUBAR
+
+Thinking: xhigh — suggestion only.
+
+Why: messy project planning plus scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and a verify matrix is scaffold-shaped, high-entropy work with likely ownership and verification ambiguity.
+
+Compact check: `class=true`, `exec=true`, `bmad=ok`, `warn=none`, `cache=false`.
+
+No edits or tools run.

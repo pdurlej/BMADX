@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Google login touches auth, callback handling, session behavior, and likely secrets/config, which are BMADX red-zone areas.  
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.  
+Scope: classification only; no edits or tool execution.

@@ -1,0 +1,8 @@
+Choice: X4 — Rescue Mode / FUBAR
+Thinking: xhigh — suggestion only.
+
+Why: partial migration failure, unclear ownership, rollback risk, and required recovery/rollout ownership make this rescue-shaped data work.
+
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+
+Next step: start from BMAD PRD and architecture, update `_bmad-output/project-context.md`, then scaffold the recovery bundle with explicit owners, verification evidence, rollback constraints, and staged rollout checkpoints.

@@ -29,7 +29,7 @@ answers.
 
 | Work shape | Recommended effort | Notes |
 | --- | --- | --- |
-| `X1` obvious tiny/local | `low` | fallback `medium`; avoid `minimal` for tool-using code edits |
+| `X1` obvious tiny/local | `medium` | `low` is experimental until repeatable GPT-5.5 canaries prove it is cheaper |
 | `X2` bounded normal work | `medium` | default for most useful BMADX work |
 | `X2/X3` boundary | `high` | ambiguity, contract risk, API/schema/auth/perf signals |
 | `X3` BMAD-heavy | `high` | BMAD artifacts and hard gate matter more than model effort |
@@ -57,8 +57,9 @@ Escalate to `xhigh` only when the work is genuinely rescue-shaped:
 
 ## Downgrade effort
 
-Prefer `low` when the task is pure typo/copy/doc-only work and the blast radius
-is local.
+Try `low` only as an explicit experiment when the task is pure typo/copy/doc-only
+work and the blast radius is local. For Codex/GPT-5.5 code tasks, prefer
+`medium` until `low` proves cheaper in repeatable canaries.
 
 Prefer `medium` for normal bounded `X2` work with a clear owner, existing
 pattern, and known verification path.
@@ -91,7 +92,7 @@ Thinking: low|medium|high|xhigh — suggestion only.
 
 - Do not use thinking effort to choose the gear.
 - Do not let `xhigh` make `X4` normal.
-- Do not use `minimal` for code-editing `X1` until benchmark evidence supports it.
+- Do not use `minimal` or default `low` for code-editing `X1` until benchmark evidence supports it.
 - Do not edit `~/.codex/config.toml`.
 - Do not create profiles, hooks, MCP, plugins, runtime state, or a second plan store.
 - Do not claim token savings until healthy and degraded benchmark runs prove them.

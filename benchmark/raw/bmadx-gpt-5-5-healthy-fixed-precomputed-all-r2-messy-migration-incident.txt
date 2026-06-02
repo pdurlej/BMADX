@@ -1,0 +1,11 @@
+Choice: X4 — Rescue Mode / FUBAR
+
+Thinking: xhigh — suggestion only.
+
+Why: Partially failed database migration + unclear ownership + risky rollback is rescue-shaped data/production work, with red-zone migration risk and explicit need for coordinated recovery, verification, rollout ownership.
+
+Gate: gear=X4, classification_allowed=true, execution_allowed=true, bmad=ok, cache=false, warn=none.
+
+Required workflow: BMAD-first recovery scaffold, starting from PRD/architecture ownership, project context update, then recovery bundle with owners, rollback/forward-fix decision points, verification evidence, rollout gates, and comms/incident handoff.
+
+No edits performed.

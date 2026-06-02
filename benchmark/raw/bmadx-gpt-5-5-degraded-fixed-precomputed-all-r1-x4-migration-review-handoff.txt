@@ -1,0 +1,7 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: failed migration, unclear rollback ownership, large logs, production risk, and requested broad review before repair commands make this recovery-shaped.
+Gate: classification allowed; execution blocked for X4.
+Blocker: BMAD needs attention; health check returned non-zero.
+Handoff: yes
+Next step: broad review and ownership clarification only; no repair or rollback commands until the BMAD check is healthy.

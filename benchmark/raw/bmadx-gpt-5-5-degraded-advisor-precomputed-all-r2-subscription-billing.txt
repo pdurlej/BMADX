@@ -1,0 +1,13 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Subscription billing, annual-plan discounts, invoices, and account permissions cross billing/payments and authorization red zones, so this is X3.
+
+Gate: classification allowed; execution blocked. BMAD needs attention: Classification is still allowed, but execution for `X3` is blocked because the current BMAD check is not healthy and returned a non-zero exit code.
+
+Required remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

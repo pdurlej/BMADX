@@ -1,6 +1,6 @@
 {
   "name": "bmadx",
-  "skill_version": "0.2.8",
+  "skill_version": "0.2.9",
   "target_codex_profile": "codex-5.5",
   "dependency_skill": "bmad-method-codex",
   "dependency_check_command": "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
@@ -20,6 +20,7 @@
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/execution-boundaries.md",
     "references/subagent-policy.md",
     "references/verify-discipline.md",
     "references/fubar-bundle-spec.md",

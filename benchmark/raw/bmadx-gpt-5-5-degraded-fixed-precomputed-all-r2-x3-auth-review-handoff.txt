@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Auth is a red-zone area, there are two existing auth systems, session ownership is unclear, and the request asks for architecture review before implementation.
+Execution: blocked for X3 because the current health check is not healthy.
+Warning: Classification is allowed, but execution is blocked until the non-zero health check is resolved.
+Handoff: yes

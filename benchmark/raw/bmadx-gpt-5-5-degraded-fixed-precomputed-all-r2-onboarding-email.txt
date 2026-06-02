@@ -1,0 +1,10 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded content-only change; explicitly avoids auth, billing, and data models.
+Gate: warning — No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state.
+Plan:
+1. Add the onboarding email copy variant in the existing email copy/template location.
+2. Wire only the copy selection path needed for the new variant, without touching restricted domains.
+Verify:
+1. Check the rendered email output for the new variant.
+2. Run focused tests or snapshot checks covering onboarding email variants.

@@ -1,0 +1,11 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: Partial database migration failure + unclear ownership + risky rollback is rescue-shaped red-zone work.
+Classification: allowed.
+Execution: blocked for X4 because the BMAD health check is not healthy.
+
+Remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

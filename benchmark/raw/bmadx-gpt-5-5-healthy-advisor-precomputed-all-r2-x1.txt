@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only
+Why: tiny local copy fix inside one React component with no architecture or process risk.
+Next step: find the component, correct the typo in the error message, then run the narrow relevant check if available.

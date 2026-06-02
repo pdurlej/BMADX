@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded copy-only onboarding email variant, explicitly outside auth, billing, and data models.
+Plan:
+1. Add the new onboarding email copy variant in the existing email/copy pattern.
+2. Keep changes scoped to copy selection/config only, with no model or sensitive-area edits.
+Verify:
+1. Confirm the variant renders correctly in the onboarding email path.
+2. Check diff scope excludes auth, billing, migrations, and data models.

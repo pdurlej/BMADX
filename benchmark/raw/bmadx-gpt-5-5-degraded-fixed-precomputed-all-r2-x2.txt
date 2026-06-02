@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: Bounded backend change across 4 files with clear scope; gate allows classification/execution with warning: No fresh healthy BMAD snapshot is available; the X1/X2 decision is using local BMADX state.
+Plan:
+1. Add the new `status` field following existing backend model/schema/DTO patterns.
+2. Propagate handling across the remaining backend touchpoints without changing unrelated behavior.
+Verify:
+1. Run focused backend tests or type checks covering the touched files.
+2. Confirm create/read/update paths preserve and return the new `status` field correctly.

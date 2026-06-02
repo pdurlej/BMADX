@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: pure hero copy change on pricing page; no pricing logic, billing behavior, or data contracts should be touched.
+Next step: edit only the pricing hero text and verify the rendered page copy; gate warning noted: No fresh healthy BMAD snapshot is available.

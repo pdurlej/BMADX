@@ -1,0 +1,8 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+
+Why: The request is messy, high-entropy, and scaffold-shaped: project plan, scaffold bundle, `AGENTS.md`, `.customize.yaml` snippets, and verify matrix.
+
+Gate: `gear=X4 class=true exec=true bmad=ok cache=false warn=none`.
+
+Scope: classification only; no tools, no edits, no artifacts rendered.

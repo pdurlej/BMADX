@@ -1,0 +1,5 @@
+Choice: X1 — One-shot  
+Thinking: medium — suggestion only.  
+Why: Tiny pricing-page copy change only; no pricing logic, billing behavior, data, or integration boundaries should be touched.  
+Gate: warning only; classification and execution allowed.  
+Next step: Update only the hero copy and verify the page renders with unchanged billing/pricing behavior.

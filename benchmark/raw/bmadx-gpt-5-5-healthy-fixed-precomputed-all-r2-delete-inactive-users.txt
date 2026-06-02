@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: data deletion touches privacy/compliance and billing safety; inactive-user deletion must preserve paid accounts and required audit records.
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.
+Ownership: confirm product/legal/data-retention owner before implementation.
+Required proof: retention policy match, paid-account exclusion, audit-data preservation, dry-run counts, rollback/restore path, and production-safe verification.

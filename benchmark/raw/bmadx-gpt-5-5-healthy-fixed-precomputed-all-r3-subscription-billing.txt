@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Billing plus permissions is a red-zone change touching account entitlements, invoice correctness, and subscription pricing behavior.
+Gate: classification allowed; execution allowed; BMAD ok; no cache; no warnings.
+Next step: route through BMAD-owned billing/permissions flow, define annual discount behavior and invoice-permission invariants, then verify pricing, entitlement, and invoice cases before release.

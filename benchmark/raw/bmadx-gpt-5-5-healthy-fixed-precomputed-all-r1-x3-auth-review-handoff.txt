@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy architecture/auth review before implementation.
+Thinking: high — suggestion only.
+Why: Google login touches auth, sessions, ownership boundaries, and permissions; two existing auth systems make implementation unsafe without an architecture decision first.
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.
+Handoff: yes
+Next step: run a focused architecture review to decide the owning auth path, session source of truth, migration/compatibility strategy, and verification plan before any code edits.

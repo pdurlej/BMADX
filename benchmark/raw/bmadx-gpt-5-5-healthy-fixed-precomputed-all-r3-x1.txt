@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: A typo in one React component’s error message is a tiny local text change with no architectural or process risk.
+Next step: I would locate the component, correct only the typo, and do a focused verification of that rendered/error path.

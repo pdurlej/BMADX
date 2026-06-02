@@ -1,0 +1,11 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: This is red-zone data deletion touching billing protection and audit retention, so it needs BMAD ownership, explicit deletion rules, and verification before execution.
+
+Gate: classification allowed, execution allowed; BMAD ok; warnings none.
+
+Owner focus: data lifecycle/account retention with billing and audit/compliance constraints.
+
+Required proof: inactive-user deletion only targets accounts older than 18 months, excludes paid accounts, preserves required audit data, and has rollback/export or tombstone evidence before production rollout.

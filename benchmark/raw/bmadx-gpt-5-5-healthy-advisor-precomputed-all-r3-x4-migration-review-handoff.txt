@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Why: failed migration, unclear rollback ownership, large logs, production risk, and review-before-repair all make this rescue-shaped.
+Thinking: xhigh — suggestion only.
+Compact gate: classification allowed; execution allowed; BMAD ok; no warnings.
+Handoff: yes

@@ -1,0 +1,10 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded copy-only change, with explicit avoidance of auth, billing, and data model areas.
+Gate: classification/execution allowed; warning: No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state.
+Plan:
+1. Add the onboarding email copy variant in the existing email copy/template location.
+2. Keep the change isolated to copy/selection wiring only, with no auth, billing, or schema changes.
+Verify:
+1. Confirm the variant renders correctly in the existing email preview/test path.
+2. Check diff scope to ensure only onboarding email copy-related files changed.

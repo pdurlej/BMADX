@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: This is a tiny copy-only pricing hero change with no intended billing, pricing logic, or behavior impact.
+Next step: Edit only the hero text and verify the rendered pricing page still uses the existing pricing data and checkout/billing flow unchanged.

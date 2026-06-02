@@ -38,6 +38,7 @@ BMAD_METHOD_ROOT = Path.home() / ".codex" / "skills" / "bmad-method-codex"
 DEFAULT_MODEL = "gpt-5.5"
 DEFAULT_REASONING = "medium"
 DEFAULT_REASONING_POLICY = "fixed"
+DEFAULT_GATE_MODE = "precomputed"
 DEFAULT_GROUPS = ("core", "boundary", "non_technical", "handoff")
 HEALTHY_BMAD_RELEASE = {
     "tag_name": "v6.3.0",
@@ -64,6 +65,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         choices=("fixed", "advisor"),
         default=DEFAULT_REASONING_POLICY,
         help="How to choose reasoning per case: fixed uses --reasoning; advisor uses scenario expected_reasoning_effort",
+    )
+    parser.add_argument(
+        "--gate-mode",
+        choices=("precomputed", "in-session"),
+        default=DEFAULT_GATE_MODE,
+        help="How to apply the compact gate: precomputed runs it in the harness; in-session asks Codex to run it",
     )
     parser.add_argument(
         "--groups",
@@ -138,19 +145,40 @@ def groups_slug(groups: list[str]) -> str:
     return "-".join(group.replace("_", "-") for group in groups)
 
 
-def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
+def compact_gate_hint(gate_report: dict | None) -> str:
+    if not gate_report:
+        return "run compact gate."
+    warning = gate_report.get("warning") or "none"
+    return (
+        "use precomputed compact gate; do not run tools. "
+        f"Gate: gear={gate_report.get('requested_gear')} "
+        f"class={str(gate_report.get('classification_allowed')).lower()} "
+        f"exec={str(gate_report.get('execution_allowed')).lower()} "
+        f"bmad={gate_report.get('bmad_status')} "
+        f"cache={str(gate_report.get('cache_used')).lower()} "
+        f"warn={warning}."
+    )
+
+
+def build_prompt(
+    scenario_path: Path,
+    *,
+    include_handoff: bool = False,
+    gate_report: dict | None = None,
+) -> str:
     content = scenario_path.read_text(encoding="utf-8")
     task_line = next(
         (line for line in content.splitlines() if line.strip().startswith("Task:")),
         "",
     )
     task = task_line.partition("Task:")[2].strip()
+    gate_instruction = compact_gate_hint(gate_report)
     prompt = (
-        "Use $bmadx. Compact gate only. Answer only the BMADX short contract. "
-        "Include exactly one `Thinking: <low|medium|high|xhigh> — suggestion only` line. "
-        "Use the BMADX thinking map: X1=low, X2=medium, X3=high, X4=xhigh. "
-        "No analysis. For X1/X2 do not read refs. "
-        "Do not implement/edit/render/inline artifacts. "
+        f"Use $bmadx. Classify only; {gate_instruction} "
+        "Start with `Choice: X...`, not Phase/Gate/FAZA/WYKONANE. "
+        "Add `Thinking: <low|medium|high|xhigh> — suggestion only`. "
+        "Map X1/X2=medium, X3=high, X4=xhigh. "
+        "X2: 2 Plan + 2 Verify lines. X1/X2: no refs. No edits. "
     )
     if include_handoff:
         prompt += (
@@ -182,11 +210,12 @@ def summary_path_for(
     model_slug_value: str,
     profile: str,
     reasoning_policy: str = "fixed",
+    gate_mode: str = "precomputed",
     group_slug_value: str = "all",
 ) -> Path:
     return (
         BENCHMARK_ROOT
-        / f"summary-{date_stamp}-{model_slug_value}-{profile}-{reasoning_policy}-{group_slug_value}-bmadx.json"
+        / f"summary-{date_stamp}-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}-bmadx.json"
     )
 
 
@@ -297,6 +326,38 @@ def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path
     validate_warmup_payload(profile, parse_json_report(result.stdout))
 
 
+def precompute_compact_gate(
+    codex_home: Path,
+    profile: str,
+    gear: str,
+    healthy_release_fixture: Path | None = None,
+) -> dict:
+    command = [
+        sys.executable,
+        str(codex_home / "skills" / "bmadx" / "scripts" / "sync_bmadx.py"),
+        "check",
+        "--gear",
+        gear,
+        "--compact",
+    ]
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        env=benchmark_env(codex_home, profile, healthy_release_fixture),
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Compact gate precompute failed for {gear}/{profile}: "
+            f"{result.stderr.strip() or result.stdout.strip()}"
+        )
+    payload = parse_json_report(result.stdout)
+    if payload.get("classification_allowed") is not True:
+        raise RuntimeError(f"Compact gate precompute blocked classification for {gear}/{profile}: {payload}")
+    return payload
+
+
 def build_codex_command(
     prompt: str,
     workdir: Path,
@@ -355,12 +416,25 @@ def run_case(
     local_provider: str | None,
     model_slug_value: str,
     reasoning_policy: str,
+    gate_mode: str,
     group_slug_value: str,
     repeat_index: int,
 ) -> dict:
     scenario_path = Path(spec["path"])
     case_reasoning = effective_reasoning(spec, reasoning, reasoning_policy)
-    prompt = build_prompt(scenario_path, include_handoff=spec.get("expected_handoff") is not None)
+    gate_report = None
+    if gate_mode == "precomputed":
+        gate_report = precompute_compact_gate(
+            codex_home,
+            profile,
+            str(spec["expected_gear"]),
+            healthy_release_fixture,
+        )
+    prompt = build_prompt(
+        scenario_path,
+        include_handoff=spec.get("expected_handoff") is not None,
+        gate_report=gate_report,
+    )
     command = build_codex_command(
         prompt,
         workdir,
@@ -382,7 +456,7 @@ def run_case(
     stdout = result.stdout.rstrip() + "\n"
     stderr = sanitize_stderr(result.stderr.rstrip()) + "\n"
     raw_base = RAW_ROOT / (
-        f"bmadx-{model_slug_value}-{profile}-{reasoning_policy}-{group_slug_value}-r{repeat_index}-{scenario_key}"
+        f"bmadx-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}-r{repeat_index}-{scenario_key}"
     )
     raw_base.with_suffix(".txt").write_text(stdout, encoding="utf-8")
     raw_base.with_suffix(".log").write_text(stdout + "\n--- STDERR ---\n" + stderr, encoding="utf-8")
@@ -402,6 +476,8 @@ def run_case(
         "model": model,
         "reasoning": case_reasoning,
         "reasoning_policy": reasoning_policy,
+        "gate_mode": gate_mode,
+        "compact_gate_report": gate_report,
         "repeat_index": repeat_index,
         "duration_seconds": round(duration_seconds, 3),
         "provider": "oss" if oss else "openai",
@@ -452,6 +528,7 @@ def run_scenario_group(
     local_provider: str | None,
     model_slug_value: str,
     reasoning_policy: str,
+    gate_mode: str,
     group_slug_value: str,
     repeat_index: int,
 ) -> list[dict]:
@@ -469,6 +546,7 @@ def run_scenario_group(
             local_provider=local_provider,
             model_slug_value=model_slug_value,
             reasoning_policy=reasoning_policy,
+            gate_mode=gate_mode,
             group_slug_value=group_slug_value,
             repeat_index=repeat_index,
         )
@@ -524,6 +602,7 @@ def build_summary(
     oss: bool = False,
     local_provider: str | None = None,
     reasoning_policy: str = "fixed",
+    gate_mode: str = "precomputed",
     groups: list[str] | None = None,
     group_slug_value: str = "all",
     repeat: int = 1,
@@ -542,6 +621,7 @@ def build_summary(
             "model": model,
             "reasoning": reasoning,
             "reasoning_policy": reasoning_policy,
+            "gate_mode": gate_mode,
             "provider": "oss" if oss else "openai",
             "local_provider": local_provider,
             "reasoning_applied": not oss,
@@ -627,6 +707,7 @@ def main() -> int:
             "local_provider": args.local_provider,
             "model_slug_value": model_slug_value,
             "reasoning_policy": args.reasoning_policy,
+            "gate_mode": args.gate_mode,
             "group_slug_value": group_slug_value,
         }
         core_cases: list[dict] = []
@@ -695,6 +776,7 @@ def main() -> int:
         oss=args.oss,
         local_provider=args.local_provider,
         reasoning_policy=args.reasoning_policy,
+        gate_mode=args.gate_mode,
         groups=args.groups,
         group_slug_value=group_slug_value,
         repeat=args.repeat,
@@ -705,6 +787,7 @@ def main() -> int:
         model_slug_value,
         args.profile,
         args.reasoning_policy,
+        args.gate_mode,
         group_slug_value,
     )
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
@@ -717,6 +800,7 @@ def main() -> int:
                 "non_technical_case_count": len(non_technical_cases),
                 "handoff_case_count": len(handoff_cases),
                 "reasoning_policy": args.reasoning_policy,
+                "gate_mode": args.gate_mode,
                 "group_slug": group_slug_value,
                 "repeat": args.repeat,
             },

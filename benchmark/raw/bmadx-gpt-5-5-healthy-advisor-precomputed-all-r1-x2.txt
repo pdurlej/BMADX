@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files with clear field propagation and normal verification scope.
+Plan:
+1. Identify the existing status/data-shape pattern and add the new status field consistently across the 4 backend files.
+2. Update validation, serialization, persistence, and response handling only where the field is owned.
+Verify:
+1. Run the focused backend tests covering the touched status flow.
+2. Check one representative create/update/read path confirms the new field is accepted and returned.

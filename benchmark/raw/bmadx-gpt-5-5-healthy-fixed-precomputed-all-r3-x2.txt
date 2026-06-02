@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files, with execution allowed and BMAD gate clean.
+Plan:
+1. Identify the existing status-handling pattern and apply the new field consistently across the 4 backend files.
+2. Update any validation, serialization, persistence, and API response paths touched by that field.
+Verify:
+1. Run the focused backend tests covering status create/update/read behavior.
+2. Check one representative end-to-end request or fixture to confirm the new status field is accepted and returned.

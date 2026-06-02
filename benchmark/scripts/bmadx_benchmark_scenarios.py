@@ -12,7 +12,7 @@ CORE_SCENARIOS = {
     "x1": {
         "path": SCENARIO_ROOT / "scenario-x1.txt",
         "expected_gear": "X1",
-        "expected_reasoning_effort": "low",
+        "expected_reasoning_effort": "medium",
         "forbidden_gears": ["X3", "X4"],
         "max_lines": 5,
         "max_chars": 650,
@@ -57,7 +57,7 @@ NON_TECH_SCENARIOS = {
     "pricing-copy": {
         "path": SCENARIO_ROOT / "scenario-nontech-pricing-copy.txt",
         "expected_gear": "X1",
-        "expected_reasoning_effort": "low",
+        "expected_reasoning_effort": "medium",
         "forbidden_gears": ["X3", "X4"],
         "max_lines": 5,
         "max_chars": 650,

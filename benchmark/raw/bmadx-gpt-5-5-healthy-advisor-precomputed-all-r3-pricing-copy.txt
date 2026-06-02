@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: This is a tiny localized copy-only change, with explicit no-change boundaries around pricing logic and billing behavior.
+Next step: Edit only the pricing hero text and verify the rendered page still uses the existing pricing data and billing paths unchanged.

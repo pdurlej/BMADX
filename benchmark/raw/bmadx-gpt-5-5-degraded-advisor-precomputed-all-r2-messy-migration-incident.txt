@@ -1,0 +1,17 @@
+Choice: X4 — Rescue Mode
+
+Thinking: xhigh — suggestion only.
+
+Why: A partially failed database migration with unclear ownership and risky rollback is rescue-shaped data recovery work.
+
+Classification: allowed.  
+Execution: blocked for `X4`.
+
+Blocker: BMAD health is `needs_attention`; execution is blocked because the BMAD health check returned a non-zero exit code.
+
+Required remediation:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

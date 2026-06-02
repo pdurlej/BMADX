@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Google login touches auth, OAuth callbacks, session behavior, secrets/config, and user identity flows, so it is red-zone work.  
+Gate: classification=true; execution=true; bmad=ok; cache=false; warn=none.  
+BMAD: preserve auth/session ownership and follow existing app patterns before implementation.  
+Verify: OAuth success/failure callbacks, state/CSRF handling, session creation/persistence/logout, and existing login regressions.

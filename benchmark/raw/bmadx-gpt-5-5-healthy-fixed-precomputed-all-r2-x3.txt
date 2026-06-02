@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Existing BMAD story implementation must preserve BMAD ownership, story artifacts, acceptance criteria, and verification discipline.
+
+Gate: classification allowed; execution allowed; BMAD ok; warnings none.
+
+Next step: Enter the BMAD story implementation flow, keep changes aligned to the story and process artifacts, and verify against the story acceptance criteria before completion.

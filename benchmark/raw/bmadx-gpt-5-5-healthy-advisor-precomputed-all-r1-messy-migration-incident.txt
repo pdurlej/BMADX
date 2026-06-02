@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: Partially failed database migration + unclear ownership + risky rollback is rescue-shaped red-zone work.
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.
+Next step: scaffold BMAD recovery ownership, verification evidence, rollback/roll-forward decision points, and rollout owners before execution.

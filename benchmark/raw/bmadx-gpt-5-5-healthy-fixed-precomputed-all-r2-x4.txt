@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: messy project planning plus scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and verify matrix is rescue-shaped/high-entropy work with ownership and verification setup needed.
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+Next step: produce the rescue planning bundle from BMAD PRD/architecture context, then verify it against ownership, scaffold completeness, customization coverage, and proof matrix before any edits.

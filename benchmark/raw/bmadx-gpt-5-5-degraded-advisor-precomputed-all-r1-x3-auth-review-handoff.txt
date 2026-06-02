@@ -1,0 +1,11 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Google login touches auth, session ownership, and architecture boundaries; the repo already has conflicting auth systems.
+
+Execution: blocked for X3 because the current health check is not healthy.
+
+Handoff: yes
+
+Next step: do the broad architecture review first, identify the auth/session owner, then implement only after the ownership and verification path are explicit.

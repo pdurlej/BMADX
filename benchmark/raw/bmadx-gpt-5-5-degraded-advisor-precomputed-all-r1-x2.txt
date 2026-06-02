@@ -1,0 +1,13 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: Bounded backend change across 4 files with a new status field; no red-zone signals.
+
+Plan:
+1. Trace existing field/model/DTO/API patterns and add `status` consistently in the 4 backend files.
+2. Keep behavior scoped to the existing data flow, avoiding schema or contract drift beyond the requested field.
+
+Verify:
+1. Run focused backend tests or type checks covering the touched files.
+2. Confirm create/read/update paths serialize and accept the new `status` field as expected.
+
+Warning: No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state.

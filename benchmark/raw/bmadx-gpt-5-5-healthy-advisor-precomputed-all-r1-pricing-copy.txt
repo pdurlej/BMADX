@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: This is a tiny localized copy-only change with explicit guardrails against pricing logic or billing behavior changes.
+Next step: Update only the pricing hero text and verify the diff contains no logic, config, billing, or pricing calculation changes.

@@ -1,0 +1,10 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: Bounded copy-only onboarding email variant; red-zone systems are explicitly out of scope.
+Gate: warning — No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state.
+Plan:
+1. Add the new onboarding email copy variant in the existing email copy/template location.
+2. Keep changes isolated from auth, billing, and data model code paths.
+Verify:
+1. Confirm the variant renders with expected subject/body content.
+2. Check diff scope to ensure no auth, billing, migration, schema, or model files changed.

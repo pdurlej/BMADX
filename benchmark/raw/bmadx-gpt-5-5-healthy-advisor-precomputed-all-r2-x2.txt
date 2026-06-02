@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files with explicit planning and verification, no red-zone risk indicated.
+Plan:
+1. Identify the existing status handling pattern and update the 4 backend files consistently.
+2. Add the new status field through validation, persistence, serialization, and any response mapping as needed.
+Verify:
+1. Run focused backend tests covering status creation/update/read paths.
+2. Check one representative API or service flow to confirm the new field is accepted and returned correctly.

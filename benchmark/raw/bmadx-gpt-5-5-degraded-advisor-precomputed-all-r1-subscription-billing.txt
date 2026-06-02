@@ -1,0 +1,15 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Billing, discounts, invoices, and account permissions are red-zone areas with contract and financial correctness risk.
+
+Gate: classification allowed; execution blocked.
+
+Blocker: BMAD needs attention. The health check returned a non-zero exit code.
+
+Remediation:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

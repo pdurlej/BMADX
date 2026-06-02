@@ -1,0 +1,11 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: Bounded backend change across 4 files with explicit planning and verification; gate allows classification and execution with a soft BMAD warning.
+
+Plan:
+1. Identify the existing status/data flow pattern across the 4 backend files.
+2. Add the new status field consistently at model/schema, mapping, validation, and response boundaries.
+
+Verify:
+1. Run focused backend tests covering status creation, update, and serialization.
+2. Check any API contract or fixture snapshots affected by the new field.

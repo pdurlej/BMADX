@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: data deletion with paid-account exclusion and audit-retention constraints is a red-zone change involving privacy, billing, compliance, and irreversible data risk.
+Compact gate: classification allowed, execution allowed, BMAD ok, no warnings.
+Ownership: BMAD-first; implementation should follow existing account lifecycle, billing, retention, and audit-log ownership boundaries.
+Verify: prove paid accounts are excluded, inactive cutoff is exact, audit data is retained or anonymized per policy, and deletion is reversible/dry-run validated before production.

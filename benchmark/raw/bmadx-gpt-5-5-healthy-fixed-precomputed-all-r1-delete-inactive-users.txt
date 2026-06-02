@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: This is data deletion with billing and audit-retention constraints, so it is a red-zone change requiring BMAD ownership, explicit policy boundaries, and strong verification.
+
+Gate: gear=X3, classification_allowed=true, execution_allowed=true, bmad=ok, cache=false, warn=none.
+
+Next step: define the deletion policy contract first: inactive means no qualifying activity for 18 months, paid accounts are excluded, and audit data is retained or anonymized according to compliance requirements before any implementation.

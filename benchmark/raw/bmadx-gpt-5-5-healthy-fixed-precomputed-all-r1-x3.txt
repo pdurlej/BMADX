@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Existing BMAD story implementation must stay aligned with BMAD ownership, story artifacts, gates, and verification, so this is process-sensitive BMAD-heavy work.
+
+Gate: classification allowed; execution allowed; BMAD ok; no warnings.
+
+Next step: enter the BMAD implementation flow from the existing story, preserve artifact alignment, and verify against the story acceptance criteria plus required BMAD checks.

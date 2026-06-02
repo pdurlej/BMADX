@@ -1,0 +1,14 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Subscription billing, annual discounts, invoices, and account permissions touch billing and permissions red zones, so this needs BMAD ownership and stronger verification.
+
+Classification: allowed.
+
+Execution: blocked. Classification is still allowed, but execution for `X3` is blocked: The current BMAD check is not healthy. The BMAD health check returned a non-zero exit code.
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

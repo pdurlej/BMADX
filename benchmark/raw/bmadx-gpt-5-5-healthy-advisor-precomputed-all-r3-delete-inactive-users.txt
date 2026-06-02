@@ -1,0 +1,11 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: This is red-zone data deletion work with billing/account-retention and audit/compliance constraints.
+
+Compact check: classification allowed, execution allowed, BMAD ok, warnings none.
+
+Ownership: BMAD-first data lifecycle/privacy area, with billing and audit-log owners explicitly protected.
+
+Verification needed before execution: prove inactive cutoff logic, paid-account exclusion, audit-data retention, dry-run results, rollback/recovery path, and owner signoff.

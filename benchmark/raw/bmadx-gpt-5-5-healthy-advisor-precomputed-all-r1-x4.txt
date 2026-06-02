@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: messy project ownership plus scaffold-shaped deliverables fit X4/FUBAR.
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.
+Next: classify as X4; no artifacts rendered and no edits made because this turn is classification-only.

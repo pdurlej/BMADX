@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: fixing a typo in one error message inside one React component is a tiny local text change with no process or architecture risk.
+Next step: I will edit the component message, then do a quick targeted check that the displayed text is corrected.

@@ -28,6 +28,7 @@ LOCAL_FILES = [
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/execution-boundaries.md",
     "references/subagent-policy.md",
     "references/verify-discipline.md",
     "references/fubar-bundle-spec.md",
@@ -63,7 +64,7 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.2.8",
+        "skill_version": "0.2.9",
         "target_codex_profile": "codex-5.5",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
@@ -106,6 +107,7 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "architecture-guardrails.md", "Architecture Guardrail Card\n")
     write(root / "references" / "broad-handoff.md", "Broad Orchestrator Handoff\n")
     write(root / "references" / "thinking-budget.md", "Thinking Budget Advisor\n")
+    write(root / "references" / "execution-boundaries.md", "Execution Boundaries\n")
     write(root / "references" / "subagent-policy.md", "policy\n")
     write(root / "references" / "verify-discipline.md", "verify\n")
     write(root / "references" / "fubar-bundle-spec.md", "spec\n")
@@ -176,6 +178,13 @@ def make_bmad_skill(
 
 
 class SyncBmadxTests(unittest.TestCase):
+    def test_public_skill_description_is_yaml_safe(self) -> None:
+        skill_path = SCRIPT_PATH.parents[1] / "SKILL.md"
+        frontmatter = skill_path.read_text(encoding="utf-8").split("---", 2)[1]
+        description_lines = [line for line in frontmatter.splitlines() if line.startswith("description:")]
+        self.assertEqual(len(description_lines), 1)
+        self.assertRegex(description_lines[0], r'^description: ".*"$')
+
     def test_gate_decision_preserves_x2_soft_fast_path(self) -> None:
         decision = build_gate_decision(
             requested_gear="X2",
@@ -493,7 +502,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.2.8")
+            self.assertEqual(payload["skill_version"], "0.2.9")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")

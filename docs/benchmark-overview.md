@@ -26,6 +26,7 @@ The benchmark does not prove:
 - BMADX `degraded` rerun from `2026-04-06`
 - BMADX GPT-5.5 optimization rerun from `2026-04-24`
 - BMADX GPT-5.5 performance canary from `2026-06-01`; full baseline was blocked by token-budget canary failures
+- BMADX GPT-5.5 performance baseline from `2026-06-02`; automated baseline verification passed, but claim verification failed
 - experimental Codex OSS-provider reruns for local models, if a local provider such as Ollama or LM Studio is installed
 
 Use these artifacts:
@@ -37,6 +38,11 @@ Use these artifacts:
 - [`../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json)
 - [`../benchmark/summary-2026-06-01-gpt-5-5-healthy-fixed-core-boundary-bmadx.json`](../benchmark/summary-2026-06-01-gpt-5-5-healthy-fixed-core-boundary-bmadx.json)
 - [`../benchmark/summary-2026-06-01-gpt-5-5-healthy-advisor-core-boundary-bmadx.json`](../benchmark/summary-2026-06-01-gpt-5-5-healthy-advisor-core-boundary-bmadx.json)
+- [`benchmark-summary-2026-06-02-gpt55-performance.md`](benchmark-summary-2026-06-02-gpt55-performance.md)
+- [`../benchmark/summary-2026-06-02-gpt-5-5-healthy-fixed-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-healthy-fixed-precomputed-all-bmadx.json)
+- [`../benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json)
+- [`../benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json)
+- [`../benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json)
 
 Runner hardening after `v0.2.4`:
 - benchmark runs now fail if `codex exec` does not report a `tokens used` footer
@@ -51,6 +57,9 @@ Runner hardening after `v0.2.4`:
 - `v0.2.7` runner validation can parse `Thinking:` lines, compare them with expected reasoning effort, and reject global Codex config mutation language
 - `v0.2.8` runner summaries include per-case `duration_seconds`, reasoning policy, repeat index, token/latency performance aggregates, and optional explicit operator-provided cost estimates
 - `v0.2.8` raw and summary artifact names include reasoning policy and group scope so canary runs do not overwrite full baselines
+- `v0.2.9` adds `benchmark/scripts/verify_bmadx_performance.py` so full baselines are approved by the same gates instead of manual inspection
+- `v0.2.9` adds `--gate-mode precomputed|in-session`; the performance baseline uses `precomputed` so the harness validates compact gates without adding in-session tool-call variance
+- `v0.2.9` verifier baseline mode reports token cap overages as warnings; `claim` mode remains strict before any public savings claim
 
 ## Thinking budget validation
 
@@ -64,7 +73,7 @@ Expected defaults:
 
 | Scenario shape | Expected thinking |
 | --- | --- |
-| `X1` tiny local work | `low` |
+| `X1` tiny local work | `medium` |
 | `X2` bounded normal work | `medium` |
 | `X2/X3` boundary | `high` |
 | `X3` red-zone or BMAD-heavy work | `high` |
@@ -76,12 +85,16 @@ config as part of normal BMADX routing.
 
 ## GPT-5.5 performance baseline
 
-`v0.2.8` measures two policies:
+`v0.2.9` measures two policies:
 
 | Policy | Meaning |
 | --- | --- |
 | `fixed` | use one CLI `--reasoning` value for every case, normally `medium` |
-| `advisor` | use the scenario's expected thinking budget: `X1=low`, `X2=medium`, `X3=high`, `X4=xhigh` |
+| `advisor` | use the scenario's expected thinking budget: `X1=medium`, `X2=medium`, `X3=high`, `X4=xhigh` |
+
+The recommended performance path uses `--gate-mode precomputed`. The benchmark
+harness runs the compact gate and injects the compact report into the Codex
+session, avoiding extra in-session tool-call variance.
 
 Canary runs:
 
@@ -91,26 +104,28 @@ python3 benchmark/scripts/run_bmadx_benchmark.py \
   --profile healthy \
   --reasoning medium \
   --reasoning-policy fixed \
+  --gate-mode precomputed \
   --groups core,boundary \
   --repeat 1 \
-  --date-stamp 2026-06-01
+  --date-stamp 2026-06-02
 
 python3 benchmark/scripts/run_bmadx_benchmark.py \
   --model gpt-5.5 \
   --profile healthy \
   --reasoning-policy advisor \
+  --gate-mode precomputed \
   --groups core,boundary \
   --repeat 1 \
-  --date-stamp 2026-06-01
+  --date-stamp 2026-06-02
 ```
 
 Full baseline runs:
 
 ```bash
-python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning medium --reasoning-policy fixed --repeat 3 --date-stamp 2026-06-01
-python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning-policy advisor --repeat 3 --date-stamp 2026-06-01
-python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning medium --reasoning-policy fixed --repeat 2 --date-stamp 2026-06-01
-python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning-policy advisor --repeat 2 --date-stamp 2026-06-01
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning medium --reasoning-policy fixed --gate-mode precomputed --repeat 3 --date-stamp 2026-06-02
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning-policy advisor --gate-mode precomputed --repeat 3 --date-stamp 2026-06-02
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning medium --reasoning-policy fixed --gate-mode precomputed --repeat 2 --date-stamp 2026-06-02
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning-policy advisor --gate-mode precomputed --repeat 2 --date-stamp 2026-06-02
 ```
 
 Reporting rule:
@@ -119,6 +134,43 @@ This is a baseline, not a public savings claim. Do not update README with token
 savings language unless repeated healthy and degraded runs preserve routing,
 red-zone safety, `X4` rarity, compact `X1/X2`, reference budget, and
 thinking-budget validation.
+
+## Performance verifier
+
+Use the verifier after canary or full runs:
+
+```bash
+python3 benchmark/scripts/verify_bmadx_performance.py \
+  benchmark/summary-2026-06-02-gpt-5-5-healthy-fixed-precomputed-all-bmadx.json \
+  benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json \
+  benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json \
+  benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json \
+  --require-profiles healthy,degraded \
+  --require-policies fixed,advisor \
+  --require-gate-mode precomputed \
+  --require-group-slug all \
+  --min-repeat 2
+```
+
+`baseline` mode exits `0` only when the safety and validation gates pass.
+Token cap overages are reported as warnings in baseline mode, because current
+Codex/GPT-5.5 token accounting showed run-to-run variance even for compact
+`X1` responses. Use `--token-cap-mode strict` or `--mode claim` when token caps
+must be hard gates.
+
+`claim` mode additionally requires advisor metrics to improve or hold fixed
+metrics for total tokens, average tokens, average latency, p95 latency, and max
+latency. Use `claim` mode before writing any public savings claim:
+
+```bash
+python3 benchmark/scripts/verify_bmadx_performance.py \
+  <same summaries> \
+  --mode claim \
+  --require-profiles healthy,degraded \
+  --require-policies fixed,advisor \
+  --require-group-slug all \
+  --min-repeat 2
+```
 
 ## Model and provider experiments
 

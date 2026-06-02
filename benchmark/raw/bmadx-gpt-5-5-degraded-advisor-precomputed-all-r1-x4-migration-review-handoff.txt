@@ -1,0 +1,6 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only
+Why: failed migration, unclear rollback ownership, large logs, production risk, and requested broad review before repair commands.
+Classification: allowed.
+Execution: blocked because the BMAD health check is not healthy and returned a non-zero exit code.
+Handoff: yes

@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: The code change is bounded to 4 backend files, but it is owned by an existing BMAD story and must stay aligned with process artifacts, so BMAD ownership governs the work.
+Gate: classification=true, execution=true, bmad=ok, cache=false, warn=none.
+Next step: execute under the existing story, update only the relevant implementation and story/process artifacts, then verify backend behavior plus BMAD artifact consistency.

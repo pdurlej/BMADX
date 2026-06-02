@@ -1,0 +1,6 @@
+Choice: X4 — Rescue Mode
+Thinking: xhigh — suggestion only.
+Why: Failed migration, unclear rollback ownership, large logs, production risk, and request for broad review before repair commands are rescue-shaped.
+Compact check: class=true, exec=true, bmad=ok, cache=false, warn=none.
+Handoff: yes
+Next step: broad review and ownership clarification before any repair or rollback command.

@@ -7,7 +7,13 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.8`
+- `v0.2.9`
+
+What `v0.2.9` focuses on:
+- reducing hidden activation cost by keeping `SKILL.md` focused on the core contract
+- moving execution-surface and model-experiment details to references
+- adding an autoverifier for full performance baselines
+- keeping token-savings claims separate from baseline safety approval
 
 What `v0.2.8` focuses on:
 - GPT-5.5 token and latency performance baselines for fixed-medium vs

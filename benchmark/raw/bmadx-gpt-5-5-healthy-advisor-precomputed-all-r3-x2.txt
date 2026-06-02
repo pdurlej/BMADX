@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across 4 files with clear scope and normal verification.
+Plan:
+1. Add the new `status` field following existing backend model/schema/serialization patterns.
+2. Propagate handling across the 4 touched files without changing unrelated contracts.
+Verify:
+1. Run targeted backend tests for the affected status flow.
+2. Check create/read/update paths confirm `status` is accepted, stored, and returned correctly.

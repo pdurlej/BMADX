@@ -1,0 +1,11 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: This is data deletion with billing and audit-retention constraints, so it is red-zone work requiring BMAD ownership, explicit policy rules, and strong verification.
+
+Gate: gear=X3 class=true exec=true bmad=ok cache=false warn=none.
+
+Execution: allowed, but no edits requested.
+
+Verification focus: prove inactive-user deletion excludes paid accounts, preserves required audit data, and is reversible or recoverable according to retention policy.

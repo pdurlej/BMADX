@@ -1,0 +1,10 @@
+Choice: X4 — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: Messy-project planning plus scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and verify matrix is rescue/scaffold-shaped work with unclear ownership and high entropy.  
+Gate: classification allowed; execution blocked.  
+Blocker: BMAD needs attention. Classification is still allowed, but execution for `X4` is blocked because the current BMAD check is not healthy and returned a non-zero exit code.  
+Next step before execution:
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
+```

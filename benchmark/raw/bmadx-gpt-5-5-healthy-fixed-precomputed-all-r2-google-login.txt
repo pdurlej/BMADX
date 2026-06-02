@@ -1,0 +1,9 @@
+Choice: X3 — BMAD-heavy
+
+Thinking: high — suggestion only.
+
+Why: Google login touches auth, callback handling, session creation, user identity mapping, secrets/config, and security-sensitive redirect behavior, so it is a red-zone change.
+
+Gate: classification allowed; execution allowed; BMAD ok; cache false; warnings none.
+
+Next step: proceed under BMAD ownership with explicit auth/session acceptance criteria and verification before implementation.

@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Google login touches auth, sessions, ownership boundaries, and architecture risk; the existing dual-auth ambiguity makes implementation unsafe before review.
+Gate: classification allowed; execution allowed; BMAD ok; warnings none.
+Handoff: yes
+Next step: run a broad architecture review to identify the owning auth/session model, expected login contract, migration path, and verification proof before adding Google login.

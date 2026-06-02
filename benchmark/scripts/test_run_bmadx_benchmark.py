@@ -27,6 +27,7 @@ from bmadx_benchmark_validation import (
     validation_failures,
 )
 from run_bmadx_benchmark import (
+    DEFAULT_GATE_MODE,
     DEFAULT_MODEL,
     DEFAULT_REASONING,
     DEFAULT_REASONING_POLICY,
@@ -34,6 +35,7 @@ from run_bmadx_benchmark import (
     build_codex_command,
     build_prompt,
     build_summary,
+    compact_gate_hint,
     copy_skills,
     copy_runtime_files,
     effective_reasoning,
@@ -81,12 +83,39 @@ tokens used
             scenario.write_text("Intro\nTask: Create a rescue bundle.\n", encoding="utf-8")
             prompt = build_prompt(scenario)
             self.assertIn("Use $bmadx.", prompt)
-            self.assertIn("Compact gate only.", prompt)
+            self.assertIn("Classify only; run compact gate.", prompt)
+            self.assertNotIn("do not run tools", prompt)
+            self.assertIn("Start with `Choice: X...`", prompt)
             self.assertIn("Thinking: <low|medium|high|xhigh>", prompt)
-            self.assertIn("X1=low, X2=medium, X3=high, X4=xhigh", prompt)
-            self.assertIn("No analysis. For X1/X2 do not read refs.", prompt)
-            self.assertIn("Do not implement/edit/render/inline artifacts.", prompt)
+            self.assertIn("Map X1/X2=medium, X3=high, X4=xhigh", prompt)
+            self.assertIn("X2: 2 Plan + 2 Verify lines.", prompt)
+            self.assertIn("X1/X2: no refs. No edits.", prompt)
             self.assertIn("Task: Create a rescue bundle.", prompt)
+
+    def test_build_prompt_can_use_precomputed_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            scenario = Path(tmpdir) / "scenario.txt"
+            scenario.write_text("Task: Fix a typo.\n", encoding="utf-8")
+            prompt = build_prompt(
+                scenario,
+                gate_report={
+                    "requested_gear": "X1",
+                    "classification_allowed": True,
+                    "execution_allowed": True,
+                    "warning": None,
+                    "bmad_status": "ok",
+                    "cache_used": True,
+                    "remediation": [],
+                },
+            )
+            self.assertIn("use precomputed compact gate", prompt)
+            self.assertIn("do not run tools", prompt)
+            self.assertIn("gear=X1", prompt)
+            self.assertIn("class=true", prompt)
+            self.assertIn("Task: Fix a typo.", prompt)
+
+    def test_compact_gate_hint_falls_back_to_in_session_gate(self) -> None:
+        self.assertEqual(compact_gate_hint(None), "run compact gate.")
 
     def test_build_prompt_can_request_handoff_line(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -245,12 +274,26 @@ tokens used
         self.assertEqual(args.model, "gpt-5.5")
         self.assertEqual(args.reasoning, DEFAULT_REASONING)
         self.assertEqual(args.reasoning_policy, DEFAULT_REASONING_POLICY)
+        self.assertEqual(args.gate_mode, DEFAULT_GATE_MODE)
+        self.assertEqual(args.gate_mode, "precomputed")
         self.assertEqual(args.groups, ["core", "boundary", "non_technical", "handoff"])
         self.assertEqual(args.repeat, 1)
 
-    def test_parse_args_supports_reasoning_policy_groups_and_repeat(self) -> None:
-        args = parse_args(["--reasoning-policy", "advisor", "--groups", "core,boundary", "--repeat", "3"])
+    def test_parse_args_supports_reasoning_policy_gate_mode_groups_and_repeat(self) -> None:
+        args = parse_args(
+            [
+                "--reasoning-policy",
+                "advisor",
+                "--gate-mode",
+                "in-session",
+                "--groups",
+                "core,boundary",
+                "--repeat",
+                "3",
+            ]
+        )
         self.assertEqual(args.reasoning_policy, "advisor")
+        self.assertEqual(args.gate_mode, "in-session")
         self.assertEqual(args.groups, ["core", "boundary"])
         self.assertEqual(args.repeat, 3)
 
@@ -290,13 +333,13 @@ tokens used
         self.assertEqual(runner_slug("mistral", oss=True, local_provider="ollama"), "ollama-mistral")
 
     def test_non_technical_scenarios_cover_red_zones_and_rescue(self) -> None:
-        self.assertEqual(CORE_SCENARIOS["x1"]["expected_reasoning_effort"], "low")
+        self.assertEqual(CORE_SCENARIOS["x1"]["expected_reasoning_effort"], "medium")
         self.assertEqual(CORE_SCENARIOS["x2"]["expected_reasoning_effort"], "medium")
         self.assertEqual(CORE_SCENARIOS["x3"]["expected_reasoning_effort"], "high")
         self.assertEqual(CORE_SCENARIOS["x4"]["expected_reasoning_effort"], "xhigh")
         self.assertEqual(BOUNDARY_SCENARIOS["x2x3-boundary"]["expected_reasoning_effort"], "high")
         self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_gear"], "X1")
-        self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_reasoning_effort"], "low")
+        self.assertEqual(NON_TECH_SCENARIOS["pricing-copy"]["expected_reasoning_effort"], "medium")
         self.assertEqual(NON_TECH_SCENARIOS["onboarding-email"]["expected_gear"], "X2")
         self.assertEqual(NON_TECH_SCENARIOS["onboarding-email"]["expected_reasoning_effort"], "medium")
         self.assertEqual(NON_TECH_SCENARIOS["google-login"]["expected_gear"], "X3")
@@ -319,11 +362,18 @@ tokens used
     def test_summary_path_uses_bmadx_suffix(self) -> None:
         self.assertEqual(
             summary_path_for("2026-05-05", "gpt-5-5", "healthy").name,
-            "summary-2026-05-05-gpt-5-5-healthy-fixed-all-bmadx.json",
+            "summary-2026-05-05-gpt-5-5-healthy-fixed-precomputed-all-bmadx.json",
         )
         self.assertEqual(
-            summary_path_for("2026-05-05", "gpt-5-5", "healthy", "advisor", "core-boundary").name,
-            "summary-2026-05-05-gpt-5-5-healthy-advisor-core-boundary-bmadx.json",
+            summary_path_for(
+                "2026-05-05",
+                "gpt-5-5",
+                "healthy",
+                "advisor",
+                "in-session",
+                "core-boundary",
+            ).name,
+            "summary-2026-05-05-gpt-5-5-healthy-advisor-in-session-core-boundary-bmadx.json",
         )
 
     def test_write_config_uses_model_and_reasoning(self) -> None:
@@ -447,6 +497,7 @@ tokens used
             model="gpt-5.5",
             reasoning="medium",
             reasoning_policy="advisor",
+            gate_mode="precomputed",
             groups=["core"],
             group_slug_value="core",
             repeat=3,
@@ -455,6 +506,7 @@ tokens used
         self.assertEqual(summary["runner"]["model"], "gpt-5.5")
         self.assertEqual(summary["runner"]["reasoning"], "medium")
         self.assertEqual(summary["runner"]["reasoning_policy"], "advisor")
+        self.assertEqual(summary["runner"]["gate_mode"], "precomputed")
         self.assertEqual(summary["runner"]["groups"], ["core"])
         self.assertEqual(summary["runner"]["group_slug"], "core")
         self.assertEqual(summary["runner"]["repeat"], 3)
