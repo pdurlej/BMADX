@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import date
 from pathlib import Path
 
@@ -36,6 +37,8 @@ BMADX_SKILL_ROOT = REPO_ROOT / "skill" / "bmadx"
 BMAD_METHOD_ROOT = Path.home() / ".codex" / "skills" / "bmad-method-codex"
 DEFAULT_MODEL = "gpt-5.5"
 DEFAULT_REASONING = "medium"
+DEFAULT_REASONING_POLICY = "fixed"
+DEFAULT_GROUPS = ("core", "boundary", "non_technical", "handoff")
 HEALTHY_BMAD_RELEASE = {
     "tag_name": "v6.3.0",
     "name": "BMAD v6.3.0",
@@ -55,6 +58,29 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--reasoning",
         default=DEFAULT_REASONING,
         help=f"Codex model reasoning effort (default: {DEFAULT_REASONING})",
+    )
+    parser.add_argument(
+        "--reasoning-policy",
+        choices=("fixed", "advisor"),
+        default=DEFAULT_REASONING_POLICY,
+        help="How to choose reasoning per case: fixed uses --reasoning; advisor uses scenario expected_reasoning_effort",
+    )
+    parser.add_argument(
+        "--groups",
+        default=",".join(DEFAULT_GROUPS),
+        help="Comma-separated scenario groups to run: core,boundary,non_technical,handoff",
+    )
+    parser.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Number of times to run each selected scenario group (default: 1)",
+    )
+    parser.add_argument(
+        "--cost-per-million-tokens",
+        type=float,
+        default=env_float("BMADX_BENCHMARK_COST_PER_MILLION_TOKENS"),
+        help="Optional explicit all-token cost estimate per million tokens; disabled when omitted",
     )
     parser.add_argument(
         "--oss",
@@ -78,7 +104,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=str(date.today()),
         help="Date stamp used in output file names (default: today)",
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    try:
+        args.groups = parse_groups(args.groups)
+    except argparse.ArgumentTypeError as exc:
+        parser.error(str(exc))
+    if args.repeat < 1:
+        parser.error("--repeat must be >= 1")
+    return args
+
+
+def env_float(name: str) -> float | None:
+    raw_value = os.environ.get(name)
+    if not raw_value:
+        return None
+    try:
+        return float(raw_value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"{name} must be a float") from exc
+
+
+def parse_groups(raw_groups: str) -> list[str]:
+    groups = [group.strip() for group in raw_groups.split(",") if group.strip()]
+    unknown = sorted(set(groups) - set(DEFAULT_GROUPS))
+    if unknown:
+        raise argparse.ArgumentTypeError(f"Unknown benchmark groups: {', '.join(unknown)}")
+    return groups or list(DEFAULT_GROUPS)
+
+
+def groups_slug(groups: list[str]) -> str:
+    if groups == list(DEFAULT_GROUPS):
+        return "all"
+    return "-".join(group.replace("_", "-") for group in groups)
 
 
 def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
@@ -91,6 +148,7 @@ def build_prompt(scenario_path: Path, *, include_handoff: bool = False) -> str:
     prompt = (
         "Use $bmadx. Compact gate only. Answer only the BMADX short contract. "
         "Include exactly one `Thinking: <low|medium|high|xhigh> — suggestion only` line. "
+        "Use the BMADX thinking map: X1=low, X2=medium, X3=high, X4=xhigh. "
         "No analysis. For X1/X2 do not read refs. "
         "Do not implement/edit/render/inline artifacts. "
     )
@@ -119,8 +177,23 @@ def runner_slug(model: str, *, oss: bool = False, local_provider: str | None = N
     return f"{provider}-{slug}"
 
 
-def summary_path_for(date_stamp: str, model_slug_value: str, profile: str) -> Path:
-    return BENCHMARK_ROOT / f"summary-{date_stamp}-{model_slug_value}-{profile}-bmadx.json"
+def summary_path_for(
+    date_stamp: str,
+    model_slug_value: str,
+    profile: str,
+    reasoning_policy: str = "fixed",
+    group_slug_value: str = "all",
+) -> Path:
+    return (
+        BENCHMARK_ROOT
+        / f"summary-{date_stamp}-{model_slug_value}-{profile}-{reasoning_policy}-{group_slug_value}-bmadx.json"
+    )
+
+
+def effective_reasoning(spec: dict, default_reasoning: str, reasoning_policy: str) -> str:
+    if reasoning_policy == "advisor":
+        return str(spec.get("expected_reasoning_effort") or default_reasoning)
+    return default_reasoning
 
 
 def write_config(codex_home: Path, model: str, reasoning: str) -> None:
@@ -244,8 +317,6 @@ def build_codex_command(
         "plugins",
         "--disable",
         "apps",
-        "--disable",
-        "general_analytics",
         "-m",
         model,
         "-C",
@@ -283,18 +354,23 @@ def run_case(
     oss: bool,
     local_provider: str | None,
     model_slug_value: str,
+    reasoning_policy: str,
+    group_slug_value: str,
+    repeat_index: int,
 ) -> dict:
     scenario_path = Path(spec["path"])
+    case_reasoning = effective_reasoning(spec, reasoning, reasoning_policy)
     prompt = build_prompt(scenario_path, include_handoff=spec.get("expected_handoff") is not None)
     command = build_codex_command(
         prompt,
         workdir,
         codex_home,
         model=model,
-        reasoning=reasoning,
+        reasoning=case_reasoning,
         oss=oss,
         local_provider=local_provider,
     )
+    started_at = time.perf_counter()
     result = subprocess.run(
         command,
         capture_output=True,
@@ -302,9 +378,12 @@ def run_case(
         env=benchmark_env(codex_home, profile, healthy_release_fixture),
         check=False,
     )
+    duration_seconds = time.perf_counter() - started_at
     stdout = result.stdout.rstrip() + "\n"
     stderr = sanitize_stderr(result.stderr.rstrip()) + "\n"
-    raw_base = RAW_ROOT / f"bmadx-{model_slug_value}-{profile}-{scenario_key}"
+    raw_base = RAW_ROOT / (
+        f"bmadx-{model_slug_value}-{profile}-{reasoning_policy}-{group_slug_value}-r{repeat_index}-{scenario_key}"
+    )
     raw_base.with_suffix(".txt").write_text(stdout, encoding="utf-8")
     raw_base.with_suffix(".log").write_text(stdout + "\n--- STDERR ---\n" + stderr, encoding="utf-8")
     if result.returncode != 0:
@@ -321,7 +400,10 @@ def run_case(
         "profile": profile,
         "tokens": tokens,
         "model": model,
-        "reasoning": reasoning,
+        "reasoning": case_reasoning,
+        "reasoning_policy": reasoning_policy,
+        "repeat_index": repeat_index,
+        "duration_seconds": round(duration_seconds, 3),
         "provider": "oss" if oss else "openai",
         "local_provider": local_provider,
         "mcp_startup": "no servers",
@@ -369,6 +451,9 @@ def run_scenario_group(
     oss: bool,
     local_provider: str | None,
     model_slug_value: str,
+    reasoning_policy: str,
+    group_slug_value: str,
+    repeat_index: int,
 ) -> list[dict]:
     return [
         run_case(
@@ -383,9 +468,47 @@ def run_scenario_group(
             oss=oss,
             local_provider=local_provider,
             model_slug_value=model_slug_value,
+            reasoning_policy=reasoning_policy,
+            group_slug_value=group_slug_value,
+            repeat_index=repeat_index,
         )
         for scenario_key, spec in scenarios.items()
     ]
+
+
+def percentile(values: list[float], fraction: float) -> float:
+    if not values:
+        return 0
+    sorted_values = sorted(values)
+    index = max(0, min(len(sorted_values) - 1, int(round((len(sorted_values) - 1) * fraction))))
+    return sorted_values[index]
+
+
+def summarize_performance(cases: list[dict]) -> dict:
+    token_values = [case["tokens"] for case in cases if case.get("tokens") is not None]
+    duration_values = [case["duration_seconds"] for case in cases if case.get("duration_seconds") is not None]
+    return {
+        "case_count": len(cases),
+        "total_tokens": sum(token_values),
+        "avg_tokens": sum(token_values) / len(token_values) if token_values else 0,
+        "min_tokens": min(token_values) if token_values else 0,
+        "max_tokens": max(token_values) if token_values else 0,
+        "avg_duration_seconds": sum(duration_values) / len(duration_values) if duration_values else 0,
+        "p50_duration_seconds": percentile(duration_values, 0.50),
+        "p95_duration_seconds": percentile(duration_values, 0.95),
+        "max_duration_seconds": max(duration_values) if duration_values else 0,
+    }
+
+
+def estimate_cost(total_tokens: int, cost_per_million_tokens: float | None) -> dict | None:
+    if cost_per_million_tokens is None:
+        return None
+    return {
+        "method": "total_tokens_only",
+        "cost_per_million_tokens": cost_per_million_tokens,
+        "estimated_cost": total_tokens * cost_per_million_tokens / 1_000_000,
+        "note": "Explicit operator-provided estimate; benchmark token footer does not split input/output tokens.",
+    }
 
 
 def build_summary(
@@ -400,10 +523,17 @@ def build_summary(
     reasoning: str,
     oss: bool = False,
     local_provider: str | None = None,
+    reasoning_policy: str = "fixed",
+    groups: list[str] | None = None,
+    group_slug_value: str = "all",
+    repeat: int = 1,
+    cost_per_million_tokens: float | None = None,
 ) -> dict:
     non_technical_cases = non_technical_cases or []
     handoff_cases = handoff_cases or []
+    groups = groups or list(DEFAULT_GROUPS)
     token_values = [case["tokens"] for case in core_cases]
+    all_cases = core_cases + boundary_cases + non_technical_cases + handoff_cases
     return {
         "generated_at": date_stamp,
         "framework": "bmadx",
@@ -411,9 +541,13 @@ def build_summary(
         "runner": {
             "model": model,
             "reasoning": reasoning,
+            "reasoning_policy": reasoning_policy,
             "provider": "oss" if oss else "openai",
             "local_provider": local_provider,
             "reasoning_applied": not oss,
+            "groups": groups,
+            "group_slug": group_slug_value,
+            "repeat": repeat,
             "mcp_startup": "no servers",
         },
         "baselines": {
@@ -432,6 +566,14 @@ def build_summary(
                 "case_count": len(token_values),
             }
         },
+        "performance_summary": {
+            "all": summarize_performance(all_cases),
+            "core": summarize_performance(core_cases),
+            "boundary": summarize_performance(boundary_cases),
+            "non_technical": summarize_performance(non_technical_cases),
+            "handoff": summarize_performance(handoff_cases),
+        },
+        "cost_estimate": estimate_cost(sum(case["tokens"] for case in all_cases), cost_per_million_tokens),
         "validation_summary": {
             "core": summarize_validation(core_cases),
             "boundary": summarize_validation(boundary_cases),
@@ -465,6 +607,7 @@ def main() -> int:
     if args.local_provider and not args.oss:
         raise SystemExit("--local-provider requires --oss")
     model_slug_value = runner_slug(args.model, oss=args.oss, local_provider=args.local_provider)
+    group_slug_value = groups_slug(args.groups)
     RAW_ROOT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="bmadx-benchmark-") as tmpdir:
         tmp_root = Path(tmpdir)
@@ -483,39 +626,62 @@ def main() -> int:
             "oss": args.oss,
             "local_provider": args.local_provider,
             "model_slug_value": model_slug_value,
+            "reasoning_policy": args.reasoning_policy,
+            "group_slug_value": group_slug_value,
         }
-        core_cases = run_scenario_group(
-            CORE_SCENARIOS,
-            codex_home,
-            args.profile,
-            workdir,
-            healthy_release_fixture,
-            **run_group_kwargs,
-        )
-        boundary_cases = run_scenario_group(
-            BOUNDARY_SCENARIOS,
-            codex_home,
-            args.profile,
-            workdir,
-            healthy_release_fixture,
-            **run_group_kwargs,
-        )
-        non_technical_cases = run_scenario_group(
-            NON_TECH_SCENARIOS,
-            codex_home,
-            args.profile,
-            workdir,
-            healthy_release_fixture,
-            **run_group_kwargs,
-        )
-        handoff_cases = run_scenario_group(
-            HANDOFF_SCENARIOS,
-            codex_home,
-            args.profile,
-            workdir,
-            healthy_release_fixture,
-            **run_group_kwargs,
-        )
+        core_cases: list[dict] = []
+        boundary_cases: list[dict] = []
+        non_technical_cases: list[dict] = []
+        handoff_cases: list[dict] = []
+        for repeat_index in range(1, args.repeat + 1):
+            if "core" in args.groups:
+                core_cases.extend(
+                    run_scenario_group(
+                        CORE_SCENARIOS,
+                        codex_home,
+                        args.profile,
+                        workdir,
+                        healthy_release_fixture,
+                        repeat_index=repeat_index,
+                        **run_group_kwargs,
+                    )
+                )
+            if "boundary" in args.groups:
+                boundary_cases.extend(
+                    run_scenario_group(
+                        BOUNDARY_SCENARIOS,
+                        codex_home,
+                        args.profile,
+                        workdir,
+                        healthy_release_fixture,
+                        repeat_index=repeat_index,
+                        **run_group_kwargs,
+                    )
+                )
+            if "non_technical" in args.groups:
+                non_technical_cases.extend(
+                    run_scenario_group(
+                        NON_TECH_SCENARIOS,
+                        codex_home,
+                        args.profile,
+                        workdir,
+                        healthy_release_fixture,
+                        repeat_index=repeat_index,
+                        **run_group_kwargs,
+                    )
+                )
+            if "handoff" in args.groups:
+                handoff_cases.extend(
+                    run_scenario_group(
+                        HANDOFF_SCENARIOS,
+                        codex_home,
+                        args.profile,
+                        workdir,
+                        healthy_release_fixture,
+                        repeat_index=repeat_index,
+                        **run_group_kwargs,
+                    )
+                )
 
     summary = build_summary(
         args.date_stamp,
@@ -528,8 +694,19 @@ def main() -> int:
         reasoning=args.reasoning,
         oss=args.oss,
         local_provider=args.local_provider,
+        reasoning_policy=args.reasoning_policy,
+        groups=args.groups,
+        group_slug_value=group_slug_value,
+        repeat=args.repeat,
+        cost_per_million_tokens=args.cost_per_million_tokens,
     )
-    summary_path = summary_path_for(args.date_stamp, model_slug_value, args.profile)
+    summary_path = summary_path_for(
+        args.date_stamp,
+        model_slug_value,
+        args.profile,
+        args.reasoning_policy,
+        group_slug_value,
+    )
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(
@@ -539,6 +716,9 @@ def main() -> int:
                 "boundary_case_count": len(boundary_cases),
                 "non_technical_case_count": len(non_technical_cases),
                 "handoff_case_count": len(handoff_cases),
+                "reasoning_policy": args.reasoning_policy,
+                "group_slug": group_slug_value,
+                "repeat": args.repeat,
             },
             indent=2,
         )

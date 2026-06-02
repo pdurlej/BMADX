@@ -7,9 +7,17 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.7`
+- `v0.2.8`
 
-What `v0.2.7` focuses on:
+What `v0.2.8` focuses on:
+- GPT-5.5 token and latency performance baselines for fixed-medium vs
+  advisor-selected reasoning policies
+- repeatable benchmark output naming by reasoning policy and repeat index
+- performance summary aggregates without making a public token-savings claim
+- canary evidence that full baseline runs should wait until obvious `X1/X2`
+  token-budget failures are reduced
+
+What `v0.2.7` focused on:
 - Thinking Budget Advisor: per-task Codex reasoning-effort recommendations
   that follow the selected gear without changing global Codex config
 - benchmark validation for `Thinking:` lines and guardrails against persistent
@@ -46,6 +54,8 @@ What `v0.2.5` focused on:
 - keep red-zone routing strict for auth, billing, permissions, data, secrets, production config, and privacy
 - integrate with companion guardrails such as pyfallow and Guardrails.md by recommendation, not by platform ownership
 - validate whether advisor-selected reasoning levels reduce token spend without weakening red-zone routing or `X4` rarity
+- reduce hidden `codex exec` token cost for obvious `X1/X2` canary cases before
+  publishing performance claims
 - keep BMADX Codex-first; do not spend near-term roadmap on Claude Code parity
 - add experimental Codex OSS-provider benchmark lanes for local models such as Mistral, without turning them into default claims
 - improve proof surfaces with better transcripts and examples

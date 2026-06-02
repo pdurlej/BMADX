@@ -9,6 +9,7 @@ The benchmark is useful for showing:
 - BMADX can test non-technical red-zone routing, such as auth, billing, data deletion, and messy recovery tasks
 - BMADX can detect whether broad-orchestrator handoff stays a small risk/proof packet instead of drifting into runtime orchestration
 - BMADX can validate fit-for-purpose thinking-budget recommendations without treating them as routing decisions
+- BMADX can measure token and latency baselines for fixed-medium reasoning vs advisor-selected reasoning
 
 ## What this does not prove
 
@@ -16,6 +17,7 @@ The benchmark does not prove:
 - that BMADX is categorically better than BMAD
 - that token counts equal user value
 - that BMADX should replace plain Codex for trivial work
+- that a single advisor-policy run proves public token savings
 
 ## Main benchmark surfaces
 
@@ -23,6 +25,7 @@ The benchmark does not prove:
 - BMADX `healthy` rerun from `2026-04-06`
 - BMADX `degraded` rerun from `2026-04-06`
 - BMADX GPT-5.5 optimization rerun from `2026-04-24`
+- BMADX GPT-5.5 performance canary from `2026-06-01`; full baseline was blocked by token-budget canary failures
 - experimental Codex OSS-provider reruns for local models, if a local provider such as Ollama or LM Studio is installed
 
 Use these artifacts:
@@ -32,6 +35,8 @@ Use these artifacts:
 - [`../benchmark/summary-2026-04-24-gpt-5-5-healthy-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-5-healthy-bmad.json)
 - [`../benchmark/summary-2026-04-24-gpt-5-5-degraded-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-5-degraded-bmad.json)
 - [`../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json`](../benchmark/summary-2026-04-24-gpt-5-4-healthy-bmad.json)
+- [`../benchmark/summary-2026-06-01-gpt-5-5-healthy-fixed-core-boundary-bmadx.json`](../benchmark/summary-2026-06-01-gpt-5-5-healthy-fixed-core-boundary-bmadx.json)
+- [`../benchmark/summary-2026-06-01-gpt-5-5-healthy-advisor-core-boundary-bmadx.json`](../benchmark/summary-2026-06-01-gpt-5-5-healthy-advisor-core-boundary-bmadx.json)
 
 Runner hardening after `v0.2.4`:
 - benchmark runs now fail if `codex exec` does not report a `tokens used` footer
@@ -44,6 +49,8 @@ Runner hardening after `v0.2.4`:
 - runner summaries record whether the run used the primary Codex/OpenAI path or an experimental OSS local provider
 - `v0.2.6` runner summaries include `handoff_cases` and runtime-drift checks that reject worker lanes, model names, dispatch commands, MCP, hooks, plugins, subagents, and runtime state
 - `v0.2.7` runner validation can parse `Thinking:` lines, compare them with expected reasoning effort, and reject global Codex config mutation language
+- `v0.2.8` runner summaries include per-case `duration_seconds`, reasoning policy, repeat index, token/latency performance aggregates, and optional explicit operator-provided cost estimates
+- `v0.2.8` raw and summary artifact names include reasoning policy and group scope so canary runs do not overwrite full baselines
 
 ## Thinking budget validation
 
@@ -66,6 +73,52 @@ Expected defaults:
 This is advisory. The benchmark must not treat higher thinking as permission to
 skip BMAD, and it must not accept answers that tell users to mutate global Codex
 config as part of normal BMADX routing.
+
+## GPT-5.5 performance baseline
+
+`v0.2.8` measures two policies:
+
+| Policy | Meaning |
+| --- | --- |
+| `fixed` | use one CLI `--reasoning` value for every case, normally `medium` |
+| `advisor` | use the scenario's expected thinking budget: `X1=low`, `X2=medium`, `X3=high`, `X4=xhigh` |
+
+Canary runs:
+
+```bash
+python3 benchmark/scripts/run_bmadx_benchmark.py \
+  --model gpt-5.5 \
+  --profile healthy \
+  --reasoning medium \
+  --reasoning-policy fixed \
+  --groups core,boundary \
+  --repeat 1 \
+  --date-stamp 2026-06-01
+
+python3 benchmark/scripts/run_bmadx_benchmark.py \
+  --model gpt-5.5 \
+  --profile healthy \
+  --reasoning-policy advisor \
+  --groups core,boundary \
+  --repeat 1 \
+  --date-stamp 2026-06-01
+```
+
+Full baseline runs:
+
+```bash
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning medium --reasoning-policy fixed --repeat 3 --date-stamp 2026-06-01
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile healthy --reasoning-policy advisor --repeat 3 --date-stamp 2026-06-01
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning medium --reasoning-policy fixed --repeat 2 --date-stamp 2026-06-01
+python3 benchmark/scripts/run_bmadx_benchmark.py --model gpt-5.5 --profile degraded --reasoning-policy advisor --repeat 2 --date-stamp 2026-06-01
+```
+
+Reporting rule:
+
+This is a baseline, not a public savings claim. Do not update README with token
+savings language unless repeated healthy and degraded runs preserve routing,
+red-zone safety, `X4` rarity, compact `X1/X2`, reference budget, and
+thinking-budget validation.
 
 ## Model and provider experiments
 

@@ -1,0 +1,57 @@
+Choice: X4 — Rescue Mode (BMAD+).
+Why: Messy project plus scaffold bundle, AGENTS.md, config snippets, and verify matrix needs ownership and proof structure.
+Gate: classification_allowed=true; execution_allowed=true; BMAD status ok.
+Thinking: xhigh — suggestion only
+Plan:
+1. Start BMAD-first with PRD, architecture, and `_bmad-output/project-context.md`.
+2. Prepare the X4/FUBAR bundle surfaces without rendering or editing files.
+3. Draft AGENTS.md scope, `.customize.yaml` snippets, and a verify matrix after artifact alignment.
+Verify:
+1. Confirm BMAD artifacts define owners, boundaries, and risks.
+2. Map every scaffold surface to an owner and proof check.
+3. Block implementation until the bundle is explicitly requested for execution.
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.134.0
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-9n61xker/workdir
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-9n61xker/codex-home]
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019e86fe-580c-72d2-a33b-262bf5710012
+--------
+user
+Use $bmadx. Compact gate only. Answer only the BMADX short contract. Include exactly one `Thinking: <low|medium|high|xhigh> — suggestion only` line. Use the BMADX thinking map: X1=low, X2=medium, X3=high, X4=xhigh. No analysis. For X1/X2 do not read refs. Do not implement/edit/render/inline artifacts. Task: I need a plan for a messy project, a scaffold bundle, a draft AGENTS.md, .customize.yaml snippets, and a verify matrix.
+exec
+/bin/zsh -lc 'python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py" check --gear X4 --compact' in /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-benchmark-9n61xker/workdir
+ succeeded in 184ms:
+{
+  "skill_version": "0.2.8",
+  "requested_gear": "X4",
+  "classification_allowed": true,
+  "execution_allowed": true,
+  "warning": null,
+  "bmad_status": "ok",
+  "cache_used": false,
+  "remediation": []
+}
+
+codex
+Choice: X4 — Rescue Mode (BMAD+).
+Why: Messy project plus scaffold bundle, AGENTS.md, config snippets, and verify matrix needs ownership and proof structure.
+Gate: classification_allowed=true; execution_allowed=true; BMAD status ok.
+Thinking: xhigh — suggestion only
+Plan:
+1. Start BMAD-first with PRD, architecture, and `_bmad-output/project-context.md`.
+2. Prepare the X4/FUBAR bundle surfaces without rendering or editing files.
+3. Draft AGENTS.md scope, `.customize.yaml` snippets, and a verify matrix after artifact alignment.
+Verify:
+1. Confirm BMAD artifacts define owners, boundaries, and risks.
+2. Map every scaffold surface to an owner and proof check.
+3. Block implementation until the bundle is explicitly requested for execution.
+tokens used
+7910

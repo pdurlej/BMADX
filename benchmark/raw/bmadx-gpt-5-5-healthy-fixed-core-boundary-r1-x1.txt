@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: low — suggestion only
+Why: This is one tiny text fix in one React component with low blast radius.
+Next step: I will locate the typo, patch only that message, then run the strongest quick check available.

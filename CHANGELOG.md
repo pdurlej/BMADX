@@ -6,6 +6,25 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.2.8] - 2026-06-02
+
+### Added
+
+- GPT-5.5 performance benchmark controls for fixed-medium vs advisor-selected reasoning policy.
+- Benchmark `--groups`, `--repeat`, `--reasoning-policy`, and optional explicit all-token cost estimate.
+- Per-case `duration_seconds`, `reasoning_policy`, and repeat index fields.
+- Summary-level token and latency aggregates for all scenario groups.
+
+### Changed
+
+- Raw benchmark artifacts and summary files now include reasoning policy, group scope, and repeat index to avoid overwrites.
+- Performance docs frame `v0.2.8` as a baseline, not a public token-savings claim.
+
+### Benchmarks
+
+- GPT-5.5 `core,boundary` canary artifacts were generated for fixed-medium and advisor policies.
+- Full healthy/degraded performance baselines were intentionally not run because both canaries had one token-budget failure despite passing routing, reference-budget, and thinking-budget gates.
+
 ## [0.2.7] - 2026-05-30
 
 ### Added

@@ -1,0 +1,7 @@
+Choice: X4/FUBAR Rescue Mode
+Thinking: xhigh — suggestion only
+Gate: classification_allowed=true; execution_allowed=true; BMAD ok.
+Why: Messy project + scaffold bundle + AGENTS.md + customize snippets + verify matrix is rescue-shaped planning.
+Entry: BMAD first via `/bmad-bmm-create-prd`, then `/bmad-bmm-create-architecture`.
+Bundle surfaces: plan, scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, verify matrix.
+Next step: render or draft only after explicit execution request; keep `_bmad-output/project-context.md` as durable source of truth.

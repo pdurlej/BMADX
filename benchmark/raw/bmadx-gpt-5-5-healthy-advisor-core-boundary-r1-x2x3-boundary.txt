@@ -1,0 +1,10 @@
+Choice: X3 — Complex (BMAD)
+Gate: classification_allowed=true, execution_allowed=true, BMAD status ok.
+Thinking: high — suggestion only
+Why: The code change is bounded, but it belongs to an existing BMAD story and must stay aligned with process artifacts.
+Plan:
+1. Use the existing BMAD story as the source of truth for scope and acceptance criteria.
+2. Update the 4 backend files only where the status field belongs in existing patterns.
+Verify:
+1. Run the story-relevant backend tests.
+2. Confirm BMAD artifacts still match the implemented status behavior.

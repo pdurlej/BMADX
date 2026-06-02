@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only
+Why: Bounded backend change across four files needs a short plan and verification, not full BMAD.
+Plan:
+1. Locate existing status handling and ownership across the four backend files.
+2. Add the new field consistently in model/schema, validation, service logic, and response mapping.
+Verify:
+1. Run targeted backend tests covering create/read/update behavior for the new status.
+2. Run lint/type checks or the backend test subset touching those four files.

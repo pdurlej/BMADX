@@ -23,6 +23,10 @@ boundary and verification layer, not a substitute for BMAD process ownership.
 Since `v0.2.7`, BMADX may also recommend a per-task thinking budget so the
 operator can buy the right amount of reasoning without changing global Codex
 configuration.
+Since `v0.2.8`, benchmark runs can compare fixed reasoning with
+advisor-selected reasoning and record token/latency baselines. Treat those
+numbers as measurement evidence, not as permission to make a savings claim from
+one run.
 
 Non-negotiable rule:
 - `BMAD > BMADX`

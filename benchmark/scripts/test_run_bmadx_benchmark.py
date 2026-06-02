@@ -29,17 +29,23 @@ from bmadx_benchmark_validation import (
 from run_bmadx_benchmark import (
     DEFAULT_MODEL,
     DEFAULT_REASONING,
+    DEFAULT_REASONING_POLICY,
     benchmark_env,
     build_codex_command,
     build_prompt,
     build_summary,
     copy_skills,
     copy_runtime_files,
+    effective_reasoning,
+    estimate_cost,
+    groups_slug,
     model_slug,
     parse_args,
+    parse_groups,
     parse_json_report,
     runner_slug,
     summary_path_for,
+    summarize_performance,
     validate_warmup_payload,
     write_healthy_bmad_fixture,
     write_config,
@@ -77,6 +83,7 @@ tokens used
             self.assertIn("Use $bmadx.", prompt)
             self.assertIn("Compact gate only.", prompt)
             self.assertIn("Thinking: <low|medium|high|xhigh>", prompt)
+            self.assertIn("X1=low, X2=medium, X3=high, X4=xhigh", prompt)
             self.assertIn("No analysis. For X1/X2 do not read refs.", prompt)
             self.assertIn("Do not implement/edit/render/inline artifacts.", prompt)
             self.assertIn("Task: Create a rescue bundle.", prompt)
@@ -237,6 +244,29 @@ tokens used
         self.assertEqual(args.model, DEFAULT_MODEL)
         self.assertEqual(args.model, "gpt-5.5")
         self.assertEqual(args.reasoning, DEFAULT_REASONING)
+        self.assertEqual(args.reasoning_policy, DEFAULT_REASONING_POLICY)
+        self.assertEqual(args.groups, ["core", "boundary", "non_technical", "handoff"])
+        self.assertEqual(args.repeat, 1)
+
+    def test_parse_args_supports_reasoning_policy_groups_and_repeat(self) -> None:
+        args = parse_args(["--reasoning-policy", "advisor", "--groups", "core,boundary", "--repeat", "3"])
+        self.assertEqual(args.reasoning_policy, "advisor")
+        self.assertEqual(args.groups, ["core", "boundary"])
+        self.assertEqual(args.repeat, 3)
+
+    def test_parse_groups_rejects_unknown_groups(self) -> None:
+        with self.assertRaises(Exception):
+            parse_groups("core,unknown")
+
+    def test_groups_slug_distinguishes_canary_from_full_runs(self) -> None:
+        self.assertEqual(groups_slug(["core", "boundary", "non_technical", "handoff"]), "all")
+        self.assertEqual(groups_slug(["core", "boundary"]), "core-boundary")
+        self.assertEqual(groups_slug(["non_technical", "handoff"]), "non-technical-handoff")
+
+    def test_effective_reasoning_uses_advisor_spec(self) -> None:
+        spec = {"expected_reasoning_effort": "xhigh"}
+        self.assertEqual(effective_reasoning(spec, "medium", "fixed"), "medium")
+        self.assertEqual(effective_reasoning(spec, "medium", "advisor"), "xhigh")
 
     def test_model_override_still_supports_gpt54(self) -> None:
         args = parse_args(["--model", "gpt-5.4", "--reasoning", "high"])
@@ -289,7 +319,11 @@ tokens used
     def test_summary_path_uses_bmadx_suffix(self) -> None:
         self.assertEqual(
             summary_path_for("2026-05-05", "gpt-5-5", "healthy").name,
-            "summary-2026-05-05-gpt-5-5-healthy-bmadx.json",
+            "summary-2026-05-05-gpt-5-5-healthy-fixed-all-bmadx.json",
+        )
+        self.assertEqual(
+            summary_path_for("2026-05-05", "gpt-5-5", "healthy", "advisor", "core-boundary").name,
+            "summary-2026-05-05-gpt-5-5-healthy-advisor-core-boundary-bmadx.json",
         )
 
     def test_write_config_uses_model_and_reasoning(self) -> None:
@@ -314,7 +348,6 @@ tokens used
         self.assertIn("--disable", command)
         self.assertIn("plugins", command)
         self.assertIn("apps", command)
-        self.assertIn("general_analytics", command)
         self.assertIn("-m", command)
         self.assertIn("gpt-5.5", command)
         self.assertIn('model_reasoning_effort="medium"', command)
@@ -395,6 +428,7 @@ tokens used
             [
                 {
                     "tokens": 100,
+                    "duration_seconds": 12.5,
                     "format_pass": True,
                     "token_count_present": True,
                     "token_pass": True,
@@ -412,15 +446,27 @@ tokens used
             [],
             model="gpt-5.5",
             reasoning="medium",
+            reasoning_policy="advisor",
+            groups=["core"],
+            group_slug_value="core",
+            repeat=3,
+            cost_per_million_tokens=2.0,
         )
         self.assertEqual(summary["runner"]["model"], "gpt-5.5")
         self.assertEqual(summary["runner"]["reasoning"], "medium")
+        self.assertEqual(summary["runner"]["reasoning_policy"], "advisor")
+        self.assertEqual(summary["runner"]["groups"], ["core"])
+        self.assertEqual(summary["runner"]["group_slug"], "core")
+        self.assertEqual(summary["runner"]["repeat"], 3)
         self.assertEqual(summary["runner"]["provider"], "openai")
         self.assertIsNone(summary["runner"]["local_provider"])
         self.assertTrue(summary["runner"]["reasoning_applied"])
         self.assertEqual(summary["validation_summary"]["core"]["token_count_present_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["overreach_pass_count"], 1)
         self.assertEqual(summary["validation_summary"]["core"]["thinking_budget_pass_count"], 1)
+        self.assertEqual(summary["performance_summary"]["all"]["total_tokens"], 100)
+        self.assertEqual(summary["performance_summary"]["all"]["avg_duration_seconds"], 12.5)
+        self.assertEqual(summary["cost_estimate"]["estimated_cost"], 0.0002)
         self.assertEqual(summary["validation_failures"]["core"], [])
         self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
         self.assertEqual(summary["validation_summary"]["handoff"]["case_count"], 0)
@@ -442,6 +488,24 @@ tokens used
         self.assertEqual(summary["runner"]["provider"], "oss")
         self.assertEqual(summary["runner"]["local_provider"], "ollama")
         self.assertFalse(summary["runner"]["reasoning_applied"])
+
+    def test_summarize_performance_records_token_and_latency_stats(self) -> None:
+        summary = summarize_performance(
+            [
+                {"tokens": 100, "duration_seconds": 1.0},
+                {"tokens": 300, "duration_seconds": 3.0},
+                {"tokens": 200, "duration_seconds": 2.0},
+            ]
+        )
+        self.assertEqual(summary["case_count"], 3)
+        self.assertEqual(summary["total_tokens"], 600)
+        self.assertEqual(summary["avg_tokens"], 200)
+        self.assertEqual(summary["p50_duration_seconds"], 2.0)
+        self.assertEqual(summary["max_duration_seconds"], 3.0)
+
+    def test_estimate_cost_is_disabled_without_explicit_price(self) -> None:
+        self.assertIsNone(estimate_cost(1000, None))
+        self.assertEqual(estimate_cost(1000, 2.0)["estimated_cost"], 0.002)
 
     def test_validate_case_catches_gpt55_overreach(self) -> None:
         validation = validate_case(

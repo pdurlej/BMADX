@@ -1,0 +1,5 @@
+Choice: X3 — Complex (BMAD)
+Gate: classification_allowed=true; execution_allowed=true; BMAD status ok.
+Thinking: high — suggestion only
+Why: A backend status-field change across 4 files is bounded, but existing BMAD story alignment makes BMAD artifacts the source of truth.
+Next step: Work inside the existing story, update only the required backend surfaces, and verify against the story acceptance criteria.

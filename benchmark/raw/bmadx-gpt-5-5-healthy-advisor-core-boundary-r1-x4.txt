@@ -1,0 +1,12 @@
+Choice: X4 — Rescue Mode (BMAD+).
+Why: Messy project plus scaffold bundle, AGENTS.md, config snippets, and verify matrix needs ownership and proof structure.
+Gate: classification_allowed=true; execution_allowed=true; BMAD status ok.
+Thinking: xhigh — suggestion only
+Plan:
+1. Start BMAD-first with PRD, architecture, and `_bmad-output/project-context.md`.
+2. Prepare the X4/FUBAR bundle surfaces without rendering or editing files.
+3. Draft AGENTS.md scope, `.customize.yaml` snippets, and a verify matrix after artifact alignment.
+Verify:
+1. Confirm BMAD artifacts define owners, boundaries, and risks.
+2. Map every scaffold surface to an owner and proof check.
+3. Block implementation until the bundle is explicitly requested for execution.
