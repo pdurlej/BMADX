@@ -10,11 +10,14 @@ import unittest
 from bmadx_benchmark_scenarios import (
     BOUNDARY_SCENARIOS,
     CORE_SCENARIOS,
+    GOAL_LOOP_SCENARIOS,
     HANDOFF_SCENARIOS,
     NON_TECH_SCENARIOS,
 )
 from bmadx_benchmark_validation import (
+    detect_goal,
     detect_handoff,
+    detect_loop,
     detect_reference_reads,
     detect_selected_gear,
     detect_thinking_effort,
@@ -23,6 +26,7 @@ from bmadx_benchmark_validation import (
     parse_token_count,
     sanitize_stderr,
     validate_case,
+    validate_goal_loop_runtime_drift,
     validate_handoff_runtime_drift,
     validation_failures,
 )
@@ -126,6 +130,18 @@ tokens used
             self.assertIn("Do not name models", prompt)
             self.assertIn("Task: Ask for broad architecture review.", prompt)
 
+    def test_build_prompt_can_request_goal_loop_lines(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            scenario = Path(tmpdir) / "scenario.txt"
+            scenario.write_text("Task: Continue until tests pass.\n", encoding="utf-8")
+            prompt = build_prompt(scenario, include_goal_loop=True)
+            self.assertIn("Goal: yes/no", prompt)
+            self.assertIn("Loop: yes/no", prompt)
+            self.assertIn("not a BMADX gear", prompt)
+            self.assertIn("bounded review -> repair -> validate", prompt)
+            self.assertIn("persistent run IDs", prompt)
+            self.assertIn("Task: Continue until tests pass.", prompt)
+
     def test_detect_reference_reads_returns_unique_paths(self) -> None:
         stderr = """
         exec /bin/zsh -lc "sed -n '1,220p' /tmp/codex-home/skills/bmadx/references/gearbox.md"
@@ -153,6 +169,18 @@ tokens used
     def test_detect_handoff_does_not_cross_lines(self) -> None:
         self.assertIsNone(detect_handoff("Handoff:\nNo, not in contract form.\n"))
 
+    def test_detect_goal_reads_contract_line(self) -> None:
+        self.assertTrue(detect_goal("Choice: X3\nGoal: yes — use /goal.\n"))
+        self.assertFalse(detect_goal("Choice: X2\nGoal: no — normal contract is enough.\n"))
+        self.assertTrue(detect_goal("**Goal:** recommended\n"))
+        self.assertIsNone(detect_goal("No goal language here."))
+
+    def test_detect_loop_reads_contract_line(self) -> None:
+        self.assertTrue(detect_loop("Choice: X4\nLoop: yes — max 3 passes.\n"))
+        self.assertTrue(detect_loop("Loop: max 2 review/repair/validate passes.\n"))
+        self.assertFalse(detect_loop("Loop: no — one verify pass is enough.\n"))
+        self.assertIsNone(detect_loop("Loop:\nNo, not in contract form.\n"))
+
     def test_detect_thinking_effort_reads_contract_line(self) -> None:
         self.assertEqual(detect_thinking_effort("Choice: X3\nThinking: high — suggestion only.\n"), "high")
         self.assertEqual(detect_thinking_effort("**Thinking:** `xhigh` — suggestion only.\n"), "xhigh")
@@ -169,6 +197,10 @@ tokens used
         self.assertFalse(dirty["no_worker_lane_pass"])
         self.assertFalse(dirty["no_model_name_pass"])
         self.assertFalse(dirty["no_dispatch_command_pass"])
+
+    def test_validate_goal_loop_runtime_drift_blocks_runtime_details(self) -> None:
+        self.assertTrue(validate_goal_loop_runtime_drift("Goal: yes\nLoop: yes — max 3 passes.\n"))
+        self.assertFalse(validate_goal_loop_runtime_drift("Goal: yes. Create hooks and subagents with persistent run IDs."))
 
     def test_validate_case_marks_reference_budget_failure_for_x1(self) -> None:
         stdout = "Choice: `X1 — One-shot`.\nWhy: ...\nNext step: ...\n"
@@ -227,6 +259,34 @@ tokens used
         self.assertTrue(validation["thinking_budget_no_mutation_pass"])
         self.assertTrue(validation["thinking_budget_supported_value_pass"])
 
+    def test_validate_case_checks_expected_goal_and_loop(self) -> None:
+        validation = validate_case(
+            "Choice: X4\nThinking: xhigh — suggestion only.\nGoal: yes — use /goal.\nLoop: yes — max 3 passes.\n",
+            "",
+            1000,
+            {
+                "expected_gear": "X4",
+                "expected_reasoning_effort": "xhigh",
+                "expected_goal": True,
+                "expected_loop": True,
+                "allow_reference_reads": True,
+            },
+        )
+        self.assertTrue(validation["goal_routing_pass"])
+        self.assertTrue(validation["loop_contract_pass"])
+        self.assertTrue(validation["goal_loop_not_runtime_pass"])
+
+    def test_validate_case_fails_goal_loop_runtime_drift(self) -> None:
+        validation = validate_case(
+            "Choice: X4\nGoal: yes — create persistent state.\nLoop: yes — dispatch worker lane.\n",
+            "",
+            1000,
+            {"expected_gear": "X4", "expected_goal": True, "expected_loop": True, "allow_reference_reads": True},
+        )
+        self.assertTrue(validation["goal_routing_pass"])
+        self.assertTrue(validation["loop_contract_pass"])
+        self.assertFalse(validation["goal_loop_not_runtime_pass"])
+
     def test_validate_case_blocks_global_config_mutation(self) -> None:
         validation = validate_case(
             "Choice: X2\nThinking: medium — edit ~/.codex/config.toml to make this global.\n",
@@ -276,7 +336,7 @@ tokens used
         self.assertEqual(args.reasoning_policy, DEFAULT_REASONING_POLICY)
         self.assertEqual(args.gate_mode, DEFAULT_GATE_MODE)
         self.assertEqual(args.gate_mode, "precomputed")
-        self.assertEqual(args.groups, ["core", "boundary", "non_technical", "handoff"])
+        self.assertEqual(args.groups, ["core", "boundary", "non_technical", "handoff", "goal_loop"])
         self.assertEqual(args.repeat, 1)
 
     def test_parse_args_supports_reasoning_policy_gate_mode_groups_and_repeat(self) -> None:
@@ -302,7 +362,7 @@ tokens used
             parse_groups("core,unknown")
 
     def test_groups_slug_distinguishes_canary_from_full_runs(self) -> None:
-        self.assertEqual(groups_slug(["core", "boundary", "non_technical", "handoff"]), "all")
+        self.assertEqual(groups_slug(["core", "boundary", "non_technical", "handoff", "goal_loop"]), "all")
         self.assertEqual(groups_slug(["core", "boundary"]), "core-boundary")
         self.assertEqual(groups_slug(["non_technical", "handoff"]), "non-technical-handoff")
 
@@ -357,6 +417,16 @@ tokens used
         self.assertEqual(HANDOFF_SCENARIOS["x4-migration-review-handoff"]["expected_gear"], "X4")
         self.assertTrue(HANDOFF_SCENARIOS["x4-migration-review-handoff"]["expected_handoff"])
         for spec in HANDOFF_SCENARIOS.values():
+            self.assertTrue(Path(spec["path"]).exists())
+
+    def test_goal_loop_scenarios_cover_x3_goal_and_x4_loop(self) -> None:
+        self.assertEqual(GOAL_LOOP_SCENARIOS["goal-x3-auth-cleanup"]["expected_gear"], "X3")
+        self.assertTrue(GOAL_LOOP_SCENARIOS["goal-x3-auth-cleanup"]["expected_goal"])
+        self.assertFalse(GOAL_LOOP_SCENARIOS["goal-x3-auth-cleanup"]["expected_loop"])
+        self.assertEqual(GOAL_LOOP_SCENARIOS["loop-x4-migration-repair"]["expected_gear"], "X4")
+        self.assertTrue(GOAL_LOOP_SCENARIOS["loop-x4-migration-repair"]["expected_goal"])
+        self.assertTrue(GOAL_LOOP_SCENARIOS["loop-x4-migration-repair"]["expected_loop"])
+        for spec in GOAL_LOOP_SCENARIOS.values():
             self.assertTrue(Path(spec["path"]).exists())
 
     def test_summary_path_uses_bmadx_suffix(self) -> None:
@@ -522,6 +592,7 @@ tokens used
         self.assertEqual(summary["validation_failures"]["core"], [])
         self.assertEqual(summary["validation_summary"]["non_technical"]["case_count"], 0)
         self.assertEqual(summary["validation_summary"]["handoff"]["case_count"], 0)
+        self.assertEqual(summary["validation_summary"]["goal_loop"]["case_count"], 0)
         self.assertEqual(summary["non_technical_readout"]["what_failed_why_it_matters"], [])
 
     def test_summary_records_oss_provider(self) -> None:
@@ -583,6 +654,11 @@ tokens used
                     "thinking_budget_pass": True,
                     "thinking_budget_no_mutation_pass": True,
                     "thinking_budget_supported_value_pass": True,
+                    "expected_goal": True,
+                    "goal_routing_pass": False,
+                    "expected_loop": True,
+                    "loop_contract_pass": True,
+                    "goal_loop_not_runtime_pass": True,
                 }
             ]
         )
@@ -591,7 +667,7 @@ tokens used
             [
                 {
                     "case": "bmadx-healthy-x1",
-                    "failed_checks": ["token_pass", "routing_pass"],
+                    "failed_checks": ["token_pass", "routing_pass", "goal_routing_pass"],
                 }
             ],
         )

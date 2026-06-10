@@ -1,0 +1,2 @@
+Scenario: X4 bounded repair loop contract
+Task: A migration repair has failed twice. Validation output now gives a remaining delta after each attempt, rollback ownership is unclear, and the operator wants Codex to keep repairing only while the validation delta shrinks. Classify and say whether a bounded review/repair/validate loop is appropriate, but do not implement.

@@ -8,10 +8,11 @@ Main public entry points:
 4. [Install for Vibe Coders](install-for-vibe-coders.md)
 5. [Architecture Guardrail Card](architecture-guardrail-card.md)
 6. [Thinking Budget Advisor](thinking-budget-advisor.md)
-7. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
-8. [Broad Orchestrator Handoff](broad-orchestrator-handoff.md)
-9. [Community Feedback](community-feedback.md)
-10. [FAQ](faq.md)
+7. [Goal and Loop Discipline](goal-loop-discipline.md)
+8. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
+9. [Broad Orchestrator Handoff](broad-orchestrator-handoff.md)
+10. [Community Feedback](community-feedback.md)
+11. [FAQ](faq.md)
 
 Deeper reading:
 

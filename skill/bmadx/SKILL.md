@@ -90,6 +90,26 @@ Line when needed:
 Thinking: high — suggestion only.
 ```
 
+## Goal and Loop Discipline
+
+Use only for multi-step work where it improves closure. It does not add a gear.
+
+- `/goal` is a Codex thread objective; BMADX still chooses `X1..X4`.
+- Goal text should name the outcome, proof, and stop condition.
+- Use `/plan` first when the goal is unclear.
+- Loops are bounded review -> repair -> validate passes, not runtime state.
+- Stop a loop when validation passes, attempts are exhausted, delta stalls, or
+  human review is needed.
+- Do not create hooks, MCP, plugins, subagents, workers, dispatch commands,
+  persistent run IDs, or a second plan store.
+
+Lines when relevant:
+
+```text
+Goal: yes — use `/goal` because the work needs a persistent definition of done.
+Loop: yes — max 3 review/repair/validate passes; stop on pass, stale delta, hard stop, or human review.
+```
+
 ## Response Contract
 
 `X1`: max 5 lines / 650 chars.
@@ -129,6 +149,7 @@ then render the bundle only when execution is allowed.
 - [trigger-matrix.md](references/trigger-matrix.md)
 - [architecture-guardrails.md](references/architecture-guardrails.md)
 - [thinking-budget.md](references/thinking-budget.md)
+- [goal-loop.md](references/goal-loop.md)
 - [execution-boundaries.md](references/execution-boundaries.md)
 - [verify-discipline.md](references/verify-discipline.md)
 - [fubar-bundle-spec.md](references/fubar-bundle-spec.md)

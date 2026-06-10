@@ -55,6 +55,19 @@ gear or mutate global Codex config.
 
 Details: [thinking-budget.md](thinking-budget.md)
 
+## Goal and loop defaults
+
+Goal and loop discipline is an execution aid, not a fifth gear.
+
+- `X1/X2`: no `/goal` and no loop unless the user explicitly asks for a longer
+  thread-level objective.
+- `X3`: recommend `/goal` when the task needs a persistent definition of done
+  across multiple Codex turns, with proof and stop conditions.
+- `X4`: recommend `/goal` plus a bounded review/repair/validate loop only for
+  real Rescue Mode execution.
+
+Details: [goal-loop.md](goal-loop.md)
+
 ## Input signals
 
 ### X1

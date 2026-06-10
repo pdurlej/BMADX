@@ -10,7 +10,7 @@ Usually no. The normal use pattern is to describe the task in plain language and
 
 ## Does BMADX require GPT-5.5?
 
-No. BMADX `v0.2.9` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
+No. BMADX `v0.2.10` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
 
 ## Does BMADX change my Codex thinking level?
 

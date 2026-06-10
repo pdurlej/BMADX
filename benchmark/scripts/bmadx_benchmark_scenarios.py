@@ -120,3 +120,23 @@ HANDOFF_SCENARIOS = {
         "allow_reference_reads": True,
     },
 }
+
+GOAL_LOOP_SCENARIOS = {
+    "goal-x3-auth-cleanup": {
+        "path": SCENARIO_ROOT / "scenario-goal-x3-auth-cleanup.txt",
+        "expected_gear": "X3",
+        "expected_reasoning_effort": "high",
+        "expected_goal": True,
+        "expected_loop": False,
+        "forbidden_gears": ["X4"],
+        "allow_reference_reads": True,
+    },
+    "loop-x4-migration-repair": {
+        "path": SCENARIO_ROOT / "scenario-loop-x4-migration-repair.txt",
+        "expected_gear": "X4",
+        "expected_reasoning_effort": "xhigh",
+        "expected_goal": True,
+        "expected_loop": True,
+        "allow_reference_reads": True,
+    },
+}

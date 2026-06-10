@@ -28,6 +28,7 @@ LOCAL_FILES = [
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/goal-loop.md",
     "references/execution-boundaries.md",
     "references/subagent-policy.md",
     "references/verify-discipline.md",
@@ -64,7 +65,7 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.2.9",
+        "skill_version": "0.2.10",
         "target_codex_profile": "codex-5.5",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
@@ -107,6 +108,7 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "architecture-guardrails.md", "Architecture Guardrail Card\n")
     write(root / "references" / "broad-handoff.md", "Broad Orchestrator Handoff\n")
     write(root / "references" / "thinking-budget.md", "Thinking Budget Advisor\n")
+    write(root / "references" / "goal-loop.md", "Goal and Loop Discipline\n")
     write(root / "references" / "execution-boundaries.md", "Execution Boundaries\n")
     write(root / "references" / "subagent-policy.md", "policy\n")
     write(root / "references" / "verify-discipline.md", "verify\n")
@@ -502,7 +504,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.2.9")
+            self.assertEqual(payload["skill_version"], "0.2.10")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")

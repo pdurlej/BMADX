@@ -9,6 +9,7 @@ The benchmark is useful for showing:
 - BMADX can test non-technical red-zone routing, such as auth, billing, data deletion, and messy recovery tasks
 - BMADX can detect whether broad-orchestrator handoff stays a small risk/proof packet instead of drifting into runtime orchestration
 - BMADX can validate fit-for-purpose thinking-budget recommendations without treating them as routing decisions
+- BMADX can validate goal-aware and bounded repair-loop contracts without turning them into runtime orchestration
 - BMADX can measure token and latency baselines for fixed-medium reasoning vs advisor-selected reasoning
 
 ## What this does not prove
@@ -60,6 +61,7 @@ Runner hardening after `v0.2.4`:
 - `v0.2.9` adds `benchmark/scripts/verify_bmadx_performance.py` so full baselines are approved by the same gates instead of manual inspection
 - `v0.2.9` adds `--gate-mode precomputed|in-session`; the performance baseline uses `precomputed` so the harness validates compact gates without adding in-session tool-call variance
 - `v0.2.9` verifier baseline mode reports token cap overages as warnings; `claim` mode remains strict before any public savings claim
+- `Unreleased` adds `goal_loop_cases` plus `Goal:` and `Loop:` validation for Codex `/goal` recommendations and bounded review/repair/validate loops
 
 ## Thinking budget validation
 
@@ -82,6 +84,27 @@ Expected defaults:
 This is advisory. The benchmark must not treat higher thinking as permission to
 skip BMAD, and it must not accept answers that tell users to mutate global Codex
 config as part of normal BMADX routing.
+
+## Goal and loop validation
+
+The benchmark can ask BMADX to include compact goal and loop lines:
+
+```text
+Goal: yes — use `/goal` because the work needs a persistent definition of done.
+Loop: yes — max 3 review/repair/validate passes; stop on pass, stale delta, hard stop, or human review.
+```
+
+Expected defaults:
+
+| Scenario shape | Expected goal | Expected loop |
+| --- | --- | --- |
+| obvious `X1/X2` | no | no |
+| multi-turn `X3` with proof criteria | yes | usually no |
+| `X4` rescue execution with repeated validation deltas | yes | yes |
+
+Goal and loop validation must not accept answers that create hooks, MCP,
+plugins, subagents, worker lanes, dispatch commands, persistent run IDs,
+runtime state, or a second plan store.
 
 ## GPT-5.5 performance baseline
 

@@ -20,6 +20,9 @@ VALIDATION_FIELDS = (
     "thinking_budget_pass",
     "thinking_budget_no_mutation_pass",
     "thinking_budget_supported_value_pass",
+    "goal_routing_pass",
+    "loop_contract_pass",
+    "goal_loop_not_runtime_pass",
     "handoff_routing_pass",
     "handoff_not_runtime_pass",
     "no_worker_lane_pass",
@@ -84,7 +87,7 @@ def load_summary(path: Path) -> dict[str, Any]:
 
 def all_cases(summary: dict[str, Any]) -> list[dict[str, Any]]:
     cases: list[dict[str, Any]] = []
-    for key in ("cases", "boundary_cases", "non_technical_cases", "handoff_cases"):
+    for key in ("cases", "boundary_cases", "non_technical_cases", "handoff_cases", "goal_loop_cases"):
         cases.extend(summary.get(key) or [])
     return cases
 

@@ -1,0 +1,2 @@
+Scenario: X3 goal-aware execution contract
+Task: Continue an existing BMAD auth-session cleanup story. The work may span several Codex turns, must keep current login behavior working, and is done only when tests pass and the rollback note is documented. Classify and say whether `/goal` should be used, but do not implement.

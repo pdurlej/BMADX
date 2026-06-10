@@ -54,6 +54,12 @@ BMADX may recommend Codex reasoning effort after classification:
 This recommendation is a cost-control hint for the current run, not a new gate
 and not a global Codex config change. Details: [thinking-budget.md](thinking-budget.md)
 
+## Goal and loop discipline
+
+`/goal` and repair loops do not change the chosen gear. Use them only after
+classification when the work needs a persistent definition of done or bounded
+review/repair/validate passes. Details: [goal-loop.md](goal-loop.md)
+
 ## Architecture Guardrail Card
 
 For boundary cases, answer five questions before final classification:

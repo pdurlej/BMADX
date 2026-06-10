@@ -21,7 +21,7 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.2.9`
+Current public version: `v0.2.10`
 
 ## Start here
 
@@ -103,6 +103,11 @@ BMADX can also suggest a fit-for-purpose thinking budget for the current run:
 `low` for tiny local work, `medium` for bounded normal changes, `high` for
 BMAD-heavy/red-zone work, and `xhigh` only for real Rescue Mode execution. See
 [Thinking Budget Advisor](docs/thinking-budget-advisor.md).
+
+For longer Codex threads, BMADX can also say when `/goal` or a bounded
+review/repair/validate loop is useful. This does not add a gear and does not
+turn BMADX into a runtime orchestrator. See
+[Goal and Loop Discipline](docs/goal-loop-discipline.md).
 
 ### Model lanes
 

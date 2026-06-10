@@ -6,6 +6,19 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.2.10] - 2026-06-10
+
+### Added
+
+- Goal and loop discipline for longer `X3/X4` Codex work, including a compact
+  `Goal:`/`Loop:` response contract without adding a new BMADX gear.
+- Benchmark parser and scenario coverage for goal-aware and bounded
+  review/repair/validate loop answers.
+
+### Changed
+
+- Current public version is `v0.2.10`.
+
 ## [0.2.9] - 2026-06-02
 
 ### Added

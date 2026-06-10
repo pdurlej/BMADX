@@ -21,6 +21,15 @@ HANDOFF_PATTERN = re.compile(
     r"Handoff(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
     r"(yes|no|recommended|not recommended|none)\b"
 )
+GOAL_PATTERN = re.compile(
+    r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
+    r"Goal(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
+    r"(yes|no|recommended|not recommended|none)\b"
+)
+LOOP_PATTERN = re.compile(
+    r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
+    r"Loop(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*([^\r\n]+)"
+)
 THINKING_PATTERN = re.compile(
     r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
     r"Thinking(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
@@ -35,6 +44,13 @@ FORBIDDEN_HANDOFF_RUNTIME_PATTERNS = {
     "no_dispatch_command_pass": re.compile(r"\b(dispatch|ollama run|codex exec --oss|run_id|runtime state)\b", re.I),
     "no_platform_surface_pass": re.compile(r"\b(MCP|hook|plugin|subagent|agent zoo)\b", re.I),
 }
+FORBIDDEN_GOAL_LOOP_RUNTIME_PATTERN = re.compile(
+    r"\b(primary_worker|secondary_workers|worker lane|model lane|lane:|dispatch|"
+    r"run_id|run ids?|runtime state|persistent state|persistent run ids?|MCP|"
+    r"hooks?|plugins?|subagents?|workers?|agent zoo|"
+    r"auto-merge|automerge|auto-deploy|autodeploy|daemon|scheduler)\b",
+    re.I,
+)
 FORBIDDEN_THINKING_MUTATION_PATTERN = re.compile(
     r"(~/.codex/config\.toml|CODEX_HOME.*/config\.toml|"
     r"persist(?:ent|ently)?.*reasoning|write_config|set.*default.*reasoning|"
@@ -61,6 +77,11 @@ HANDOFF_VALIDATION_CHECKS = VALIDATION_CHECKS + (
     "no_dispatch_command_pass",
     "no_platform_surface_pass",
 )
+GOAL_LOOP_VALIDATION_CHECKS = (
+    "goal_routing_pass",
+    "loop_contract_pass",
+    "goal_loop_not_runtime_pass",
+)
 NON_TECH_FAILURE_REASONS = {
     "format_pass": "The answer is too long or unstructured for a non-technical owner to act on safely.",
     "token_count_present": "The benchmark cannot compare cost or verbosity without a token count.",
@@ -77,6 +98,9 @@ NON_TECH_FAILURE_REASONS = {
     "no_model_name_pass": "The handoff named specific models, which should remain a receiving orchestrator decision.",
     "no_dispatch_command_pass": "The handoff included dispatch/runtime commands instead of a portable risk-and-proof packet.",
     "no_platform_surface_pass": "The handoff mentioned platform surfaces such as MCP, hooks, plugins, or subagents that BMADX must not install or require.",
+    "goal_routing_pass": "The agent did not make the expected `/goal` recommendation for a longer Codex task.",
+    "loop_contract_pass": "The agent did not make the expected bounded repair-loop decision.",
+    "goal_loop_not_runtime_pass": "The goal or loop answer drifted into runtime machinery instead of staying a small Codex-thread contract.",
 }
 
 
@@ -141,6 +165,30 @@ def detect_handoff(stdout: str) -> bool | None:
     return None
 
 
+def detect_goal(stdout: str) -> bool | None:
+    match = GOAL_PATTERN.search(stdout)
+    if not match:
+        return None
+    value = match.group(1).strip().lower()
+    if value in {"yes", "recommended"}:
+        return True
+    if value in {"no", "not recommended", "none"}:
+        return False
+    return None
+
+
+def detect_loop(stdout: str) -> bool | None:
+    match = LOOP_PATTERN.search(stdout)
+    if not match:
+        return None
+    value = match.group(1).strip().lower()
+    if value.startswith(("yes", "bounded", "max ")):
+        return True
+    if value.startswith(("no", "none", "not recommended", "not needed")):
+        return False
+    return None
+
+
 def normalize_reasoning_effort(value: str | None) -> str | None:
     if value is None:
         return None
@@ -166,6 +214,10 @@ def validate_handoff_runtime_drift(stdout: str) -> dict:
     return result
 
 
+def validate_goal_loop_runtime_drift(stdout: str) -> bool:
+    return FORBIDDEN_GOAL_LOOP_RUNTIME_PATTERN.search(stdout) is None
+
+
 def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> dict:
     response = stdout.strip()
     lines = [line for line in response.splitlines() if line.strip()]
@@ -175,8 +227,12 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
     expected_gear = str(spec.get("expected_gear") or "")
     forbidden_gears = set(spec.get("forbidden_gears") or [])
     expected_handoff = spec.get("expected_handoff")
+    expected_goal = spec.get("expected_goal")
+    expected_loop = spec.get("expected_loop")
     expected_reasoning_effort = normalize_reasoning_effort(spec.get("expected_reasoning_effort"))
     observed_reasoning_effort = detect_thinking_effort(stdout)
+    observed_goal = detect_goal(stdout)
+    observed_loop = detect_loop(stdout)
     token_count_present = tokens is not None
 
     format_pass = True
@@ -206,6 +262,21 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "no_dispatch_command_pass": True,
         "no_platform_surface_pass": True,
     }
+    goal_routing_pass = (
+        observed_goal == bool(expected_goal)
+        if expected_goal is not None
+        else True
+    )
+    loop_contract_pass = (
+        observed_loop == bool(expected_loop)
+        if expected_loop is not None
+        else True
+    )
+    goal_loop_not_runtime_pass = (
+        validate_goal_loop_runtime_drift(stdout)
+        if expected_goal is not None or expected_loop is not None
+        else True
+    )
     thinking_budget_present = observed_reasoning_effort is not None
     thinking_budget_supported_value_pass = (
         observed_reasoning_effort in SUPPORTED_REASONING_EFFORTS
@@ -233,6 +304,13 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "expected_handoff": expected_handoff,
         "observed_handoff": observed_handoff,
         "handoff_routing_pass": handoff_routing_pass,
+        "expected_goal": expected_goal,
+        "observed_goal": observed_goal,
+        "goal_routing_pass": goal_routing_pass,
+        "expected_loop": expected_loop,
+        "observed_loop": observed_loop,
+        "loop_contract_pass": loop_contract_pass,
+        "goal_loop_not_runtime_pass": goal_loop_not_runtime_pass,
         "expected_reasoning_effort": expected_reasoning_effort,
         "observed_reasoning_effort": observed_reasoning_effort,
         "thinking_budget_present": thinking_budget_present,
@@ -257,6 +335,9 @@ def summarize_validation(cases: list[dict]) -> dict:
             "thinking_budget_pass_count": 0,
             "thinking_budget_no_mutation_pass_count": 0,
             "thinking_budget_supported_value_pass_count": 0,
+            "goal_routing_pass_count": 0,
+            "loop_contract_pass_count": 0,
+            "goal_loop_not_runtime_pass_count": 0,
         }
     return {
         "case_count": len(cases),
@@ -274,13 +355,22 @@ def summarize_validation(cases: list[dict]) -> dict:
         "thinking_budget_supported_value_pass_count": sum(
             1 for case in cases if case.get("thinking_budget_supported_value_pass")
         ),
+        "goal_routing_pass_count": sum(1 for case in cases if case.get("goal_routing_pass")),
+        "loop_contract_pass_count": sum(1 for case in cases if case.get("loop_contract_pass")),
+        "goal_loop_not_runtime_pass_count": sum(
+            1 for case in cases if case.get("goal_loop_not_runtime_pass")
+        ),
     }
 
 
 def validation_failures(cases: list[dict]) -> list[dict]:
     failures = []
     for case in cases:
-        checks = HANDOFF_VALIDATION_CHECKS if case.get("expected_handoff") is not None else VALIDATION_CHECKS
+        checks = list(VALIDATION_CHECKS)
+        if case.get("expected_handoff") is not None:
+            checks.extend(check for check in HANDOFF_VALIDATION_CHECKS if check not in checks)
+        if case.get("expected_goal") is not None or case.get("expected_loop") is not None:
+            checks.extend(GOAL_LOOP_VALIDATION_CHECKS)
         failed_checks = [check for check in checks if not case.get(check)]
         if failed_checks:
             failures.append(

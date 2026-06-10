@@ -18,6 +18,7 @@ from pathlib import Path
 from bmadx_benchmark_scenarios import (
     BOUNDARY_SCENARIOS,
     CORE_SCENARIOS,
+    GOAL_LOOP_SCENARIOS,
     HANDOFF_SCENARIOS,
     NON_TECH_SCENARIOS,
 )
@@ -39,7 +40,7 @@ DEFAULT_MODEL = "gpt-5.5"
 DEFAULT_REASONING = "medium"
 DEFAULT_REASONING_POLICY = "fixed"
 DEFAULT_GATE_MODE = "precomputed"
-DEFAULT_GROUPS = ("core", "boundary", "non_technical", "handoff")
+DEFAULT_GROUPS = ("core", "boundary", "non_technical", "handoff", "goal_loop")
 HEALTHY_BMAD_RELEASE = {
     "tag_name": "v6.3.0",
     "name": "BMAD v6.3.0",
@@ -75,7 +76,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--groups",
         default=",".join(DEFAULT_GROUPS),
-        help="Comma-separated scenario groups to run: core,boundary,non_technical,handoff",
+        help="Comma-separated scenario groups to run: core,boundary,non_technical,handoff,goal_loop",
     )
     parser.add_argument(
         "--repeat",
@@ -164,6 +165,7 @@ def build_prompt(
     scenario_path: Path,
     *,
     include_handoff: bool = False,
+    include_goal_loop: bool = False,
     gate_report: dict | None = None,
 ) -> str:
     content = scenario_path.read_text(encoding="utf-8")
@@ -184,6 +186,13 @@ def build_prompt(
         prompt += (
             "If broad orchestrator handoff is relevant, include exactly one `Handoff: yes/no` line. "
             "Do not name models, worker lanes, arbiters, dispatch commands, MCP, hooks, plugins, subagents, or runtime state. "
+        )
+    if include_goal_loop:
+        prompt += (
+            "If goal or loop discipline is relevant, include exactly one `Goal: yes/no` line and exactly one `Loop: yes/no` line. "
+            "`/goal` is a Codex thread objective, not a BMADX gear. "
+            "A loop means bounded review -> repair -> validate passes. "
+            "Do not create runtime state, hooks, plugins, MCP, subagents, workers, dispatch, persistent run IDs, or a second plan store. "
         )
     return prompt + f"Task: {task}"
 
@@ -433,6 +442,7 @@ def run_case(
     prompt = build_prompt(
         scenario_path,
         include_handoff=spec.get("expected_handoff") is not None,
+        include_goal_loop=spec.get("expected_goal") is not None or spec.get("expected_loop") is not None,
         gate_report=gate_report,
     )
     command = build_codex_command(
@@ -498,6 +508,13 @@ def run_case(
         "expected_handoff": validation["expected_handoff"],
         "observed_handoff": validation["observed_handoff"],
         "handoff_routing_pass": validation["handoff_routing_pass"],
+        "expected_goal": validation["expected_goal"],
+        "observed_goal": validation["observed_goal"],
+        "goal_routing_pass": validation["goal_routing_pass"],
+        "expected_loop": validation["expected_loop"],
+        "observed_loop": validation["observed_loop"],
+        "loop_contract_pass": validation["loop_contract_pass"],
+        "goal_loop_not_runtime_pass": validation["goal_loop_not_runtime_pass"],
         "expected_reasoning_effort": validation["expected_reasoning_effort"],
         "observed_reasoning_effort": validation["observed_reasoning_effort"],
         "thinking_budget_present": validation["thinking_budget_present"],
@@ -596,6 +613,7 @@ def build_summary(
     boundary_cases: list[dict],
     non_technical_cases: list[dict] | None = None,
     handoff_cases: list[dict] | None = None,
+    goal_loop_cases: list[dict] | None = None,
     *,
     model: str,
     reasoning: str,
@@ -610,9 +628,10 @@ def build_summary(
 ) -> dict:
     non_technical_cases = non_technical_cases or []
     handoff_cases = handoff_cases or []
+    goal_loop_cases = goal_loop_cases or []
     groups = groups or list(DEFAULT_GROUPS)
     token_values = [case["tokens"] for case in core_cases]
-    all_cases = core_cases + boundary_cases + non_technical_cases + handoff_cases
+    all_cases = core_cases + boundary_cases + non_technical_cases + handoff_cases + goal_loop_cases
     return {
         "generated_at": date_stamp,
         "framework": "bmadx",
@@ -638,6 +657,7 @@ def build_summary(
         "boundary_cases": boundary_cases,
         "non_technical_cases": non_technical_cases,
         "handoff_cases": handoff_cases,
+        "goal_loop_cases": goal_loop_cases,
         "framework_averages": {
             "bmadx": {
                 "avg_tokens": sum(token_values) / len(token_values) if token_values else 0,
@@ -652,6 +672,7 @@ def build_summary(
             "boundary": summarize_performance(boundary_cases),
             "non_technical": summarize_performance(non_technical_cases),
             "handoff": summarize_performance(handoff_cases),
+            "goal_loop": summarize_performance(goal_loop_cases),
         },
         "cost_estimate": estimate_cost(sum(case["tokens"] for case in all_cases), cost_per_million_tokens),
         "validation_summary": {
@@ -667,16 +688,19 @@ def build_summary(
                 "no_dispatch_command_pass_count": sum(1 for case in handoff_cases if case["no_dispatch_command_pass"]),
                 "no_platform_surface_pass_count": sum(1 for case in handoff_cases if case["no_platform_surface_pass"]),
             },
+            "goal_loop": summarize_validation(goal_loop_cases),
         },
         "validation_failures": {
             "core": validation_failures(core_cases),
             "boundary": validation_failures(boundary_cases),
             "non_technical": validation_failures(non_technical_cases),
             "handoff": validation_failures(handoff_cases),
+            "goal_loop": validation_failures(goal_loop_cases),
         },
         "non_technical_readout": {
             "what_failed_why_it_matters": explain_failures_for_non_technical_users(
                 core_cases + boundary_cases + non_technical_cases + handoff_cases
+                + goal_loop_cases
             )
         },
     }
@@ -714,6 +738,7 @@ def main() -> int:
         boundary_cases: list[dict] = []
         non_technical_cases: list[dict] = []
         handoff_cases: list[dict] = []
+        goal_loop_cases: list[dict] = []
         for repeat_index in range(1, args.repeat + 1):
             if "core" in args.groups:
                 core_cases.extend(
@@ -763,6 +788,18 @@ def main() -> int:
                         **run_group_kwargs,
                     )
                 )
+            if "goal_loop" in args.groups:
+                goal_loop_cases.extend(
+                    run_scenario_group(
+                        GOAL_LOOP_SCENARIOS,
+                        codex_home,
+                        args.profile,
+                        workdir,
+                        healthy_release_fixture,
+                        repeat_index=repeat_index,
+                        **run_group_kwargs,
+                    )
+                )
 
     summary = build_summary(
         args.date_stamp,
@@ -771,6 +808,7 @@ def main() -> int:
         boundary_cases,
         non_technical_cases,
         handoff_cases,
+        goal_loop_cases,
         model=args.model,
         reasoning=args.reasoning,
         oss=args.oss,
@@ -799,6 +837,7 @@ def main() -> int:
                 "boundary_case_count": len(boundary_cases),
                 "non_technical_case_count": len(non_technical_cases),
                 "handoff_case_count": len(handoff_cases),
+                "goal_loop_case_count": len(goal_loop_cases),
                 "reasoning_policy": args.reasoning_policy,
                 "gate_mode": args.gate_mode,
                 "group_slug": group_slug_value,

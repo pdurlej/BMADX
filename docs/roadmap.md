@@ -7,7 +7,12 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.9`
+- `v0.2.10`
+
+What `v0.2.10` focuses on:
+- goal-aware BMADX contract for Codex `/goal` without adding a new gear
+- bounded review/repair/validate loop discipline for `X3/X4`
+- benchmark coverage for `Goal:` and `Loop:` lines with runtime-drift guards
 
 What `v0.2.9` focuses on:
 - reducing hidden activation cost by keeping `SKILL.md` focused on the core contract
