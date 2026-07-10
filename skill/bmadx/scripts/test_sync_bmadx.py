@@ -69,7 +69,7 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.3.0",
+        "skill_version": "0.3.1",
         "target_codex_profile": "codex-model-profiled",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
@@ -512,7 +512,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.3.0")
+            self.assertEqual(payload["skill_version"], "0.3.1")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")

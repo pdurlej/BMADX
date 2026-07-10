@@ -1,4 +1,4 @@
-# Project Context — BMADX v0.3.0
+# Project Context — BMADX v0.3.1
 
 ## Product Boundary
 
@@ -29,7 +29,7 @@ Done:
 
 - Codex CLI upgraded to `0.144.1`; GPT-5.6 minimum is `0.144.0`.
 - Local catalog exposes Sol, Terra, and Luna with expected reasoning levels.
-- Manifest and public surfaces are aligned on `v0.3.0`.
+- Manifest and public surfaces are aligned on `v0.3.1`.
 - Shared model profile policy and compatibility checker added.
 - Benchmark model is explicit and advisor output is model-aware.
 - Performance claims and required coverage are isolated per model.
@@ -72,7 +72,7 @@ expose `ultra` in the observed Codex `0.144.1` catalog.
 
 ## Immediate Next Work
 
-1. Keep the published `v0.3.0` compatibility scope distinct from model
+1. Keep the published `v0.3.x` compatibility scope distinct from model
    promotion.
 2. With explicit quota approval, run repeated same-model fixed/advisor pairs.
 3. Cover both healthy and degraded BMAD profiles.
@@ -98,7 +98,7 @@ python3 skill/bmadx/scripts/sync_bmadx.py check --gear X3 --compact
 
 ## Handoff Capsule
 
-- Current state: `v0.3.0` compatibility release ready; first healthy canaries pass.
+- Current state: `v0.3.1` CI patch ready; first healthy canaries remain valid.
 - Done: audit, model policy, checker, runner/verifier hardening, docs, CI, BMAD sync, Sol/Terra/Luna canaries.
 - Next: repeated healthy/degraded same-model evidence matrix.
 - Active approvals: none persisted; live-thread approval is not reusable.

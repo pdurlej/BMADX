@@ -6,6 +6,13 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.3.1] - 2026-07-10
+
+### Fixed
+
+- Isolated the benchmark skill-copy test from the operator's installed
+  `CODEX_HOME`, so deterministic CI passes on clean GitHub runners.
+
 ## [0.3.0] - 2026-07-10
 
 ### Added

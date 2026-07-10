@@ -21,7 +21,7 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.3.0`
+Current public version: `v0.3.1`
 
 GPT-5.6 Sol, Terra, and Luna passed their first subscription-backed healthy
 canaries on 2026-07-10. They remain candidate profiles until repeated healthy

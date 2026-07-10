@@ -8,6 +8,7 @@ import io
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from bmadx_benchmark_scenarios import (
     BOUNDARY_SCENARIOS,
@@ -542,10 +543,24 @@ tokens used
 
     def test_copy_skills_excludes_runtime_state_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            codex_home = Path(tmpdir)
-            copy_skills(codex_home)
+            root = Path(tmpdir)
+            source_codex_home = root / "source-codex-home"
+            bmad_state = source_codex_home / "skills/bmad-method-codex/state"
+            bmad_state.mkdir(parents=True)
+            bmad_state.joinpath(".gitkeep").write_text("", encoding="utf-8")
+            bmad_state.joinpath("bmad-release-state.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+            codex_home = root / "benchmark-codex-home"
+            with patch.dict(
+                "run_bmadx_benchmark.os.environ",
+                {"CODEX_HOME": str(source_codex_home)},
+            ):
+                copy_skills(codex_home)
             self.assertFalse(codex_home.joinpath("skills/bmadx/state/bmadx-state.json").exists())
             self.assertTrue(codex_home.joinpath("skills/bmadx/state/.gitkeep").exists())
+            self.assertTrue(codex_home.joinpath("skills/bmad-method-codex/state/.gitkeep").exists())
             self.assertFalse(
                 codex_home.joinpath("skills/bmad-method-codex/state/bmad-release-state.json").exists()
             )

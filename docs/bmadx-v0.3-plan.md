@@ -1,6 +1,6 @@
 # BMADX v0.3 GPT-5.6 Plan
 
-Status: `v0.3.0` compatibility release complete; repeated promotion evidence
+Status: `v0.3.1` compatibility release complete; repeated promotion evidence
 pending.
 
 ## Objective
@@ -115,9 +115,10 @@ Release only when:
 - no token/cost claim is made unless same-model claim verification passes,
 - public version, manifest, changelog, and project context agree.
 
-Release decision: publish `v0.3.0` because Sol, Terra, and Luna passed their
-intended healthy canary scopes. Keep all three profiles at `candidate`; the
-release makes no token, latency, cost, or default-model claim.
+Release decision: `v0.3.0` delivered the compatibility surface and `v0.3.1`
+isolated its deterministic CI fixture from operator-global state. Sol, Terra,
+and Luna remain `candidate`; neither release makes a token, latency, cost, or
+default-model claim.
 
 ## Handoff for the next evidence run
 

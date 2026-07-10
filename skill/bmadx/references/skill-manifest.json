@@ -1,6 +1,6 @@
 {
   "name": "bmadx",
-  "skill_version": "0.3.0",
+  "skill_version": "0.3.1",
   "target_codex_profile": "codex-model-profiled",
   "supported_model_profiles": [
     "gpt-5.5",

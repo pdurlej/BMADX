@@ -7,10 +7,14 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.3.0`
+- `v0.3.1`
 
 Current main development line:
 - `v0.3.x`
+
+What `v0.3.1` fixes:
+- deterministic benchmark tests no longer depend on an operator-installed
+  global BMAD skill when running on a clean CI host
 
 What `v0.3.0` delivers:
 - GPT-5.6 Sol, Terra, and Luna profile compatibility on Codex CLI `0.144.0+`
