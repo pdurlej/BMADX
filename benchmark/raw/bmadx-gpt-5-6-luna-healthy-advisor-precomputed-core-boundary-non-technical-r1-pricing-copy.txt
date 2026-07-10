@@ -1,0 +1,4 @@
+Choice: X1 — One-shot  
+Thinking: medium — suggestion only.  
+Why: Copy-only hero wording change with pricing and billing behavior explicitly out of scope.  
+Next step: Update the pricing hero copy only; no edits are made in classification mode.

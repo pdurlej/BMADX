@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: This is a tiny, purely textual change in one React component with no architectural or process risk.
+Next step: Locate the message, correct the typo, then run the component’s relevant test or a focused check.

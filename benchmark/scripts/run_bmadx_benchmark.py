@@ -30,13 +30,17 @@ from bmadx_benchmark_validation import (
     validate_case,
     validation_failures,
 )
+from bmadx_model_profiles import (
+    advisor_reasoning,
+    profile_snapshot,
+    reasoning_prompt_contract,
+    validate_model_options,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BENCHMARK_ROOT = REPO_ROOT / "benchmark"
 RAW_ROOT = BENCHMARK_ROOT / "raw"
 BMADX_SKILL_ROOT = REPO_ROOT / "skill" / "bmadx"
-BMAD_METHOD_ROOT = Path.home() / ".codex" / "skills" / "bmad-method-codex"
-DEFAULT_MODEL = "gpt-5.5"
 DEFAULT_REASONING = "medium"
 DEFAULT_REASONING_POLICY = "fixed"
 DEFAULT_GATE_MODE = "precomputed"
@@ -53,8 +57,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run BMADX benchmark scenarios in a clean CODEX_HOME")
     parser.add_argument(
         "--model",
-        default=DEFAULT_MODEL,
-        help=f"Codex model to run in the benchmark CODEX_HOME (default: {DEFAULT_MODEL})",
+        required=True,
+        help="Explicit Codex model to benchmark; required so model baselines cannot drift silently",
     )
     parser.add_argument(
         "--reasoning",
@@ -164,6 +168,7 @@ def compact_gate_hint(gate_report: dict | None) -> str:
 def build_prompt(
     scenario_path: Path,
     *,
+    model: str = "gpt-5.5",
     include_handoff: bool = False,
     include_goal_loop: bool = False,
     gate_report: dict | None = None,
@@ -175,11 +180,12 @@ def build_prompt(
     )
     task = task_line.partition("Task:")[2].strip()
     gate_instruction = compact_gate_hint(gate_report)
+    allowed_reasoning, reasoning_mapping = reasoning_prompt_contract(model)
     prompt = (
         f"Use $bmadx. Classify only; {gate_instruction} "
         "Start with `Choice: X...`, not Phase/Gate/FAZA/WYKONANE. "
-        "Add `Thinking: <low|medium|high|xhigh> — suggestion only`. "
-        "Map X1/X2=medium, X3=high, X4=xhigh. "
+        f"Add `Thinking: <{allowed_reasoning}> — suggestion only`. "
+        f"For {model}, map {reasoning_mapping}. "
         "X2: 2 Plan + 2 Verify lines. X1/X2: no refs. No edits. "
     )
     if include_handoff:
@@ -191,7 +197,10 @@ def build_prompt(
         prompt += (
             "If goal or loop discipline is relevant, include exactly one `Goal: yes/no` line and exactly one `Loop: yes/no` line. "
             "`/goal` is a Codex thread objective, not a BMADX gear. "
-            "A loop means bounded review -> repair -> validate passes. "
+            "Goal and loop are independent: multi-turn goal work does not imply a loop. "
+            "Use `Loop: yes` only when the task already needs repeated evidence-driven repair and one verification pass is insufficient. "
+            "A `Goal: yes` line must name an achieved, blocked, approval, hard-stop, human-review, or budget stop condition. "
+            "A `Loop: yes` line must include a numeric maximum and stop condition for review -> repair -> validate passes. "
             "Do not create runtime state, hooks, plugins, MCP, subagents, workers, dispatch, persistent run IDs, or a second plan store. "
         )
     return prompt + f"Task: {task}"
@@ -228,9 +237,17 @@ def summary_path_for(
     )
 
 
-def effective_reasoning(spec: dict, default_reasoning: str, reasoning_policy: str) -> str:
+def effective_reasoning(
+    spec: dict,
+    default_reasoning: str,
+    reasoning_policy: str,
+    model: str | None = None,
+) -> str:
     if reasoning_policy == "advisor":
-        return str(spec.get("expected_reasoning_effort") or default_reasoning)
+        fallback = str(spec.get("expected_reasoning_effort") or default_reasoning)
+        if model:
+            return advisor_reasoning(model, str(spec.get("expected_gear") or ""), fallback)
+        return fallback
     return default_reasoning
 
 
@@ -247,9 +264,13 @@ def write_config(codex_home: Path, model: str, reasoning: str) -> None:
     (codex_home / "config.toml").write_text(config, encoding="utf-8")
 
 
+def source_codex_home() -> Path:
+    return Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+
+
 def copy_runtime_files(codex_home: Path) -> None:
     for name in ("auth.json", "version.json"):
-        source = Path.home() / ".codex" / name
+        source = source_codex_home() / name
         if source.exists():
             shutil.copy2(source, codex_home / name)
 
@@ -270,7 +291,7 @@ def copy_skills(codex_home: Path) -> None:
         ignore=ignore_bmadx_runtime_state,
     )
     shutil.copytree(
-        BMAD_METHOD_ROOT,
+        source_codex_home() / "skills" / "bmad-method-codex",
         skills_dir / "bmad-method-codex",
         dirs_exist_ok=True,
         ignore=ignore_bmadx_runtime_state,
@@ -430,7 +451,14 @@ def run_case(
     repeat_index: int,
 ) -> dict:
     scenario_path = Path(spec["path"])
-    case_reasoning = effective_reasoning(spec, reasoning, reasoning_policy)
+    expected_reasoning = advisor_reasoning(
+        model,
+        str(spec.get("expected_gear") or ""),
+        str(spec.get("expected_reasoning_effort") or reasoning),
+    )
+    case_spec = dict(spec)
+    case_spec["expected_reasoning_effort"] = expected_reasoning
+    case_reasoning = effective_reasoning(case_spec, reasoning, reasoning_policy)
     gate_report = None
     if gate_mode == "precomputed":
         gate_report = precompute_compact_gate(
@@ -441,6 +469,7 @@ def run_case(
         )
     prompt = build_prompt(
         scenario_path,
+        model=model,
         include_handoff=spec.get("expected_handoff") is not None,
         include_goal_loop=spec.get("expected_goal") is not None or spec.get("expected_loop") is not None,
         gate_report=gate_report,
@@ -477,7 +506,7 @@ def run_case(
     tokens = parse_token_count(stderr)
     if tokens is None:
         raise RuntimeError(f"codex exec did not report token usage for {scenario_key}")
-    validation = validate_case(stdout, stderr, tokens, spec)
+    validation = validate_case(stdout, stderr, tokens, case_spec)
     return {
         "case": f"bmadx-{profile}-{scenario_key}",
         "framework": "bmadx",
@@ -511,6 +540,7 @@ def run_case(
         "expected_goal": validation["expected_goal"],
         "observed_goal": validation["observed_goal"],
         "goal_routing_pass": validation["goal_routing_pass"],
+        "goal_stop_condition_pass": validation["goal_stop_condition_pass"],
         "expected_loop": validation["expected_loop"],
         "observed_loop": validation["observed_loop"],
         "loop_contract_pass": validation["loop_contract_pass"],
@@ -638,6 +668,7 @@ def build_summary(
         "profile": profile,
         "runner": {
             "model": model,
+            "model_profile": profile_snapshot(model),
             "reasoning": reasoning,
             "reasoning_policy": reasoning_policy,
             "gate_mode": gate_mode,
@@ -710,6 +741,22 @@ def main() -> int:
     args = parse_args()
     if args.local_provider and not args.oss:
         raise SystemExit("--local-provider requires --oss")
+    if not args.oss:
+        version_result = subprocess.run(
+            ["codex", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if version_result.returncode != 0:
+            raise SystemExit(version_result.stderr.strip() or "Could not read Codex CLI version")
+        compatibility_failures = validate_model_options(
+            args.model,
+            args.reasoning,
+            cli_version=version_result.stdout,
+        )
+        if compatibility_failures:
+            raise SystemExit("; ".join(compatibility_failures))
     model_slug_value = runner_slug(args.model, oss=args.oss, local_provider=args.local_provider)
     group_slug_value = groups_slug(args.groups)
     RAW_ROOT.mkdir(parents=True, exist_ok=True)

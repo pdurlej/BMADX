@@ -1,0 +1,9 @@
+Choice: X2 — Regular  
+Thinking: medium — suggestion only.  
+Why: Bounded copy change with no auth, billing, or data-model impact.  
+Plan:  
+1. Add the onboarding email variant following existing copy conventions.  
+2. Keep scope limited to email content and its selection/configuration.  
+Verify:  
+1. Confirm the variant renders correctly and is selectable.  
+2. Confirm auth, billing, and data-model files remain unchanged.

@@ -12,9 +12,21 @@ The order stays:
 
 ## Goal Mode
 
-Use `/goal` when the work may span multiple turns and Codex needs a persistent
+Use goal mode when the work may span multiple turns and Codex needs a persistent
 definition of done. Good goal text names the outcome, proof, stop condition, and
 hard constraints.
+
+Surface matters:
+
+- in interactive Codex CLI or the app, `/goal <objective>` is a client command,
+- in `codex exec`, ask the agent explicitly to create a goal; slash-command text
+  is not deterministic programmatic dispatch,
+- a BMADX recommendation does not create a goal unless the user asks for one.
+
+Include blocked completion in the objective. The goal should stop when proof
+passes, its bounded attempt budget is exhausted, or approval/hard-stop blocking
+requires human action. This prevents a continuation loop from repeatedly
+re-entering the same forbidden action.
 
 Do not use `/goal` for obvious `X1/X2` work. A tiny copy fix or bounded local
 change should stay in the normal BMADX contract.
@@ -22,7 +34,7 @@ change should stay in the normal BMADX contract.
 Example:
 
 ```text
-Goal: yes — use `/goal` because the work needs a persistent definition of done.
+Goal: yes — stop when proof passes, attempts are exhausted, or approval/hard-stop blocking needs human action.
 ```
 
 ## Repair Loops
@@ -35,7 +47,7 @@ A loop is useful when each pass should learn from validation evidence:
 4. carry forward only the remaining delta.
 
 Stop when validation passes, the attempt limit is reached, the remaining delta
-stops shrinking, a hard stop appears, or human review is needed.
+stops shrinking, a hard stop appears, or human review/approval is needed.
 
 Defaults:
 

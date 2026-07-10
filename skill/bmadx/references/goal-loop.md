@@ -16,6 +16,14 @@ Goal and loop discipline does not change the gear:
 `/goal` belongs to Codex. BMADX only decides whether the task shape benefits
 from using it and what completion criteria should be attached.
 
+Surface rule:
+
+- interactive Codex CLI/app: `/goal <objective>` is interpreted by the client,
+- `codex exec`: ask the agent in natural language to create a goal; passing a
+  slash command as prompt text is not deterministic control-plane dispatch,
+- BMADX recommendation alone must not create a goal; creation requires an
+  explicit user request.
+
 ## Goal Contract
 
 Recommend a goal when:
@@ -35,10 +43,16 @@ Goal text should include:
 3. stop condition,
 4. hard constraints or non-goals.
 
+The stop condition must cover both success and blocked completion. Include
+approval or hard-stop blocking explicitly so goal continuation does not keep
+re-entering the same forbidden action. After the same blocker repeats for the
+configured bounded attempts, stop and report the blocker rather than claiming
+success.
+
 Contract line:
 
 ```text
-Goal: yes — use `/goal` because the work needs a persistent definition of done.
+Goal: yes — stop when proof passes, attempts are exhausted, or approval/hard-stop blocking needs human action.
 ```
 
 Use `Goal: no` when the work is bounded enough for the normal gear contract.
@@ -60,7 +74,7 @@ Stop when:
 - the maximum attempt count is reached,
 - the remaining delta stops shrinking,
 - a BMADX/BMAD hard stop appears,
-- human review is needed.
+- human review or approval is needed.
 
 Default attempt cap:
 

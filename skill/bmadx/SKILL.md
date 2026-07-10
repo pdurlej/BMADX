@@ -73,16 +73,15 @@ Use silently for `X1/X2`; surface only when risk changes the mode.
 
 ## Thinking Budget
 
-Advisory only; never changes routing, gate, or global Codex config.
+Advisory and model-aware; never changes routing, gate, or global Codex config.
 
-- `X1=medium` for Codex/GPT-5.5 code tasks; `low` is experimental.
-- `X2=medium`
-- `X2/X3 boundary=high`
-- `X3=high`
-- `X4=xhigh` for real rescue execution
+- GPT-5.5: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
+- GPT-5.6 Sol: `X1/X2=medium`, `X3/X4=high`.
+- GPT-5.6 Terra/Luna: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
+- `max` and `ultra` are explicit experiments, not BMADX defaults.
 
-Canonical values: `minimal`, `low`, `medium`, `high`, `xhigh`. Normalize
-`extra high` / `extra_high` to `xhigh`.
+Use only levels supported by the active Codex model. Normalize `extra high` /
+`extra_high` to `xhigh`. Model profile never overrides gear or BMAD gate.
 
 Line when needed:
 
@@ -95,19 +94,25 @@ Thinking: high — suggestion only.
 Use only for multi-step work where it improves closure. It does not add a gear.
 
 - `/goal` is a Codex thread objective; BMADX still chooses `X1..X4`.
+- Interactive Codex surfaces interpret `/goal`; `codex exec` requires an
+  explicit natural-language request to create a goal.
+- Recommend goal mode without creating it unless the user explicitly asks.
 - Goal text should name the outcome, proof, and stop condition.
 - Use `/plan` first when the goal is unclear.
+- Goal and loop are independent: multi-turn goal work does not imply a loop.
+- Default to no loop for `X3` unless the task already needs repeated
+  evidence-driven repair and one verification pass is insufficient.
 - Loops are bounded review -> repair -> validate passes, not runtime state.
 - Stop a loop when validation passes, attempts are exhausted, delta stalls, or
-  human review is needed.
+  human review, approval, or a hard stop is needed.
 - Do not create hooks, MCP, plugins, subagents, workers, dispatch commands,
   persistent run IDs, or a second plan store.
 
 Lines when relevant:
 
 ```text
-Goal: yes — use `/goal` because the work needs a persistent definition of done.
-Loop: yes — max 3 review/repair/validate passes; stop on pass, stale delta, hard stop, or human review.
+Goal: yes — stop when proof passes, attempts are exhausted, or approval/hard-stop blocking needs human action.
+Loop: yes — max 3 review/repair/validate passes; stop on pass, stale delta, hard stop, approval, or human review.
 ```
 
 ## Response Contract
@@ -149,6 +154,7 @@ then render the bundle only when execution is allowed.
 - [trigger-matrix.md](references/trigger-matrix.md)
 - [architecture-guardrails.md](references/architecture-guardrails.md)
 - [thinking-budget.md](references/thinking-budget.md)
+- [model-compatibility.md](references/model-compatibility.md)
 - [goal-loop.md](references/goal-loop.md)
 - [execution-boundaries.md](references/execution-boundaries.md)
 - [verify-discipline.md](references/verify-discipline.md)

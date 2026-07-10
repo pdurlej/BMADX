@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy implementation  
+Why: An existing BMAD story owns the work, so implementation must follow its workflow and remain aligned with BMAD artifacts.  
+Gate: classification and execution allowed; BMAD healthy; no warnings.  
+Thinking: high — suggestion only.  
+Next step: Enter the story implementation flow, preserving BMAD ownership and verification.

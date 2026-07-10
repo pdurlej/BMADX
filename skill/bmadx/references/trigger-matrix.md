@@ -43,16 +43,17 @@ failures, rollback risk, incident recovery, or no credible verification path.
 
 ## Thinking budget
 
-BMADX may recommend Codex reasoning effort after classification:
+BMADX may recommend Codex reasoning effort after classification. The active
+model profile supplies the exact values:
 
-- `X1`: `low`
-- `X2`: `medium`
-- `X2/X3` boundary: `high`
-- `X3`: `high`
-- `X4`: `xhigh` for rescue execution
+- GPT-5.5: `X1/X2=medium`, `X3=high`, `X4=xhigh`
+- GPT-5.6 Sol: `X1/X2=medium`, `X3/X4=high`
+- GPT-5.6 Terra/Luna: `X1/X2=medium`, `X3=high`, `X4=xhigh`
 
 This recommendation is a cost-control hint for the current run, not a new gate
-and not a global Codex config change. Details: [thinking-budget.md](thinking-budget.md)
+and not a global Codex config change. Details:
+[thinking-budget.md](thinking-budget.md) and
+[model-compatibility.md](model-compatibility.md)
 
 ## Goal and loop discipline
 

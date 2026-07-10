@@ -1,0 +1,9 @@
+Choice: X2 — Regular  
+Thinking: medium — suggestion only.  
+Why: Bounded backend change across four files.  
+Plan:  
+1. Add the status field consistently across the affected backend layers.  
+2. Update related validation, mapping, or serialization paths.  
+Verify:  
+1. Run the relevant backend tests.  
+2. Confirm status is accepted, persisted, and returned correctly.

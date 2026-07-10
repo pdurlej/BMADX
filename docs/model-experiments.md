@@ -2,9 +2,11 @@
 
 Status: experimental.
 
-BMADX is Codex-first. The supported path is still Codex on GPT-5.5 with BMAD as
-the upstream process owner. Other models are useful to test, but they are model
-behavior probes until they pass the same BMADX gates.
+BMADX is Codex-first. GPT-5.5 remains the validated historical baseline. GPT-5.6
+Sol, Terra, and Luna are first-party candidate profiles; they are not promoted
+until they pass repeated healthy and degraded BMADX gates. Their first healthy
+subscription-backed canaries passed on 2026-07-10. BMAD remains the upstream
+process owner.
 
 ## PMAX X lane
 
@@ -17,8 +19,10 @@ BMADX to dispatch workers, choose multi-model lanes, or claim broad
 orchestration support.
 
 Clean rule:
-- `gpt-5.5` remains the primary BMADX lane for routing, red-zone decisions,
+- `gpt-5.5` remains the validated baseline,
+- `gpt-5.6-sol` is the primary candidate for routing, red-zone decisions,
   `X3/X4`, Rescue Mode, and final synthesis,
+- `gpt-5.6-terra` and `gpt-5.6-luna` must prove their narrower candidate scopes,
 - `PMAX X` is where cheaper Ollama/OpenRouter/local candidates compete for
   bounded support work,
 - no model graduates from PMAX X into a recommended BMADX lane without repeated
@@ -48,7 +52,7 @@ Test whether a model can:
 | `L1` | Benchmark candidate | Passed simple smoke; eligible for the full runner. |
 | `L2` | Recommended experiment lane | Passed repeated full benchmark for a narrow stage. |
 | `L3` | Recommended lane | Safe enough to recommend for a defined BMADX stage. |
-| `L4` | Default | Replaces `gpt-5.5` for a default path; do not grant this soon. |
+| `L4` | Default | Replaces the validated baseline for a default path; do not grant this soon. |
 
 Minimum for `L2`:
 - 100% routing pass on core, boundary, and non-technical cases,
@@ -188,7 +192,9 @@ Full Codex OSS runner results on 2026-05-06:
 | `minimax-m2.7:cloud` | 4/4 | 0/1 | 4/6 | best cheap experiment so far, but still under-escalates auth, billing, and BMAD-story boundary |
 
 Stage mapping for now:
-- default BMADX decisions, red-zone routing, `X3/X4`, and final synthesis: keep `gpt-5.5`,
+- validated historical baseline: keep `gpt-5.5`,
+- first-party GPT-5.6 candidate for red-zone routing, `X3/X4`, and final synthesis: test `gpt-5.6-sol` before promotion,
+- balanced/fast first-party candidates: test `gpt-5.6-terra` and `gpt-5.6-luna` only within the scopes in `gpt56-model-compatibility.md`,
 - cheap `X1/X2` drafting or codebase exploration after GPT/BMADX classification: try `minimax-m2.7:cloud`,
 - long-horizon/rescue-mode ideation after BMAD/BMADX has already selected `X4`: watch `kimi-k2.6:cloud` and `glm-5.1:cloud`,
 - code patch helpers only, not risk classification: `qwen3-coder-next:cloud`, `devstral-small-2:24b-cloud`, `devstral-2:123b-cloud`.

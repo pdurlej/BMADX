@@ -1,0 +1,6 @@
+Choice: X4/FUBAR — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: Messy ownership plus scaffold-shaped deliverables requires rescue classification.  
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.  
+Scope: BMAD-first ownership, then bundle rendering when execution is requested.  
+Action: Classification only; no tools, references, or edits.

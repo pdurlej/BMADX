@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: User-data deletion is a red-zone task involving billing and audit-retention boundaries.  
+Gate: classification allowed; execution allowed; BMAD OK; no warnings.  
+Scope: Classification only; no tools, edits, or execution.

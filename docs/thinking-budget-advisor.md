@@ -12,17 +12,18 @@ The order stays the same:
 BMADX does not edit `~/.codex/config.toml`, create profiles, or change your
 global Codex defaults.
 
-## Defaults
+## Model-aware defaults
 
-| Task shape | BMADX gear | Suggested effort |
-| --- | --- | --- |
-| tiny copy, typo, local fix | `X1` | `low` |
-| bounded normal product change | `X2` | `medium` |
-| unclear `X2/X3` boundary | `X3` if risky | `high` |
-| BMAD-heavy architecture or red-zone work | `X3` | `high` |
-| real Rescue Mode execution | `X4/FUBAR` | `xhigh` |
+| Model | `X1` | `X2` | `X3` | `X4/FUBAR` |
+| --- | --- | --- | --- | --- |
+| GPT-5.5 | `medium` | `medium` | `high` | `xhigh` |
+| GPT-5.6 Sol | `medium` | `medium` | `high` | `high` |
+| GPT-5.6 Terra | `medium` | `medium` | `high` | `xhigh` |
+| GPT-5.6 Luna | `medium` | `medium` | `high` | `xhigh` |
 
-Use `xhigh`, not `extra_high`, for the highest Codex reasoning effort.
+Use `xhigh`, not `extra_high`. Current Sol and Terra also expose `max` and
+`ultra`; Luna exposes `max`. BMADX accepts those values but does not recommend
+them automatically until model-specific benchmark evidence exists.
 
 ## When BMADX should show it
 
@@ -42,9 +43,10 @@ Use `high` when the work touches API contracts, schema changes, auth, billing,
 permissions, secrets, production config, user data, privacy, performance,
 concurrency, or unclear architecture ownership.
 
-Use `xhigh` only for real rescue-shaped work: repeated failures, incident
-recovery, unclear rollback ownership, destructive data risk, or a scaffold
-bundle that must coordinate owners and proof.
+Use `xhigh` only when the active profile maps real rescue-shaped work there:
+repeated failures, incident recovery, unclear rollback ownership, destructive
+data risk, or a scaffold bundle that must coordinate owners and proof. Sol
+starts at `high` for the same shape and escalates only with evidence.
 
 ## What this does not do
 
@@ -56,9 +58,9 @@ bundle that must coordinate owners and proof.
 
 ## Benchmarking
 
-`v0.2.7` adds parser and validation support for a `Thinking:` line in benchmark
-responses. This validates whether the recommendation matches the task shape and
-whether the answer avoids global config mutation.
+The benchmark parser validates `Thinking:` against the task shape and active
+model profile while rejecting global config mutation. `max` and `ultra` are
+recognized Codex values, but the advisor does not select them by default.
 
 Do not claim token savings from the advisor until healthy and degraded benchmark
 runs show the savings without red-zone under-escalation, `X4` false positives,

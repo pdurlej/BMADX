@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
 from pathlib import Path
 import tempfile
 import unittest
@@ -32,7 +34,6 @@ from bmadx_benchmark_validation import (
 )
 from run_bmadx_benchmark import (
     DEFAULT_GATE_MODE,
-    DEFAULT_MODEL,
     DEFAULT_REASONING,
     DEFAULT_REASONING_POLICY,
     benchmark_env,
@@ -55,6 +56,12 @@ from run_bmadx_benchmark import (
     validate_warmup_payload,
     write_healthy_bmad_fixture,
     write_config,
+)
+from bmadx_model_profiles import (
+    advisor_reasoning,
+    profile_for_model,
+    reasoning_prompt_contract,
+    validate_model_options,
 )
 
 
@@ -91,7 +98,7 @@ tokens used
             self.assertNotIn("do not run tools", prompt)
             self.assertIn("Start with `Choice: X...`", prompt)
             self.assertIn("Thinking: <low|medium|high|xhigh>", prompt)
-            self.assertIn("Map X1/X2=medium, X3=high, X4=xhigh", prompt)
+            self.assertIn("For gpt-5.5, map X1=medium, X2=medium, X3=high, X4=xhigh", prompt)
             self.assertIn("X2: 2 Plan + 2 Verify lines.", prompt)
             self.assertIn("X1/X2: no refs. No edits.", prompt)
             self.assertIn("Task: Create a rescue bundle.", prompt)
@@ -138,7 +145,10 @@ tokens used
             self.assertIn("Goal: yes/no", prompt)
             self.assertIn("Loop: yes/no", prompt)
             self.assertIn("not a BMADX gear", prompt)
-            self.assertIn("bounded review -> repair -> validate", prompt)
+            self.assertIn("Goal and loop are independent", prompt)
+            self.assertIn("one verification pass is insufficient", prompt)
+            self.assertIn("numeric maximum", prompt)
+            self.assertIn("review -> repair -> validate", prompt)
             self.assertIn("persistent run IDs", prompt)
             self.assertIn("Task: Continue until tests pass.", prompt)
 
@@ -184,6 +194,8 @@ tokens used
     def test_detect_thinking_effort_reads_contract_line(self) -> None:
         self.assertEqual(detect_thinking_effort("Choice: X3\nThinking: high — suggestion only.\n"), "high")
         self.assertEqual(detect_thinking_effort("**Thinking:** `xhigh` — suggestion only.\n"), "xhigh")
+        self.assertEqual(detect_thinking_effort("Thinking: max — suggestion only.\n"), "max")
+        self.assertEqual(detect_thinking_effort("Thinking: ultra — suggestion only.\n"), "ultra")
 
     def test_detect_thinking_effort_normalizes_extra_high(self) -> None:
         self.assertEqual(normalize_reasoning_effort("extra_high"), "xhigh")
@@ -261,7 +273,7 @@ tokens used
 
     def test_validate_case_checks_expected_goal_and_loop(self) -> None:
         validation = validate_case(
-            "Choice: X4\nThinking: xhigh — suggestion only.\nGoal: yes — use /goal.\nLoop: yes — max 3 passes.\n",
+            "Choice: X4\nThinking: xhigh — suggestion only.\nGoal: yes — stop when validation passes or approval blocks execution.\nLoop: yes — max 3 passes; stop on pass or stale delta.\n",
             "",
             1000,
             {
@@ -273,6 +285,7 @@ tokens used
             },
         )
         self.assertTrue(validation["goal_routing_pass"])
+        self.assertTrue(validation["goal_stop_condition_pass"])
         self.assertTrue(validation["loop_contract_pass"])
         self.assertTrue(validation["goal_loop_not_runtime_pass"])
 
@@ -284,8 +297,19 @@ tokens used
             {"expected_gear": "X4", "expected_goal": True, "expected_loop": True, "allow_reference_reads": True},
         )
         self.assertTrue(validation["goal_routing_pass"])
-        self.assertTrue(validation["loop_contract_pass"])
+        self.assertFalse(validation["goal_stop_condition_pass"])
+        self.assertFalse(validation["loop_contract_pass"])
         self.assertFalse(validation["goal_loop_not_runtime_pass"])
+
+    def test_validate_case_rejects_unbounded_goal_loop(self) -> None:
+        validation = validate_case(
+            "Choice: X4\nGoal: yes — keep working.\nLoop: yes — repeat until perfect.\n",
+            "",
+            1000,
+            {"expected_gear": "X4", "expected_goal": True, "expected_loop": True},
+        )
+        self.assertFalse(validation["goal_stop_condition_pass"])
+        self.assertFalse(validation["loop_contract_pass"])
 
     def test_validate_case_blocks_global_config_mutation(self) -> None:
         validation = validate_case(
@@ -297,9 +321,9 @@ tokens used
         self.assertTrue(validation["thinking_budget_pass"])
         self.assertFalse(validation["thinking_budget_no_mutation_pass"])
 
-    def test_validate_case_rejects_unsupported_thinking_value(self) -> None:
+    def test_validate_case_rejects_unknown_thinking_value(self) -> None:
         validation = validate_case(
-            "Choice: X2\nThinking: ultra — suggestion only.\n",
+            "Choice: X2\nThinking: extreme — suggestion only.\n",
             "",
             1000,
             {"expected_gear": "X2", "expected_reasoning_effort": "medium", "allow_reference_reads": False},
@@ -328,10 +352,12 @@ tokens used
         self.assertFalse(validation["token_count_present"])
         self.assertFalse(validation["token_pass"])
 
-    def test_default_model_is_gpt55(self) -> None:
-        args = parse_args([])
-        self.assertEqual(args.model, DEFAULT_MODEL)
-        self.assertEqual(args.model, "gpt-5.5")
+    def test_model_is_required_for_reproducible_runs(self) -> None:
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parse_args([])
+        args = parse_args(["--model", "gpt-5.6-sol"])
+        self.assertEqual(args.model, "gpt-5.6-sol")
         self.assertEqual(args.reasoning, DEFAULT_REASONING)
         self.assertEqual(args.reasoning_policy, DEFAULT_REASONING_POLICY)
         self.assertEqual(args.gate_mode, DEFAULT_GATE_MODE)
@@ -342,6 +368,8 @@ tokens used
     def test_parse_args_supports_reasoning_policy_gate_mode_groups_and_repeat(self) -> None:
         args = parse_args(
             [
+                "--model",
+                "gpt-5.6-terra",
                 "--reasoning-policy",
                 "advisor",
                 "--gate-mode",
@@ -367,9 +395,23 @@ tokens used
         self.assertEqual(groups_slug(["non_technical", "handoff"]), "non-technical-handoff")
 
     def test_effective_reasoning_uses_advisor_spec(self) -> None:
-        spec = {"expected_reasoning_effort": "xhigh"}
+        spec = {"expected_gear": "X4", "expected_reasoning_effort": "xhigh"}
         self.assertEqual(effective_reasoning(spec, "medium", "fixed"), "medium")
         self.assertEqual(effective_reasoning(spec, "medium", "advisor"), "xhigh")
+        self.assertEqual(effective_reasoning(spec, "medium", "advisor", "gpt-5.6-sol"), "high")
+
+    def test_gpt56_profiles_are_model_aware(self) -> None:
+        sol = profile_for_model("gpt-5.6-sol")
+        self.assertEqual(sol["status"], "candidate")
+        self.assertEqual(advisor_reasoning("gpt-5.6-sol", "X4", "xhigh"), "high")
+        self.assertEqual(advisor_reasoning("gpt-5.6-terra", "X4", "high"), "xhigh")
+        self.assertIn("ultra", reasoning_prompt_contract("gpt-5.6-sol")[0])
+        self.assertNotIn("ultra", reasoning_prompt_contract("gpt-5.6-luna")[0])
+
+    def test_gpt56_profile_rejects_old_cli_and_unsupported_effort(self) -> None:
+        failures = validate_model_options("gpt-5.6-luna", "ultra", cli_version="codex-cli 0.143.0")
+        self.assertTrue(any("not supported" in failure for failure in failures))
+        self.assertTrue(any("requires Codex CLI" in failure for failure in failures))
 
     def test_model_override_still_supports_gpt54(self) -> None:
         args = parse_args(["--model", "gpt-5.4", "--reasoning", "high"])
@@ -574,6 +616,7 @@ tokens used
             cost_per_million_tokens=2.0,
         )
         self.assertEqual(summary["runner"]["model"], "gpt-5.5")
+        self.assertEqual(summary["runner"]["model_profile"]["status"], "validated-baseline")
         self.assertEqual(summary["runner"]["reasoning"], "medium")
         self.assertEqual(summary["runner"]["reasoning_policy"], "advisor")
         self.assertEqual(summary["runner"]["gate_mode"], "precomputed")
@@ -667,7 +710,12 @@ tokens used
             [
                 {
                     "case": "bmadx-healthy-x1",
-                    "failed_checks": ["token_pass", "routing_pass", "goal_routing_pass"],
+                    "failed_checks": [
+                        "token_pass",
+                        "routing_pass",
+                        "goal_routing_pass",
+                        "goal_stop_condition_pass",
+                    ],
                 }
             ],
         )

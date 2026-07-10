@@ -28,6 +28,8 @@ LOCAL_FILES = [
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/model-profiles.json",
+    "references/model-compatibility.md",
     "references/goal-loop.md",
     "references/execution-boundaries.md",
     "references/subagent-policy.md",
@@ -36,6 +38,8 @@ LOCAL_FILES = [
     "references/skill-manifest.json",
     "assets/schemas/broad-handoff-packet.schema.json",
     "scripts/sync_bmadx.py",
+    "scripts/check_codex_compat.py",
+    "scripts/test_check_codex_compat.py",
     "scripts/test_sync_bmadx.py",
     "scripts/render_fubar_bundle.py",
     "assets/templates/AGENTS.repo.md",
@@ -65,8 +69,8 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.2.10",
-        "target_codex_profile": "codex-5.5",
+        "skill_version": "0.3.0",
+        "target_codex_profile": "codex-model-profiled",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
         "template_checks": {
@@ -108,6 +112,8 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "architecture-guardrails.md", "Architecture Guardrail Card\n")
     write(root / "references" / "broad-handoff.md", "Broad Orchestrator Handoff\n")
     write(root / "references" / "thinking-budget.md", "Thinking Budget Advisor\n")
+    write(root / "references" / "model-profiles.json", '{"profiles": {}}\n')
+    write(root / "references" / "model-compatibility.md", "Codex Model Compatibility\n")
     write(root / "references" / "goal-loop.md", "Goal and Loop Discipline\n")
     write(root / "references" / "execution-boundaries.md", "Execution Boundaries\n")
     write(root / "references" / "subagent-policy.md", "policy\n")
@@ -116,6 +122,8 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "skill-manifest.json", json.dumps(build_manifest(), indent=2) + "\n")
     write(root / "assets" / "schemas" / "broad-handoff-packet.schema.json", "{}\n")
     write(root / "scripts" / "sync_bmadx.py", "placeholder\n")
+    write(root / "scripts" / "check_codex_compat.py", "placeholder\n")
+    write(root / "scripts" / "test_check_codex_compat.py", "placeholder\n")
     write(root / "scripts" / "test_sync_bmadx.py", "placeholder\n")
     write(root / "scripts" / "render_fubar_bundle.py", "placeholder\n")
     write(
@@ -504,7 +512,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.2.10")
+            self.assertEqual(payload["skill_version"], "0.3.0")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")

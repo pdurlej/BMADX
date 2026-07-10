@@ -1,0 +1,4 @@
+Choice: X1 — One-shot  
+Thinking: medium — suggestion only.  
+Why: a single error-message typo is a tiny local text change.  
+Next step: correct the typo in the React component, then confirm the message text.

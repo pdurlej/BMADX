@@ -66,6 +66,9 @@ The installer copies the BMADX skill into your Codex skills folder, verifies the
 BMAD dependency, runs the BMADX sync/check path, and prints the next prompt to
 paste into Codex. It does not edit your global Codex model or thinking config.
 
+For GPT-5.6 Sol, Terra, or Luna, use Codex CLI `0.144.0` or newer and read
+[GPT-5.6 Model Compatibility](docs/gpt56-model-compatibility.md).
+
 ## First prompt to try
 
 ```text

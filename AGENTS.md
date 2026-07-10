@@ -23,13 +23,15 @@ To repo jest dedykowane rozwojowi `BMADX`.
 
 ## Cel bieżący
 
-Pierwszy cel repo to przygotowanie `BMADX v0.2`.
+Aktualny cel repo to przygotowanie `BMADX v0.3`.
 
-Priorytety `v0.2`:
-- zmiękczyć dependency gate dla `X1/X2`,
-- rozdzielić klasyfikację biegu od zgody na execution dla `X3/X4`,
-- cachować ostatni zdrowy stan BMAD zamiast stale zwracać `needs_attention`,
-- utrzymać przewagę `X4/FUBAR` bez zwiększania ceremonii dla prostych tasków.
+Priorytety `v0.3`:
+- utrzymać routing `X1..X4` niezależny od modelu,
+- obsłużyć profile GPT-5.6 Sol, Terra i Luna bez osłabiania `BMAD > BMADX`,
+- dobierać thinking do capability aktywnego modelu, ale nie robić z niego routera,
+- izolować benchmarki i performance claimy per model,
+- domknąć bezpieczne stop conditions dla goals i loops,
+- nie promować profilu GPT-5.6 bez powtarzalnych healthy/degraded benchmarków.
 
 ## Mapa repo
 
@@ -38,22 +40,24 @@ Priorytety `v0.2`:
 - `benchmark/scenarios/` — wejściowe scenariusze `X1..X4`.
 - `benchmark/summary-2026-04-04.json` — zebrane metryki.
 - `samples/fubar-bundle/` — przykładowy output `X4`.
-- `docs/` — podsumowania i plan `v0.2`.
+- `docs/` — audyt, podsumowania i aktywny plan `v0.3`.
 
 ## Source of truth
 
 - aktualny kod skilla: `skill/bmadx/`
-- aktualna interpretacja benchmarku: `docs/benchmark-summary-2026-04-04.md`
-- aktualny plan zmian: `docs/bmadx-v0.2-plan.md`
+- aktualny audyt: `docs/audit-2026-07-10-gpt56.md`
+- aktualny plan zmian: `docs/bmadx-v0.3-plan.md`
+- aktualny PRD i architektura: `_bmad-output/prd-bmadx-v0.3.md`, `_bmad-output/architecture-bmadx-v0.3.md`
 
 Nie twórz równoległych planów w innych plikach, jeśli nie ma konkretnego powodu.
 
 ## Zasady pracy
 
-- najpierw przeczytaj benchmark i plan `v0.2`,
+- najpierw przeczytaj audyt, plan `v0.3` i aktywne artefakty BMAD,
 - zmieniaj jak najmniej, ale tak, żeby poprawić realne zachowanie,
 - nie komplikuj architektury skilla tylko po to, żeby była „ładniejsza”,
 - benchmarkuj znowu po istotnych zmianach w routingu i dependency gate,
+- wymagaj jawnego modelu w benchmarku i nie porównuj claimów między modelami,
 - `X4` ma pozostać asem w rękawie, nie trybem domyślnym,
 - nie rozbudowuj projektu w stronę pełnego `OMX`.
 

@@ -7,7 +7,20 @@ It is intentionally lightweight.
 ## Current status
 
 Current public version:
-- `v0.2.10`
+- `v0.3.0`
+
+Current main development line:
+- `v0.3.x`
+
+What `v0.3.0` delivers:
+- GPT-5.6 Sol, Terra, and Luna profile compatibility on Codex CLI `0.144.0+`
+- model-aware thinking advice without changing `X1..X4` or BMAD gates
+- explicit-model benchmark runs and per-model claim isolation
+- goal stop conditions that terminate on proof, bounded attempts, approvals,
+  hard stops, or human review
+- audit and BMAD artifacts that let a medium/high-thinking Sol continue safely
+- first healthy subscription-backed canaries for all three GPT-5.6 profiles,
+  without promoting them to defaults or publishing performance claims
 
 What `v0.2.10` focuses on:
 - goal-aware BMADX contract for Codex `/goal` without adding a new gear
@@ -56,6 +69,7 @@ What `v0.2.5` focused on:
 - `X4/FUBAR` scaffold bundle
 - benchmark runner committed in-repo
 - model-aware benchmark output naming
+- local Codex model-catalog compatibility diagnostics
 
 ## Near-term improvements
 
@@ -65,6 +79,8 @@ What `v0.2.5` focused on:
 - keep red-zone routing strict for auth, billing, permissions, data, secrets, production config, and privacy
 - integrate with companion guardrails such as pyfallow and Guardrails.md by recommendation, not by platform ownership
 - validate whether advisor-selected reasoning levels reduce token spend without weakening red-zone routing or `X4` rarity
+- run repeated healthy and degraded matrices for Sol, Terra, and Luna before
+  any support promotion
 - reduce hidden `codex exec` token cost for obvious `X1/X2` canary cases before
   publishing performance claims
 - keep BMADX Codex-first; do not spend near-term roadmap on Claude Code parity

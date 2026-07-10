@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Cross-file backend change tied to an existing BMAD story requires process-artifact alignment.  
+Gate: classification and execution allowed; BMAD aligned; no warnings.

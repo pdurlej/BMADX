@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: bounded backend change across four known files with no red-zone or architectural risk.
+Plan:
+1. Trace the existing status pattern and identify the four backend touchpoints.
+2. Add the field consistently across models, mapping, validation, and serialization as applicable.
+Verify:
+1. Run focused tests covering accepted values, defaults, and status propagation.
+2. Run backend type-checks and relevant regression tests.

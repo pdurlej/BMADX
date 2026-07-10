@@ -1,0 +1,9 @@
+Choice: X2 — Regular  
+Thinking: medium — suggestion only.  
+Why: Bounded backend change spanning four files.  
+Plan:  
+1. Identify the four backend files and follow existing status-field patterns.  
+2. Add the new field consistently across types, handling, and serialization.  
+Verify:  
+1. Run focused backend tests and type/lint checks.  
+2. Confirm all four files expose and process the field consistently.

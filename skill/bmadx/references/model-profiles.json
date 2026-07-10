@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-07-10",
+  "catalog_source": "Codex CLI 0.144.1 `codex debug models`",
+  "runtime_catalog_wins": true,
+  "advisor_maximum": "xhigh",
+  "notes": [
+    "Model profiles change thinking advice, not BMADX gear classification or BMAD gate semantics.",
+    "GPT-5.6 profiles are candidates until repeated healthy and degraded BMADX benchmarks pass.",
+    "BMADX does not recommend max or ultra by default; those levels remain explicit experiments."
+  ],
+  "profiles": {
+    "gpt-5.5": {
+      "status": "validated-baseline",
+      "minimum_codex_cli": null,
+      "default_reasoning": "medium",
+      "supported_reasoning": [
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ],
+      "advisor_by_gear": {
+        "X1": "medium",
+        "X2": "medium",
+        "X3": "high",
+        "X4": "xhigh"
+      },
+      "recommended_scope": "Historical validated baseline for BMADX v0.2.9 and v0.2.10."
+    },
+    "gpt-5.6-sol": {
+      "status": "candidate",
+      "minimum_codex_cli": "0.144.0",
+      "default_reasoning": "low",
+      "supported_reasoning": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ],
+      "advisor_by_gear": {
+        "X1": "medium",
+        "X2": "medium",
+        "X3": "high",
+        "X4": "high"
+      },
+      "recommended_scope": "Primary GPT-5.6 candidate for red-zone work, Rescue Mode, and final synthesis; benchmark before a public support claim."
+    },
+    "gpt-5.6-terra": {
+      "status": "candidate",
+      "minimum_codex_cli": "0.144.0",
+      "default_reasoning": "medium",
+      "supported_reasoning": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ],
+      "advisor_by_gear": {
+        "X1": "medium",
+        "X2": "medium",
+        "X3": "high",
+        "X4": "xhigh"
+      },
+      "recommended_scope": "Balanced GPT-5.6 candidate for everyday X1/X2 work and bounded X3 assistance; benchmark red-zone and X4 behavior before promotion."
+    },
+    "gpt-5.6-luna": {
+      "status": "candidate",
+      "minimum_codex_cli": "0.144.0",
+      "default_reasoning": "medium",
+      "supported_reasoning": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "advisor_by_gear": {
+        "X1": "medium",
+        "X2": "medium",
+        "X3": "high",
+        "X4": "xhigh"
+      },
+      "recommended_scope": "Fast GPT-5.6 candidate for X1/X2; keep X3/X4 routing and execution unpromoted until red-zone and overwrite-safety benchmarks pass."
+    }
+  }
+}

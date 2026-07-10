@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: messy scope plus a scaffold bundle and governance artifacts is rescue-shaped work.  
+Gate: classification and execution allowed; BMAD ready; no warnings.  
+Next: begin with BMAD PRD/architecture and project context before rendering the bundle.

@@ -78,7 +78,16 @@ Important behavior:
 
 This split is one of the key design decisions in `v0.2+`.
 
-### 4. Execution discipline
+### 4. Model capability and policy
+
+After classification and gate evaluation, BMADX may use the active model
+profile to recommend reasoning effort. The runtime Codex catalog owns supported
+levels; BMADX owns only the gear-to-effort policy and promotion status.
+
+Model profile never changes gear, BMAD ownership, or execution permission.
+Compatibility is not the same as benchmark validation.
+
+### 5. Execution discipline
 
 BMADX enforces `verify-before-done` at every gear, but the amount of ceremony
 changes by gear:
@@ -86,7 +95,7 @@ changes by gear:
 - `X2` gets a short plan and short verify block
 - `X3/X4` align with BMAD artifacts and criteria
 
-### 5. `X4/FUBAR` bundle
+### 6. `X4/FUBAR` bundle
 
 `X4` is not the default mode.
 

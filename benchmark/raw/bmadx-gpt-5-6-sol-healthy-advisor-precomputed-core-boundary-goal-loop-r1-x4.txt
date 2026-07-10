@@ -1,0 +1,4 @@
+Choice: X4 — Rescue Mode (FUBAR)
+Why: Messy ownership plus a scaffold-shaped bundle, AGENTS.md, customization snippets, and verification matrix requires BMAD-first recovery planning.
+Gate: classification allowed; execution allowed; BMAD OK; no cache or warnings.
+Thinking: high — suggestion only.

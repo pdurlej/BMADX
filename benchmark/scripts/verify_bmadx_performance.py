@@ -21,6 +21,7 @@ VALIDATION_FIELDS = (
     "thinking_budget_no_mutation_pass",
     "thinking_budget_supported_value_pass",
     "goal_routing_pass",
+    "goal_stop_condition_pass",
     "loop_contract_pass",
     "goal_loop_not_runtime_pass",
     "handoff_routing_pass",
@@ -54,7 +55,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="baseline",
         help="baseline requires safety/validation gates; claim also requires advisor to improve or hold metrics",
     )
-    parser.add_argument("--require-model", default="gpt-5.5")
+    parser.add_argument(
+        "--require-model",
+        default="",
+        help="Optional exact model requirement; omitted by default so each observed model is verified independently",
+    )
     parser.add_argument("--require-profiles", default="")
     parser.add_argument("--require-policies", default="")
     parser.add_argument("--require-gate-mode", default="")
@@ -189,48 +194,64 @@ def validate_required_coverage(
     required_policies: set[str],
 ) -> list[str]:
     failures: list[str] = []
-    observed_profiles = {summary.get("profile") for summary in summaries}
-    observed_policies = {(summary.get("runner") or {}).get("reasoning_policy") for summary in summaries}
+    summaries_by_model: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for summary in summaries:
+        model = str((summary.get("runner") or {}).get("model") or "<missing-model>")
+        summaries_by_model[model].append(summary)
 
-    for profile in sorted(required_profiles - observed_profiles):
-        failures.append(f"missing required profile: {profile}")
-    for policy in sorted(required_policies - observed_policies):
-        failures.append(f"missing required reasoning policy: {policy}")
-
-    if required_profiles and required_policies:
-        observed_pairs = {
-            (summary.get("profile"), (summary.get("runner") or {}).get("reasoning_policy"))
-            for summary in summaries
+    for model, model_summaries in sorted(summaries_by_model.items()):
+        observed_profiles = {summary.get("profile") for summary in model_summaries}
+        observed_policies = {
+            (summary.get("runner") or {}).get("reasoning_policy") for summary in model_summaries
         }
-        for profile in sorted(required_profiles):
-            for policy in sorted(required_policies):
-                if (profile, policy) not in observed_pairs:
-                    failures.append(f"missing required profile/policy pair: {profile}/{policy}")
+
+        for profile in sorted(required_profiles - observed_profiles):
+            failures.append(f"{model}: missing required profile: {profile}")
+        for policy in sorted(required_policies - observed_policies):
+            failures.append(f"{model}: missing required reasoning policy: {policy}")
+
+        if required_profiles and required_policies:
+            observed_pairs = {
+                (summary.get("profile"), (summary.get("runner") or {}).get("reasoning_policy"))
+                for summary in model_summaries
+            }
+            for profile in sorted(required_profiles):
+                for policy in sorted(required_policies):
+                    if (profile, policy) not in observed_pairs:
+                        failures.append(
+                            f"{model}: missing required profile/policy pair: {profile}/{policy}"
+                        )
 
     return failures
 
 
 def claim_failures(summaries: list[dict[str, Any]]) -> list[str]:
     failures: list[str] = []
-    grouped: dict[tuple[Any, Any], dict[str, dict[str, Any]]] = defaultdict(dict)
+    grouped: dict[tuple[Any, Any, Any], dict[str, dict[str, Any]]] = defaultdict(dict)
     for summary in summaries:
         runner = summary.get("runner") or {}
-        key = (summary.get("profile"), runner.get("group_slug"))
-        policy = runner.get("reasoning_policy")
+        key = (
+            str(runner.get("model") or "<missing-model>"),
+            str(summary.get("profile") or "<missing-profile>"),
+            str(runner.get("group_slug") or "<missing-group>"),
+        )
+        policy = str(runner.get("reasoning_policy") or "<missing-policy>")
         grouped[key][policy] = summary
 
-    for (profile, group_slug), by_policy in sorted(grouped.items()):
+    for (model, profile, group_slug), by_policy in sorted(grouped.items()):
         fixed = by_policy.get("fixed")
         advisor = by_policy.get("advisor")
         if not fixed or not advisor:
-            failures.append(f"{profile}/{group_slug}: missing fixed/advisor pair for claim comparison")
+            failures.append(
+                f"{model}/{profile}/{group_slug}: missing fixed/advisor pair for claim comparison"
+            )
             continue
         for metric_name, path in CLAIM_METRICS:
             fixed_value = nested(fixed, path)
             advisor_value = nested(advisor, path)
             if advisor_value > fixed_value:
                 failures.append(
-                    f"{profile}/{group_slug}: advisor {metric_name} {advisor_value} exceeds fixed {fixed_value}"
+                    f"{model}/{profile}/{group_slug}: advisor {metric_name} {advisor_value} exceeds fixed {fixed_value}"
                 )
 
     return failures
@@ -266,6 +287,9 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "claim_pass": not baseline_failures and not claim_checks,
         "mode": args.mode,
         "summary_count": len(summaries),
+        "models": sorted(
+            {str((summary.get("runner") or {}).get("model") or "<missing-model>") for summary in summaries}
+        ),
         "baseline_failures": baseline_failures,
         "token_cap_warnings": token_cap_warnings,
         "claim_failures": claim_checks,

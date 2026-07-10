@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Cross-file backend contract change tied to an existing BMAD story and process artifacts.  
+Gate status: class=true, exec=true, bmad=ok, cache=false, warn=none.  
+Scope: Classification only; no tools, edits, or execution.

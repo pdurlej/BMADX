@@ -61,7 +61,8 @@ Runner hardening after `v0.2.4`:
 - `v0.2.9` adds `benchmark/scripts/verify_bmadx_performance.py` so full baselines are approved by the same gates instead of manual inspection
 - `v0.2.9` adds `--gate-mode precomputed|in-session`; the performance baseline uses `precomputed` so the harness validates compact gates without adding in-session tool-call variance
 - `v0.2.9` verifier baseline mode reports token cap overages as warnings; `claim` mode remains strict before any public savings claim
-- `Unreleased` adds `goal_loop_cases` plus `Goal:` and `Loop:` validation for Codex `/goal` recommendations and bounded review/repair/validate loops
+- `v0.3.0` strengthens `goal_loop_cases` with independent goal/loop selection,
+  blocked stop conditions, and numeric bounds for review/repair/validate loops
 
 ## Thinking budget validation
 
@@ -168,6 +169,7 @@ python3 benchmark/scripts/verify_bmadx_performance.py \
   benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json \
   benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json \
   benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json \
+  --require-model gpt-5.5 \
   --require-profiles healthy,degraded \
   --require-policies fixed,advisor \
   --require-gate-mode precomputed \
@@ -189,6 +191,7 @@ latency. Use `claim` mode before writing any public savings claim:
 python3 benchmark/scripts/verify_bmadx_performance.py \
   <same summaries> \
   --mode claim \
+  --require-model gpt-5.5 \
   --require-profiles healthy,degraded \
   --require-policies fixed,advisor \
   --require-group-slug all \
@@ -197,8 +200,10 @@ python3 benchmark/scripts/verify_bmadx_performance.py \
 
 ## Model and provider experiments
 
-The default benchmark target remains Codex on GPT-5.5. Other OpenAI/Codex
-models can be compared with `--model`.
+The benchmark runner has no implicit model default. Every run must pass
+`--model` so artifacts and claims cannot drift silently. GPT-5.5 remains the
+validated historical baseline; GPT-5.6 Sol, Terra, and Luna are candidate
+profiles described in [GPT-5.6 Model Compatibility](gpt56-model-compatibility.md).
 
 Local-model experiments use Codex OSS providers and are explicitly exploratory.
 For example, after installing a Mistral-family model in Ollama, run:

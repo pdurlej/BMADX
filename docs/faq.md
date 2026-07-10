@@ -10,13 +10,16 @@ Usually no. The normal use pattern is to describe the task in plain language and
 
 ## Does BMADX require GPT-5.5?
 
-No. BMADX `v0.2.10` is tuned for Codex on GPT-5.5, but the installer does not change your Codex model config. Benchmarks should record the model explicitly so GPT-5.4 and GPT-5.5 runs stay comparable.
+No. GPT-5.5 remains the validated historical baseline. Main now profiles
+GPT-5.6 Sol, Terra, and Luna as candidates. GPT-5.6 requires Codex CLI `0.144.0`
+or newer, and no candidate becomes a recommended default until repeated BMADX
+benchmarks pass.
 
 ## Does BMADX change my Codex thinking level?
 
-No. BMADX can recommend a per-task thinking budget, such as `low`, `medium`,
-`high`, or `xhigh`, but it does not edit global Codex config. Treat the
-recommendation as fit-for-purpose guidance for the current run.
+No. BMADX can recommend a per-task thinking budget supported by the active
+model. Sol and Terra expose up to `ultra`; Luna exposes up to `max`. BMADX does
+not recommend `max` or `ultra` by default and does not edit global Codex config.
 
 ## Does BMADX work with broad orchestrators?
 

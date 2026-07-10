@@ -28,7 +28,11 @@ My task:
 What I care about:
 <speed / clarity / safety / cleanup / shipping>
 """
-MODEL_NOTE = "BMADX is tuned for Codex on GPT-5.5. This installer does not change your Codex model or thinking config."
+MODEL_NOTE = (
+    "BMADX supports profiled Codex runs on GPT-5.5 and GPT-5.6 Sol/Terra/Luna. "
+    "GPT-5.6 requires Codex CLI 0.144.0 or newer; profiles remain candidates until their BMADX benchmarks pass. "
+    "This installer does not change your Codex model or thinking config."
+)
 VERIFY_TIMEOUT_SECONDS = 60
 
 
@@ -41,9 +45,11 @@ def build_parser() -> argparse.ArgumentParser:
 def verification_commands(target: Path) -> list[list[str]]:
     sync_script = target / "scripts" / "sync_bmadx.py"
     test_script = target / "scripts" / "test_sync_bmadx.py"
+    compat_script = target / "scripts" / "check_codex_compat.py"
     return [
         [sys.executable, str(sync_script), "sync", "--json"],
         [sys.executable, str(test_script)],
+        [sys.executable, str(compat_script), "--json"],
     ]
 
 

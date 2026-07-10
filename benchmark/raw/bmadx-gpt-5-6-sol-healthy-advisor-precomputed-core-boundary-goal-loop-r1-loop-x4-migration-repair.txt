@@ -1,0 +1,6 @@
+Choice: X4 — Rescue Mode  
+Why: Migration risk, two failed repairs, residual validation deltas, and unclear rollback ownership make this rescue-shaped work.  
+Gate: classification and execution allowed; classification only requested.  
+Thinking: high — suggestion only.  
+Goal: yes — stop when validation passes, rollback ownership requires human review, or a hard stop blocks safe repair.  
+Loop: yes — max 3 review/repair/validate passes; continue only while the validation delta strictly shrinks, and stop on pass, stalled/increased delta, exhausted passes, or human review.

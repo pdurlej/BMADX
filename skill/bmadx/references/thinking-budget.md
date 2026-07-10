@@ -11,30 +11,36 @@ Non-negotiable rules:
 - the recommendation is per task or per benchmark run,
 - BMADX must not edit or tell the user to edit global Codex config.
 
-## Canonical values
+## Runtime-supported values
 
-Use only these values:
+Use only values supported by the active model. The current Codex catalog union
+is:
 
-- `minimal`
 - `low`
 - `medium`
 - `high`
 - `xhigh`
+- `max`
+- `ultra`
 
 If the user says `extra_high`, `extra-high`, or `extra high`, normalize it to
 `xhigh`. Do not emit `extra_high` in public docs, benchmark summaries, or skill
 answers.
 
+BMADX does not recommend `max` or `ultra` by default. They remain explicit
+experiments. Luna does not currently expose `ultra`.
+
 ## Defaults
 
-| Work shape | Recommended effort | Notes |
-| --- | --- | --- |
-| `X1` obvious tiny/local | `medium` | `low` is experimental until repeatable GPT-5.5 canaries prove it is cheaper |
-| `X2` bounded normal work | `medium` | default for most useful BMADX work |
-| `X2/X3` boundary | `high` | ambiguity, contract risk, API/schema/auth/perf signals |
-| `X3` BMAD-heavy | `high` | BMAD artifacts and hard gate matter more than model effort |
-| `X4` Rescue execution | `xhigh` | only for real rescue/bundle/incident-shaped work |
-| `X4` classification-only prompt | `high` | `xhigh` may be suggested for real execution |
+| Model | `X1` | `X2` | `X3` | `X4` |
+| --- | --- | --- | --- | --- |
+| GPT-5.5 | `medium` | `medium` | `high` | `xhigh` |
+| GPT-5.6 Sol | `medium` | `medium` | `high` | `high` |
+| GPT-5.6 Terra | `medium` | `medium` | `high` | `xhigh` |
+| GPT-5.6 Luna | `medium` | `medium` | `high` | `xhigh` |
+
+For `X2/X3` boundaries, use at least `high`. For classification-only `X4`,
+`high` is enough even when real execution would use the profile's `X4` value.
 
 ## Escalate effort
 
@@ -58,8 +64,8 @@ Escalate to `xhigh` only when the work is genuinely rescue-shaped:
 ## Downgrade effort
 
 Try `low` only as an explicit experiment when the task is pure typo/copy/doc-only
-work and the blast radius is local. For Codex/GPT-5.5 code tasks, prefer
-`medium` until `low` proves cheaper in repeatable canaries.
+work and the blast radius is local. Prefer `medium` until `low` proves cheaper
+in repeatable model-specific canaries.
 
 Prefer `medium` for normal bounded `X2` work with a clear owner, existing
 pattern, and known verification path.
@@ -85,14 +91,14 @@ Thinking: high — suggestion only for this Codex run.
 For benchmark output, the line is required so the runner can validate it:
 
 ```text
-Thinking: low|medium|high|xhigh — suggestion only.
+Thinking: low|medium|high|xhigh|max|ultra — suggestion only.
 ```
 
 ## What not to do
 
 - Do not use thinking effort to choose the gear.
 - Do not let `xhigh` make `X4` normal.
-- Do not use `minimal` or default `low` for code-editing `X1` until benchmark evidence supports it.
+- Do not default to `low`, `max`, or `ultra` without model-specific benchmark evidence.
 - Do not edit `~/.codex/config.toml`.
 - Do not create profiles, hooks, MCP, plugins, runtime state, or a second plan store.
 - Do not claim token savings until healthy and degraded benchmark runs prove them.

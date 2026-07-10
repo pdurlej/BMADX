@@ -1,0 +1,2 @@
+# Raw benchmark artifacts preserve model output verbatim.
+benchmark/raw/** -whitespace

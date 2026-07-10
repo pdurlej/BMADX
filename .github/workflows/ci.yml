@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run deterministic tests
+        run: |
+          python scripts/test_install_bmadx.py
+          python scripts/test_install_and_verify_bmadx.py
+          python skill/bmadx/scripts/test_check_codex_compat.py
+          python skill/bmadx/scripts/test_sync_bmadx.py
+          python benchmark/scripts/test_handoff_packet_schema.py
+          python benchmark/scripts/test_run_bmadx_benchmark.py
+          python benchmark/scripts/test_verify_bmadx_performance.py

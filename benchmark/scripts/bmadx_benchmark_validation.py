@@ -26,6 +26,10 @@ GOAL_PATTERN = re.compile(
     r"Goal(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*"
     r"(yes|no|recommended|not recommended|none)\b"
 )
+GOAL_DETAIL_PATTERN = re.compile(
+    r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
+    r"Goal(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*([^\r\n]+)"
+)
 LOOP_PATTERN = re.compile(
     r"(?im)^[ \t]*(?:[-*][ \t]*)?(?:\*\*)?"
     r"Loop(?:\*\*)?[ \t]*:[ \t]*(?:`|\*\*)?[ \t]*([^\r\n]+)"
@@ -57,7 +61,7 @@ FORBIDDEN_THINKING_MUTATION_PATTERN = re.compile(
     r"mutate.*config|edit.*config\.toml)",
     re.I,
 )
-SUPPORTED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh"}
+SUPPORTED_REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 VALIDATION_CHECKS = (
     "format_pass",
     "token_count_present",
@@ -79,6 +83,7 @@ HANDOFF_VALIDATION_CHECKS = VALIDATION_CHECKS + (
 )
 GOAL_LOOP_VALIDATION_CHECKS = (
     "goal_routing_pass",
+    "goal_stop_condition_pass",
     "loop_contract_pass",
     "goal_loop_not_runtime_pass",
 )
@@ -91,7 +96,7 @@ NON_TECH_FAILURE_REASONS = {
     "overreach_pass": "The agent mentioned forbidden higher gears, creating unnecessary escalation noise for a bounded task.",
     "thinking_budget_pass": "The suggested reasoning effort does not match the task's risk and process weight.",
     "thinking_budget_no_mutation_pass": "The answer tried to make reasoning effort a persistent config change instead of a per-task suggestion.",
-    "thinking_budget_supported_value_pass": "The answer used a non-canonical reasoning effort instead of minimal, low, medium, high, or xhigh.",
+    "thinking_budget_supported_value_pass": "The answer used a reasoning effort outside the current Codex catalog union: low, medium, high, xhigh, max, or ultra.",
     "handoff_routing_pass": "The agent did not make the expected broad-orchestrator handoff decision for this risk shape.",
     "handoff_not_runtime_pass": "The agent leaked orchestration runtime details instead of staying inside the BMADX handoff packet contract.",
     "no_worker_lane_pass": "The handoff suggested worker lanes, which would make BMADX behave like a runtime orchestrator.",
@@ -99,6 +104,7 @@ NON_TECH_FAILURE_REASONS = {
     "no_dispatch_command_pass": "The handoff included dispatch/runtime commands instead of a portable risk-and-proof packet.",
     "no_platform_surface_pass": "The handoff mentioned platform surfaces such as MCP, hooks, plugins, or subagents that BMADX must not install or require.",
     "goal_routing_pass": "The agent did not make the expected `/goal` recommendation for a longer Codex task.",
+    "goal_stop_condition_pass": "The recommended goal omitted an achievement, approval, hard-stop, or blocked termination condition.",
     "loop_contract_pass": "The agent did not make the expected bounded repair-loop decision.",
     "goal_loop_not_runtime_pass": "The goal or loop answer drifted into runtime machinery instead of staying a small Codex-thread contract.",
 }
@@ -189,6 +195,40 @@ def detect_loop(stdout: str) -> bool | None:
     return None
 
 
+def goal_has_stop_condition(stdout: str) -> bool:
+    match = GOAL_DETAIL_PATTERN.search(stdout)
+    if not match:
+        return False
+    detail = match.group(1).strip().lower()
+    return any(
+        marker in detail
+        for marker in (
+            "stop",
+            "done when",
+            "until",
+            "achieved",
+            "blocked",
+            "approval",
+            "hard stop",
+            "human review",
+            "budget",
+        )
+    )
+
+
+def loop_is_bounded(stdout: str) -> bool:
+    match = LOOP_PATTERN.search(stdout)
+    if not match:
+        return False
+    detail = match.group(1).strip().lower()
+    return bool(
+        re.search(r"\b(?:max(?:imum)?|at most|up to)\s+\d+\b", detail)
+        or "bounded" in detail
+        or "stop on" in detail
+        or "stop when" in detail
+    )
+
+
 def normalize_reasoning_effort(value: str | None) -> str | None:
     if value is None:
         return None
@@ -267,11 +307,18 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         if expected_goal is not None
         else True
     )
+    goal_stop_condition_pass = (
+        goal_has_stop_condition(stdout)
+        if expected_goal is True
+        else True
+    )
     loop_contract_pass = (
         observed_loop == bool(expected_loop)
         if expected_loop is not None
         else True
     )
+    if expected_loop is True:
+        loop_contract_pass = loop_contract_pass and loop_is_bounded(stdout)
     goal_loop_not_runtime_pass = (
         validate_goal_loop_runtime_drift(stdout)
         if expected_goal is not None or expected_loop is not None
@@ -307,6 +354,7 @@ def validate_case(stdout: str, stderr: str, tokens: int | None, spec: dict) -> d
         "expected_goal": expected_goal,
         "observed_goal": observed_goal,
         "goal_routing_pass": goal_routing_pass,
+        "goal_stop_condition_pass": goal_stop_condition_pass,
         "expected_loop": expected_loop,
         "observed_loop": observed_loop,
         "loop_contract_pass": loop_contract_pass,
@@ -336,6 +384,7 @@ def summarize_validation(cases: list[dict]) -> dict:
             "thinking_budget_no_mutation_pass_count": 0,
             "thinking_budget_supported_value_pass_count": 0,
             "goal_routing_pass_count": 0,
+            "goal_stop_condition_pass_count": 0,
             "loop_contract_pass_count": 0,
             "goal_loop_not_runtime_pass_count": 0,
         }
@@ -356,6 +405,9 @@ def summarize_validation(cases: list[dict]) -> dict:
             1 for case in cases if case.get("thinking_budget_supported_value_pass")
         ),
         "goal_routing_pass_count": sum(1 for case in cases if case.get("goal_routing_pass")),
+        "goal_stop_condition_pass_count": sum(
+            1 for case in cases if case.get("goal_stop_condition_pass")
+        ),
         "loop_contract_pass_count": sum(1 for case in cases if case.get("loop_contract_pass")),
         "goal_loop_not_runtime_pass_count": sum(
             1 for case in cases if case.get("goal_loop_not_runtime_pass")

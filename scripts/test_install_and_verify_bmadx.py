@@ -27,6 +27,7 @@ def build_source(root: Path) -> Path:
     write(source / "SKILL.md", "---\nname: bmadx\n---\n")
     write(source / "scripts" / "sync_bmadx.py", "print('sync ok')\n")
     write(source / "scripts" / "test_sync_bmadx.py", "print('tests ok')\n")
+    write(source / "scripts" / "check_codex_compat.py", "print('{}')\n")
     return source
 
 
@@ -44,8 +45,8 @@ class RunnerStub:
 
     def __init__(self, return_codes: list[int] | None = None, stdout_values: list[str] | None = None) -> None:
         self.calls: list[list[str]] = []
-        self.return_codes = return_codes or [0, 0]
-        self.stdout_values = stdout_values or [self.OK_SYNC_JSON, "tests ok\n"]
+        self.return_codes = return_codes or [0, 0, 0]
+        self.stdout_values = stdout_values or [self.OK_SYNC_JSON, "tests ok\n", "{}\n"]
 
     def __call__(self, command, capture_output, text, check, timeout=None):
         self.calls.append(list(command))
@@ -84,7 +85,7 @@ class InstallAndVerifyTests(unittest.TestCase):
 
             message = install_and_verify(source, dependency, target, force=False, dry_run=False, runner=runner)
 
-            self.assertEqual(len(runner.calls), 2)
+            self.assertEqual(len(runner.calls), 3)
             self.assertEqual(runner.calls[0][0], sys.executable)
             self.assertEqual(runner.calls[1][0], sys.executable)
             self.assertEqual(runner.last_timeout, VERIFY_TIMEOUT_SECONDS)

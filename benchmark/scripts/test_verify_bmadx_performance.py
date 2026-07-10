@@ -27,6 +27,7 @@ def passing_case(name: str, gear: str, tokens: int = 1000, duration: float = 1.0
         "thinking_budget_pass": True,
         "thinking_budget_no_mutation_pass": True,
         "thinking_budget_supported_value_pass": True,
+        "goal_stop_condition_pass": True,
         "handoff_routing_pass": True,
         "handoff_not_runtime_pass": True,
         "no_worker_lane_pass": True,
@@ -36,12 +37,19 @@ def passing_case(name: str, gear: str, tokens: int = 1000, duration: float = 1.0
     }
 
 
-def summary(policy: str, profile: str = "healthy", *, total_tokens: int = 1000, avg_duration: float = 1.0) -> dict:
+def summary(
+    policy: str,
+    profile: str = "healthy",
+    *,
+    model: str = "gpt-5.5",
+    total_tokens: int = 1000,
+    avg_duration: float = 1.0,
+) -> dict:
     return {
         "generated_at": "2026-06-02",
         "profile": profile,
         "runner": {
-            "model": "gpt-5.5",
+            "model": model,
             "reasoning_policy": policy,
             "gate_mode": "precomputed",
             "group_slug": "all",
@@ -152,6 +160,35 @@ class VerifyBmadxPerformanceTests(unittest.TestCase):
             report = build_report(parse_args([str(fixed), str(advisor), "--mode", "claim"]))
             self.assertTrue(report["baseline_pass"])
             self.assertTrue(report["claim_pass"])
+
+    def test_claim_never_pairs_different_models(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            fixed = write_summary(
+                root,
+                "sol-fixed.json",
+                summary("fixed", model="gpt-5.6-sol"),
+            )
+            advisor = write_summary(
+                root,
+                "terra-advisor.json",
+                summary("advisor", model="gpt-5.6-terra", total_tokens=900),
+            )
+            report = build_report(parse_args([str(fixed), str(advisor), "--mode", "claim"]))
+            self.assertFalse(report["claim_pass"])
+            self.assertEqual(report["models"], ["gpt-5.6-sol", "gpt-5.6-terra"])
+            self.assertTrue(any("missing fixed/advisor pair" in failure for failure in report["claim_failures"]))
+
+    def test_claim_handles_missing_model_metadata_without_sort_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            missing = summary("fixed")
+            del missing["runner"]["model"]
+            fixed = write_summary(root, "missing-fixed.json", missing)
+            advisor = write_summary(root, "sol-advisor.json", summary("advisor", model="gpt-5.6-sol"))
+            report = build_report(parse_args([str(fixed), str(advisor), "--mode", "claim"]))
+            self.assertFalse(report["claim_pass"])
+            self.assertIn("<missing-model>", report["models"])
 
 
 if __name__ == "__main__":

@@ -13,6 +13,11 @@ BMADX is built for Codex:
 
 Do not mutate global Codex config as part of BMADX routing.
 
+GPT-5.6 Sol, Terra, and Luna require Codex CLI `0.144.0` or newer. They are
+profiled candidates, not validated replacements for the GPT-5.5 baseline. Use
+`model-compatibility.md` and the local compatibility checker before benchmark
+runs.
+
 ## Claude Code
 
 Claude Code is watch/prototype only. Do not present it as near-term parity.
@@ -31,7 +36,7 @@ persistent memory as a default path.
 ## Local and Cheap Model Experiments
 
 Local or cheap models may be tested through Codex OSS providers. Treat them as
-experiments until they pass the same gates as GPT-5.5:
+experiments until they pass the same gates as the validated BMADX baseline:
 
 - routing correctness,
 - compact `X1/X2`,
@@ -65,4 +70,3 @@ BMADX must not become:
 
 BMADX exports risk and proof. BMAD owns process. Deterministic checks own hard
 facts.
-

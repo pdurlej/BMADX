@@ -8,8 +8,14 @@ BMAD must already be installed in your Codex skills.
 
 BMADX depends on `bmad-method-codex`. It does not replace it.
 
-BMADX `v0.2.10` is tuned for Codex on GPT-5.5. The installer does not edit your
-Codex model configuration; choose GPT-5.5 in Codex if it is available to you.
+The current main branch profiles GPT-5.5 and GPT-5.6 Sol, Terra, and Luna. The
+installer does not edit your Codex model configuration. GPT-5.6 requires Codex
+CLI `0.144.0` or newer, or ChatGPT desktop/Codex mode `26.707.30751` or newer:
+
+```bash
+codex update
+codex --version
+```
 
 Check the BMAD dependency:
 
@@ -35,10 +41,17 @@ If that succeeds, BMADX is installed and verified.
 - checks that `bmad-method-codex` is available
 - runs BMADX sync/check verification
 - runs the local installer verification path
+- checks the local Codex model catalog without reading credential values
 - prints the next prompt to paste into Codex
 
 It does not edit your global Codex model config, install hooks, create a runtime
 state platform, or replace BMAD.
+
+Inspect model compatibility at any time:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/check_codex_compat.py" --json
+```
 
 ## Expected success output
 

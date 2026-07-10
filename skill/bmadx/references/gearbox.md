@@ -47,13 +47,13 @@ The card asks:
 Thinking budget is advisory and follows the chosen gear; it must not change the
 gear or mutate global Codex config.
 
-- `X1`: `low`, fallback `medium`.
-- `X2`: `medium`.
-- `X2/X3` boundary: `high`.
-- `X3`: `high`.
-- `X4`: `xhigh` for rescue execution; `high` can be enough for classification-only prompts.
+- GPT-5.5: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
+- GPT-5.6 Sol: `X1/X2=medium`, `X3/X4=high`.
+- GPT-5.6 Terra/Luna: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
+- `X4` classification-only prompts can stay at `high` on every profile.
 
-Details: [thinking-budget.md](thinking-budget.md)
+Details: [thinking-budget.md](thinking-budget.md) and
+[model-compatibility.md](model-compatibility.md)
 
 ## Goal and loop defaults
 

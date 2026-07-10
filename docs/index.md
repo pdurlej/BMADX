@@ -9,10 +9,11 @@ Main public entry points:
 5. [Architecture Guardrail Card](architecture-guardrail-card.md)
 6. [Thinking Budget Advisor](thinking-budget-advisor.md)
 7. [Goal and Loop Discipline](goal-loop-discipline.md)
-8. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
-9. [Broad Orchestrator Handoff](broad-orchestrator-handoff.md)
-10. [Community Feedback](community-feedback.md)
-11. [FAQ](faq.md)
+8. [GPT-5.6 Sol, Terra, and Luna Compatibility](gpt56-model-compatibility.md)
+9. [Choose BMAD vs BMADX vs OMX](choose-bmad-bmadx-omx.md)
+10. [Broad Orchestrator Handoff](broad-orchestrator-handoff.md)
+11. [Community Feedback](community-feedback.md)
+12. [FAQ](faq.md)
 
 Deeper reading:
 
@@ -22,7 +23,9 @@ Deeper reading:
 4. [Ecosystem and Strategic Stance](ecosystem-and-stance.md)
 5. [Benchmark Overview](benchmark-overview.md)
 6. [Model Experiments](model-experiments.md)
-7. [Roadmap](roadmap.md)
+7. [GPT-5.6 Repository Audit](audit-2026-07-10-gpt56.md)
+8. [BMADX v0.3 GPT-5.6 Plan](bmadx-v0.3-plan.md)
+9. [Roadmap](roadmap.md)
 
 Historical context:
 

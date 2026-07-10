@@ -21,7 +21,11 @@ vibe-coded one-shot.
 If this matches how you use Codex/BMAD, stars and misroute reports help find
 early testers.
 
-Current public version: `v0.2.10`
+Current public version: `v0.3.0`
+
+GPT-5.6 Sol, Terra, and Luna passed their first subscription-backed healthy
+canaries on 2026-07-10. They remain candidate profiles until repeated healthy
+and degraded BMADX benchmarks pass.
 
 ## Start here
 
@@ -58,6 +62,7 @@ unclear migration recovery as the same kind of work.
 - BMADX is Codex-first, not Claude Code-native.
 - BMADX adds routing and guardrails; it does not prove code quality by itself.
 - BMADX can recommend per-task Codex thinking budget, but it does not edit your global Codex config.
+- GPT-5.6 requires Codex CLI `0.144.0` or newer.
 - Model experiments such as `PMAX X` are benchmark probes, not support claims.
 - Tests, CI, static analysis, and human review still matter for red-zone work.
 
@@ -99,10 +104,11 @@ Model experiments are welcome inside Codex. The benchmark runner supports the
 primary OpenAI/Codex path and can also run experimental local-model checks via
 Codex OSS providers when a local model is installed.
 
-BMADX can also suggest a fit-for-purpose thinking budget for the current run:
-`low` for tiny local work, `medium` for bounded normal changes, `high` for
-BMAD-heavy/red-zone work, and `xhigh` only for real Rescue Mode execution. See
-[Thinking Budget Advisor](docs/thinking-budget-advisor.md).
+BMADX can also suggest a fit-for-purpose thinking budget for the current run.
+The mapping is model-aware: Sol can stay at `high` for `X4`, while Terra and
+Luna keep `xhigh` for Rescue execution until benchmarks say otherwise. See
+[Thinking Budget Advisor](docs/thinking-budget-advisor.md) and
+[GPT-5.6 Model Compatibility](docs/gpt56-model-compatibility.md).
 
 For longer Codex threads, BMADX can also say when `/goal` or a bounded
 review/repair/validate loop is useful. This does not add a gear and does not
@@ -111,7 +117,9 @@ turn BMADX into a runtime orchestrator. See
 
 ### Model lanes
 
-- Primary lane: Codex on GPT-5.5.
+- Validated baseline: Codex on GPT-5.5.
+- Canary-passed candidate lanes: GPT-5.6 Sol, Terra, and Luna; no performance
+  or default-model promotion claim yet.
 - Experiment lane: `PMAX X`, currently focused on cheaper Ollama/OpenRouter/local candidates.
 - Current best PMAX X experiment: `minimax-m2.7:cloud`, but it is not safe as the BMADX router yet.
 - Not defaults: Claude adapters, local/Ollama/OpenRouter models, and any model that fails red-zone routing.

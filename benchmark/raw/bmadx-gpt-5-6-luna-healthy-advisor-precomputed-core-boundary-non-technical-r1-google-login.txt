@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Authentication, callback handling, and session behavior are red-zone work.  
+Gate: class=true, exec=true, bmad=ok, cache=false, warn=none.

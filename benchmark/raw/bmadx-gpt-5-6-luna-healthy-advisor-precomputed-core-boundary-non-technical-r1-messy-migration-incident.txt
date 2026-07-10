@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode  
+Thinking: xhigh — suggestion only.  
+Why: Partially failed migration, unclear ownership, rollback risk, and recovery/rollout coordination require rescue handling.  
+Gate: gear=X4; class=true; exec=true; bmad=ok; cache=false; warn=none.  
+Next step: Scaffold BMAD-first recovery with explicit data/system owners, verification evidence, and staged rollout ownership; no edits or execution in this classification pass.

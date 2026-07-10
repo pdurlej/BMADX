@@ -6,6 +6,36 @@ All notable changes to this repository will be documented here.
 
 No unreleased changes.
 
+## [0.3.0] - 2026-07-10
+
+### Added
+
+- GPT-5.6 Sol, Terra, and Luna model profiles with local Codex catalog
+  compatibility diagnostics.
+- Model-aware benchmark reasoning policy and model-profile metadata in summary
+  artifacts.
+- Explicit goal stop-condition and bounded-loop validation.
+
+### Changed
+
+- Benchmark runs now require an explicit `--model` and performance claims are
+  isolated per model.
+- GPT-5.6 requires Codex CLI `0.144.0` or newer; `max` and `ultra` are accepted
+  runtime values but remain explicit experiments.
+- Benchmark source paths now honor `CODEX_HOME` instead of assuming
+  `~/.codex`.
+
+### Benchmarks
+
+- Subscription-backed healthy canaries passed baseline verification for GPT-5.6
+  Sol (`core,boundary,goal_loop`), Terra (`core,boundary`), and Luna
+  (`core,boundary,non_technical`).
+- Sol retained token-cap warnings for the `X1` and `X2` core cases. Luna
+  retained them for `X1/X2` in core plus pricing-copy and onboarding-email
+  cases, so no token, latency, cost, or default-model claim is made.
+- All GPT-5.6 profiles remain candidates until repeated healthy and degraded
+  evidence passes within each model.
+
 ## [0.2.10] - 2026-06-10
 
 ### Added
