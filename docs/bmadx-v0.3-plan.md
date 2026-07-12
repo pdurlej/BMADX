@@ -152,3 +152,7 @@ Status: implementation in progress.
 - A/B runner v2 hardening is complete locally. The next live run must use an
   opaque activation check, independently adjudicated held-out scenarios, and a
   placebo/BMADX-only/BMADX+real-BMAD decomposition at `high` before effort work.
+- The three-arm causal canary v1.2 executed 16/18 calls with 16/16 activation,
+  zero protected-path mutations, and complete per-case evidence. It stopped on
+  the frozen `critical` risk label after a recovery/high answer with complete
+  safeguards. Independent label adjudication now blocks the larger live run.
