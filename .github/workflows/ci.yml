@@ -31,4 +31,5 @@ jobs:
           python benchmark/scripts/test_run_bmadx_benchmark.py
           python benchmark/scripts/test_sol_bmadx_ab.py
           python benchmark/scripts/test_sol_bmadx_causal_canary.py
+          python benchmark/scripts/test_bmadx_value_study.py
           python benchmark/scripts/test_verify_bmadx_performance.py

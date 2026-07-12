@@ -1,0 +1,1 @@
+Task: Implement automatic deletion of inactive accounts after a retention period. Legal exceptions, recovery windows, notification behavior, and deletion ownership are unresolved.

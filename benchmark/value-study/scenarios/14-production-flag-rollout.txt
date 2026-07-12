@@ -1,0 +1,1 @@
+Task: Roll out a new production authorization path behind an existing feature-flag system. The change affects admin permissions and must support staged exposure and rapid rollback.

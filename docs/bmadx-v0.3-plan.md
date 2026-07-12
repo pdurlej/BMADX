@@ -156,3 +156,8 @@ Status: implementation in progress.
   zero protected-path mutations, and complete per-case evidence. It stopped on
   the frozen `critical` risk label after a recovery/high answer with complete
   safeguards. Independent label adjudication now blocks the larger live run.
+- The replacement decision-value study v1 is pre-registered at 18 scenario
+  clusters, three arms, three repeats, and 162 Sol/high calls. It uses blinded
+  preference plus frozen quality/cost/safety gates instead of the project exact
+  scorer. Live execution is blocked until an independent pre-run scenario audit
+  is approved and committed.

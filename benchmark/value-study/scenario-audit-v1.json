@@ -1,0 +1,19 @@
+{
+  "schema": "bmadx_value_scenario_audit.v1",
+  "protocol_id": "sol-bmadx-decision-value-v1",
+  "scenario_manifest_sha256": "a1080652ccd37a294bd40e547f47c974a2d6eb5922a37fc518672a1c8dd2a567",
+  "status": "pending_independent_review",
+  "reviewer_id": null,
+  "independent_of_bmadx_authorship": null,
+  "completed_before_live_run": null,
+  "review": {
+    "task_distribution_representative_1_to_7": null,
+    "difficulty_distribution_representative_1_to_7": null,
+    "contains_bmadx_favoring_cues": null,
+    "contains_control_favoring_cues": null,
+    "materially_duplicate_scenarios": [],
+    "missing_common_task_shapes": [],
+    "required_edits": [],
+    "notes": ""
+  }
+}

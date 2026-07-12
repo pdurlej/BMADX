@@ -29,8 +29,9 @@ Deeper reading:
 10. [Plain Sol vs BMADX A/B, July 12 2026](sol-bmadx-ab-2026-07-12.md)
 11. [Oracle Review Response, July 12 2026](oracle-review-response-2026-07-12.md)
 12. [Sol BMADX Causal Canary Results, July 12 2026](sol-bmadx-causal-canary-results-2026-07-12.md)
-13. [BMADX v0.3 GPT-5.6 Plan](bmadx-v0.3-plan.md)
-14. [Roadmap](roadmap.md)
+13. [BMADX Decision-Value Study v1](bmadx-value-study-v1.md)
+14. [BMADX v0.3 GPT-5.6 Plan](bmadx-v0.3-plan.md)
+15. [Roadmap](roadmap.md)
 
 Historical context:
 

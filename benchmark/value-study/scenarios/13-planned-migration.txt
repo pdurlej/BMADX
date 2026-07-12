@@ -1,0 +1,1 @@
+Task: Replace a widely used string status column with an enum through a staged database migration. Existing clients cannot all update simultaneously.

@@ -1,0 +1,1 @@
+Task: Add cursor pagination to one established internal list endpoint and its client. The API conventions and test fixtures already exist.

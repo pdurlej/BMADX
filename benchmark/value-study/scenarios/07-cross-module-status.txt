@@ -1,0 +1,1 @@
+Task: Add a new processing status used by four backend modules under an existing story. Contracts, serialization, and acceptance criteria must remain aligned.
