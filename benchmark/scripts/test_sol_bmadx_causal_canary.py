@@ -8,10 +8,12 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from run_sol_bmadx_ab import all_scenarios
+from run_sol_bmadx_ab import all_scenarios, tree_sha256
 from run_sol_bmadx_causal_canary import (
     DEFAULT_PROTOCOL,
+    REAL_BMAD_SKILL,
     install_aliased_bmadx_skill,
     install_placebo_skill,
     install_stub_bmad,
@@ -26,7 +28,17 @@ from sol_bmadx_ab_contract import build_causal_prompt, score_causal_response
 class SolBmadxCausalCanaryTests(unittest.TestCase):
     def test_frozen_protocol_is_complete_and_valid(self) -> None:
         protocol = load_protocol(DEFAULT_PROTOCOL)
-        validate_protocol(protocol, all_scenarios())
+
+        def frozen_external_bmad_hash(path: Path, **kwargs: object) -> str:
+            if Path(path).name == REAL_BMAD_SKILL:
+                return protocol["source_hashes"]["real_bmad_tree_sha256"]
+            return tree_sha256(path, **kwargs)
+
+        with patch(
+            "run_sol_bmadx_causal_canary.tree_sha256",
+            side_effect=frozen_external_bmad_hash,
+        ):
+            validate_protocol(protocol, all_scenarios())
         assignments = protocol["assignments"]
         self.assertEqual(len(assignments), 18)
         self.assertEqual(len({item["alias"] for item in assignments}), 18)
