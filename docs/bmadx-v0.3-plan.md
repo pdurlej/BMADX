@@ -161,3 +161,7 @@ Status: implementation in progress.
   preference plus frozen quality/cost/safety gates instead of the project exact
   scorer. Live execution is blocked until an independent pre-run scenario audit
   is approved and committed.
+- Its review stage is now a preregistered five-family synthetic panel: 270
+  primary judgments, 55 order-stability judgments, and 44 OpenCode/Pi transport
+  controls. Synthetic evidence is sufficient for the first cross-model claim,
+  but not for claims about real novice learning or productivity.

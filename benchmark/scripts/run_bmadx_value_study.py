@@ -187,6 +187,31 @@ def validate_protocol(
     rubric_path = REPO_ROOT / str(rubric.get("path") or "")
     if not rubric_path.is_file() or sha256_file(rubric_path) != rubric.get("sha256"):
         raise ValueError("Review rubric hash mismatch")
+    review_policy = protocol.get("review_policy") or {}
+    synthetic_panel = review_policy.get("synthetic_panel") or {}
+    synthetic_panel_path = REPO_ROOT / str(synthetic_panel.get("path") or "")
+    required_reviewers = review_policy.get("required_reviewer_ids") or []
+    synthetic_panel_payload = (
+        json.loads(synthetic_panel_path.read_text(encoding="utf-8"))
+        if synthetic_panel_path.is_file()
+        else {}
+    )
+    panel_reviewers = [
+        entry.get("reviewer_id")
+        for entry in synthetic_panel_payload.get("reviewers") or []
+    ]
+    if (
+        review_policy.get("mode") != "synthetic_model_panel"
+        or review_policy.get("minimum_reviewers") != 5
+        or review_policy.get("minimum_independent_reviewers") != 5
+        or len(required_reviewers) != 5
+        or len(set(required_reviewers)) != 5
+        or panel_reviewers != required_reviewers
+        or synthetic_panel.get("health_required_for_positive_claim") is not True
+        or not synthetic_panel_path.is_file()
+        or sha256_file(synthetic_panel_path) != synthetic_panel.get("sha256")
+    ):
+        raise ValueError("Synthetic review policy is not frozen")
     schedule = build_schedule(protocol)
     expected = len(scenarios) * len(ARMS) * int(protocol["repeats"])
     if len(schedule) != expected or protocol.get("expected_call_count") != expected:
@@ -219,6 +244,9 @@ def validate_protocol(
             "build_bmadx_value_review_packet.py"
         ),
         "analyzer_sha256": Path(__file__).with_name("analyze_bmadx_value_study.py"),
+        "synthetic_panel_runner_sha256": Path(__file__).with_name(
+            "run_bmadx_synthetic_review_panel.py"
+        ),
     }
     for key, path in harness_files.items():
         if sha256_file(path) != (protocol.get("harness_hashes") or {}).get(key):

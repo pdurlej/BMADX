@@ -26,6 +26,13 @@ from run_bmadx_value_study import (
     task_from_path,
     validate_protocol,
 )
+from run_bmadx_synthetic_review_panel import (
+    build_panel_schedule,
+    minimal_opencode_config,
+    ordered_block,
+    parse_runtime_output,
+    validate_judgment,
+)
 
 
 BLINDING_KEY = bytes.fromhex("11" * 32)
@@ -87,7 +94,15 @@ def synthetic_reviews(protocol: dict, summary: dict, packet: dict) -> list[dict]
         block_id = f"{case['scenario']}-r{case['repeat_index']}"
         case_by_candidate[candidate_id(BLINDING_KEY, block_id, case["case_id"])] = case
     reviews = []
-    for reviewer_index in range(3):
+    reviewers = [
+        ("gemini-31-pro", "google-gemini", "google/antigravity-gemini-3.1-pro"),
+        ("deepseek-v4-pro", "deepseek", "ollama/deepseek-v4-pro:cloud"),
+        ("qwen-35", "qwen", "ollama/qwen3.5:cloud"),
+        ("glm-52", "glm", "ollama/glm-5.2:cloud"),
+        ("kimi-k27-code", "kimi", "ollama/kimi-k2.7-code:cloud"),
+    ]
+    panel_sha = protocol["review_policy"]["synthetic_panel"]["sha256"]
+    for reviewer_id, family, model_id in reviewers:
         blocks = []
         for block in packet["blocks"]:
             candidate_reviews = []
@@ -124,13 +139,45 @@ def synthetic_reviews(protocol: dict, summary: dict, packet: dict) -> list[dict]
                 "schema": "bmadx_value_review.v1",
                 "protocol_id": protocol["protocol_id"],
                 "packet_sha256": json_sha(packet),
-                "reviewer_id": f"reviewer-{reviewer_index + 1}",
-                "independent_of_bmadx_authorship": reviewer_index < 2,
+                "reviewer_id": reviewer_id,
+                "reviewer_kind": "synthetic_model",
+                "model_family": family,
+                "model_id": model_id,
+                "runtime": "opencode",
+                "runtime_version": "1.17.18",
+                "panel_protocol_sha256": panel_sha,
+                "independent_of_bmadx_authorship": True,
                 "mapping_was_not_available": True,
                 "blocks": blocks,
             }
         )
     return reviews
+
+
+def synthetic_panel_summary(protocol: dict, packet: dict, reviews: list[dict]) -> dict:
+    return {
+        "schema": "bmadx_synthetic_panel_summary.v1",
+        "protocol_id": protocol["protocol_id"],
+        "packet_sha256": json_sha(packet),
+        "panel_protocol_sha256": protocol["review_policy"]["synthetic_panel"][
+            "sha256"
+        ],
+        "complete": True,
+        "healthy": True,
+        "expected_call_count": 369,
+        "completed_call_count": 369,
+        "runtime_versions": {"opencode": "1.17.18", "pi": "0.78.0"},
+        "reviewers": [
+            {
+                "reviewer_id": review["reviewer_id"],
+                "family": review["model_family"],
+                "model_id": review["model_id"],
+                "healthy": True,
+                "primary_review_sha256": json_sha(review),
+            }
+            for review in reviews
+        ],
+    }
 
 
 class BmadxValueStudyTests(unittest.TestCase):
@@ -215,6 +262,83 @@ class BmadxValueStudyTests(unittest.TestCase):
         self.assertEqual(len(packet["blocks"]), 54)
         self.assertEqual(len(template["blocks"]), 54)
 
+    def test_synthetic_panel_schedule_has_frozen_lane_counts(self) -> None:
+        summary = synthetic_summary(self.protocol)
+        packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
+        panel = json.loads(
+            (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        schedule = build_panel_schedule(panel, packet)
+        self.assertEqual(len(schedule), 369)
+        self.assertEqual(sum(call["lane"] == "primary" for call in schedule), 270)
+        self.assertEqual(sum(call["lane"] == "stability" for call in schedule), 55)
+        self.assertEqual(sum(call["lane"] == "transport" for call in schedule), 44)
+        self.assertEqual(sum(call["runtime"] == "opencode" for call in schedule), 109)
+        self.assertEqual(sum(call["runtime"] == "pi" for call in schedule), 260)
+
+    def test_stability_lane_changes_candidate_order(self) -> None:
+        summary = synthetic_summary(self.protocol)
+        packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
+        panel = json.loads(
+            (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        reviewer = panel["reviewers"][0]
+        primary_call = {
+            "lane": "primary",
+            "reviewer": reviewer,
+            "block_id": packet["blocks"][0]["block_id"],
+        }
+        stability_call = {**primary_call, "lane": "stability"}
+        primary = ordered_block(panel, packet["blocks"][0], primary_call)
+        stability = ordered_block(panel, packet["blocks"][0], stability_call)
+        self.assertNotEqual(
+            [candidate["candidate_id"] for candidate in primary["candidates"]],
+            [candidate["candidate_id"] for candidate in stability["candidates"]],
+        )
+
+    def test_runtime_parser_extracts_opencode_text_event(self) -> None:
+        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
+        event = {"type": "text", "part": {"type": "text", "text": json.dumps(payload)}}
+        self.assertEqual(parse_runtime_output(json.dumps(event)), payload)
+
+    def test_runtime_parser_uses_final_pi_assistant_message(self) -> None:
+        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
+        partial = {
+            "type": "message_update",
+            "message": {
+                "role": "assistant",
+                "content": [{"type": "text", "text": "partial"}],
+            },
+        }
+        final = {
+            "type": "message_end",
+            "message": {
+                "role": "assistant",
+                "content": [{"type": "text", "text": json.dumps(payload)}],
+            },
+        }
+        stdout = json.dumps(partial) + "\n" + json.dumps(final)
+        self.assertEqual(parse_runtime_output(stdout), payload)
+
+    def test_synthetic_runtime_config_has_no_mcp_and_disables_tools(self) -> None:
+        panel = json.loads(
+            (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        config = minimal_opencode_config(panel)
+        self.assertNotIn("mcp", config)
+        self.assertTrue(
+            all(
+                value is False
+                for value in config["agent"]["bmadx-synthetic-judge"]["tools"].values()
+            )
+        )
+
     def test_candidate_mapping_cannot_be_rebuilt_with_the_wrong_key(self) -> None:
         expected = candidate_id(BLINDING_KEY, "scenario-r1", "case-1")
         wrong = candidate_id(bytes.fromhex("22" * 32), "scenario-r1", "case-1")
@@ -234,7 +358,10 @@ class BmadxValueStudyTests(unittest.TestCase):
         summary = synthetic_summary(self.protocol)
         packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
         reviews = synthetic_reviews(self.protocol, summary, packet)
-        result = analyze(self.protocol, summary, packet, reviews, BLINDING_KEY)
+        panel = synthetic_panel_summary(self.protocol, packet, reviews)
+        result = analyze(
+            self.protocol, summary, packet, reviews, BLINDING_KEY, panel
+        )
         self.assertEqual(result["verdict"], "positive_value_added")
         self.assertTrue(all(result["positive_gates"].values()))
         self.assertEqual(
@@ -249,7 +376,10 @@ class BmadxValueStudyTests(unittest.TestCase):
                 case["tokens"] = 200
         packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
         reviews = synthetic_reviews(self.protocol, summary, packet)
-        result = analyze(self.protocol, summary, packet, reviews, BLINDING_KEY)
+        panel = synthetic_panel_summary(self.protocol, packet, reviews)
+        result = analyze(
+            self.protocol, summary, packet, reviews, BLINDING_KEY, panel
+        )
         self.assertEqual(result["verdict"], "inconclusive")
         self.assertFalse(result["positive_gates"]["token_overhead_acceptable"])
 
@@ -258,13 +388,15 @@ class BmadxValueStudyTests(unittest.TestCase):
         packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
         reviews = synthetic_reviews(self.protocol, summary, packet)
         reviews[0]["mapping_was_not_available"] = False
+        panel = synthetic_panel_summary(self.protocol, packet, reviews)
         with self.assertRaisesRegex(ValueError, "mapping"):
-            analyze(self.protocol, summary, packet, reviews, BLINDING_KEY)
+            analyze(self.protocol, summary, packet, reviews, BLINDING_KEY, panel)
 
     def test_analysis_rejects_wrong_blinding_key(self) -> None:
         summary = synthetic_summary(self.protocol)
         packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
         reviews = synthetic_reviews(self.protocol, summary, packet)
+        panel = synthetic_panel_summary(self.protocol, packet, reviews)
         with self.assertRaisesRegex(ValueError, "Blinding key"):
             analyze(
                 self.protocol,
@@ -272,7 +404,17 @@ class BmadxValueStudyTests(unittest.TestCase):
                 packet,
                 reviews,
                 bytes.fromhex("22" * 32),
+                panel,
             )
+
+    def test_analysis_rejects_unhealthy_synthetic_panel(self) -> None:
+        summary = synthetic_summary(self.protocol)
+        packet, _ = build_packet(self.protocol, summary, BLINDING_KEY)
+        reviews = synthetic_reviews(self.protocol, summary, packet)
+        panel = synthetic_panel_summary(self.protocol, packet, reviews)
+        panel["healthy"] = False
+        with self.assertRaisesRegex(ValueError, "unhealthy"):
+            analyze(self.protocol, summary, packet, reviews, BLINDING_KEY, panel)
 
 
 if __name__ == "__main__":

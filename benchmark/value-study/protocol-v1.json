@@ -34,17 +34,31 @@
     "real_bmad_release_tag": "v6.10.0"
   },
   "harness_hashes": {
-    "runner_sha256": "87ef9eab89c71a337328afee740c231c7c107aa1eda33e9f24bfbd3c0f03dabd",
+    "runner_sha256": "99a6af4533d3a21ce04b6de3b1d197551622b84822ee159947098c668d747eb7",
     "contract_sha256": "b987e5564b1bbcaeef97d745a88c597a9c86cfee54db13156b14b678d2c6602f",
     "runtime_helpers_sha256": "d7b3ff5a68f4e8c5ee152ac7c7c838ed3c5eafa7094b7a672a29cff6fb66a183",
     "review_builder_sha256": "9d491e484cd08c6f83f3b79ba57215b4c925489e51ab3b176355ab0abcc73f55",
-    "analyzer_sha256": "e493a02975a9a729b1433c5d85ea086ddc9151d5bff6ed5b9d6b2a032c53e282"
+    "analyzer_sha256": "f0be429e79bcfafa891db87445a71719a3c6db680eb31f4fffcfa5ab91293ac4",
+    "synthetic_panel_runner_sha256": "89507d289de911a2cb3619cece816242037a2fe1f7359d802b99de3637a73d0f"
   },
   "review_policy": {
-    "minimum_reviewers": 3,
-    "minimum_independent_reviewers": 2,
+    "mode": "synthetic_model_panel",
+    "minimum_reviewers": 5,
+    "minimum_independent_reviewers": 5,
+    "required_reviewer_ids": [
+      "gemini-31-pro",
+      "deepseek-v4-pro",
+      "qwen-35",
+      "glm-52",
+      "kimi-k27-code"
+    ],
     "reviewers_must_not_receive_arm_mapping": true,
-    "review_order": "absolute_scores_before_preference"
+    "review_order": "absolute_scores_before_preference",
+    "synthetic_panel": {
+      "path": "benchmark/value-study/synthetic-panel-v1.json",
+      "sha256": "387c2e6a396ae4af837d06c1bea605db96fdfb3cd03039b05b40256084c5fb01",
+      "health_required_for_positive_claim": true
+    }
   },
   "decision_thresholds": {
     "minimum_net_preference": 0.1,

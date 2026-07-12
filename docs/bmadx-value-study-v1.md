@@ -53,11 +53,21 @@ Keep that key outside the packet and unavailable to reviewers. Reveal and
 archive it only after all reviews are signed, so the final analysis remains
 reproducible without making the review mapping reversible in advance.
 
-At least three reviewers score every response independently. At least two must
-be independent of BMADX authorship, and every reviewer must attest that the arm
-mapping was unavailable. Reviewers score absolute dimensions before choosing a
-preferred candidate. The rubric is frozen in
-`benchmark/value-study/rubric-v1.json`.
+Five preregistered model families score every response independently: Gemini,
+DeepSeek, Qwen, GLM, and Kimi. Each family has exactly one primary vote and
+must attest that the arm mapping was unavailable. Reviewers score absolute
+dimensions before choosing a preferred candidate. The rubric is frozen in
+`benchmark/value-study/rubric-v1.json`; panel identities, runtimes, health
+gates, and call counts are frozen in
+`benchmark/value-study/synthetic-panel-v1.json`.
+
+Every reviewer receives its own deterministic candidate order. Eleven of 54
+blocks per reviewer are repeated with a rotated order to measure position
+stability. Gemini runs through Antigravity/OpenCode; four Ollama-backed
+families run through Pi and repeat eleven blocks through OpenCode to measure
+transport sensitivity. Stability and transport-control calls never vote in the
+primary outcome. A failed health threshold blocks a positive claim instead of
+silently excluding or replacing the reviewer.
 
 Primary outcome: within-block blinded preference, analyzed with a scenario-
 cluster bootstrap. Secondary outcomes include all rubric dimensions, safety
@@ -118,10 +128,41 @@ pre-registered; do not tune them after seeing results.
 
    Do not share the key, run summary, raw logs, repository branch, or arm map
    with reviewers.
-8. Collect three or more completed review JSON files without sharing arm maps.
-9. Run `analyze_bmadx_value_study.py` with the same key and report the frozen
+8. Validate the synthetic panel without model calls:
+
+   ```bash
+   python3 benchmark/scripts/run_bmadx_synthetic_review_panel.py --validate-only
+   ```
+
+9. Run the frozen five-family panel only after explicit approval of its 369
+   calls:
+
+   ```bash
+   python3 benchmark/scripts/run_bmadx_synthetic_review_panel.py \
+     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/review-packet.json \
+     --output-dir benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel \
+     --confirm-call-count 369
+   ```
+
+10. Run `analyze_bmadx_value_study.py` with all five review files, the panel
+summary, and the same key. Report the frozen
    verdict plus every failed gate, not only the headline preference. Archive
    the key only after reviews are final.
+
+   ```bash
+   python3 benchmark/scripts/analyze_bmadx_value_study.py \
+     --protocol benchmark/value-study/protocol-v1.json \
+     --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/summary.json \
+     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/review-packet.json \
+     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/panel-summary.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/gemini-31-pro.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/deepseek-v4-pro.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/qwen-35.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/glm-52.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/kimi-k27-code.json \
+     --blinding-key-file /tmp/bmadx-value-blinding-key \
+     --output benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/analysis.json
+   ```
 
 ## Why This Is More Objective
 
@@ -137,7 +178,9 @@ This design instead separates:
 - trade-offs, which can veto a positive quality result;
 - implementation quality, which remains a separate hidden-test claim.
 
-Residual limitations remain: reviewers are subjective, the task distribution
-is synthetic, model calls are not guaranteed deterministic, and 18 clusters do
-not represent every repository. Those limits must accompany any published
-claim.
+Residual limitations remain: model judges may share training-data and
+evaluation biases, the task distribution is synthetic, model calls are not
+guaranteed deterministic, and 18 clusters do not represent every repository.
+The study can support a cross-model blinded-preference claim. It cannot claim
+that human beginners learn faster, feel less confused, or complete more work;
+those remain later external-validation questions.

@@ -23,6 +23,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--summary", type=Path, required=True)
     parser.add_argument("--packet", type=Path, required=True)
     parser.add_argument("--review", type=Path, action="append", required=True)
+    parser.add_argument("--panel-summary", type=Path)
     parser.add_argument("--blinding-key-file", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args(argv)
@@ -60,6 +61,7 @@ def validate_inputs(
     packet: dict[str, Any],
     reviews: list[dict[str, Any]],
     blinding_key: bytes,
+    panel_summary: dict[str, Any] | None = None,
 ) -> None:
     if summary.get("complete") is not True:
         raise ValueError("Analysis requires a complete integrity-healthy study")
@@ -84,6 +86,44 @@ def validate_inputs(
             "Every reviewer must attest that the arm mapping was unavailable"
         )
     packet_hash = json_sha(packet)
+    review_policy = protocol.get("review_policy") or {}
+    if review_policy.get("mode") == "synthetic_model_panel":
+        required_ids = set(review_policy.get("required_reviewer_ids") or [])
+        if set(reviewer_ids) != required_ids:
+            raise ValueError("Synthetic panel does not contain the exact frozen reviewers")
+        panel_ref = review_policy.get("synthetic_panel") or {}
+        if panel_summary is None:
+            raise ValueError("Synthetic panel summary is required")
+        if (
+            panel_summary.get("schema") != "bmadx_synthetic_panel_summary.v1"
+            or panel_summary.get("complete") is not True
+            or panel_summary.get("healthy") is not True
+        ):
+            raise ValueError("Synthetic panel is incomplete or unhealthy")
+        if (
+            panel_summary.get("protocol_id") != protocol.get("protocol_id")
+            or panel_summary.get("packet_sha256") != packet_hash
+            or panel_summary.get("panel_protocol_sha256") != panel_ref.get("sha256")
+        ):
+            raise ValueError("Synthetic panel provenance mismatch")
+        panel_reviewers = {
+            entry.get("reviewer_id"): entry
+            for entry in panel_summary.get("reviewers") or []
+        }
+        if set(panel_reviewers) != required_ids:
+            raise ValueError("Synthetic panel summary reviewer set mismatch")
+        for review in reviews:
+            reviewer_id = review["reviewer_id"]
+            panel_entry = panel_reviewers[reviewer_id]
+            if (
+                review.get("reviewer_kind") != "synthetic_model"
+                or review.get("model_family") != panel_entry.get("family")
+                or review.get("model_id") != panel_entry.get("model_id")
+                or review.get("panel_protocol_sha256") != panel_ref.get("sha256")
+                or panel_entry.get("healthy") is not True
+                or panel_entry.get("primary_review_sha256") != json_sha(review)
+            ):
+                raise ValueError(f"Synthetic reviewer provenance mismatch: {reviewer_id}")
     block_candidates = {
         block["block_id"]: {
             candidate["candidate_id"] for candidate in block["candidates"]
@@ -128,8 +168,11 @@ def analyze(
     packet: dict[str, Any],
     reviews: list[dict[str, Any]],
     blinding_key: bytes,
+    panel_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    validate_inputs(protocol, summary, packet, reviews, blinding_key)
+    validate_inputs(
+        protocol, summary, packet, reviews, blinding_key, panel_summary
+    )
     candidate_to_case = {}
     for case in summary["cases"]:
         block_id = f"{case['scenario']}-r{case['repeat_index']}"
@@ -281,6 +324,9 @@ def analyze(
         "tradeoffs": tradeoffs,
         "reviewer_preference_pairwise_jaccard": preference_agreement,
         "reviewer_count": len(reviews),
+        "synthetic_panel_healthy": panel_summary.get("healthy")
+        if panel_summary is not None
+        else None,
         "scenario_cluster_count": len(protocol["scenarios"]),
         "case_count": len(summary["cases"]),
     }
@@ -292,12 +338,18 @@ def main(argv: list[str] | None = None) -> int:
     summary = json.loads(args.summary.read_text(encoding="utf-8"))
     packet = json.loads(args.packet.read_text(encoding="utf-8"))
     reviews = [json.loads(path.read_text(encoding="utf-8")) for path in args.review]
+    panel_summary = (
+        json.loads(args.panel_summary.read_text(encoding="utf-8"))
+        if args.panel_summary
+        else None
+    )
     result = analyze(
         protocol,
         summary,
         packet,
         reviews,
         read_blinding_key(args.blinding_key_file),
+        panel_summary,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
