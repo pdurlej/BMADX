@@ -30,7 +30,7 @@ from run_bmadx_value_study import (
 from run_sol_bmadx_ab import tree_sha256
 from run_bmadx_synthetic_review_panel import (
     build_panel_schedule,
-    minimal_opencode_config,
+    command_for_call,
     ordered_block,
     parse_runtime_output,
     validate_judgment,
@@ -97,7 +97,7 @@ def synthetic_reviews(protocol: dict, summary: dict, packet: dict) -> list[dict]
         case_by_candidate[candidate_id(BLINDING_KEY, block_id, case["case_id"])] = case
     reviews = []
     reviewers = [
-        ("gemini-31-pro", "google-gemini", "google/antigravity-gemini-3.1-pro"),
+        ("minimax-m3", "minimax", "ollama/minimax-m3:cloud"),
         ("deepseek-v4-pro", "deepseek", "ollama/deepseek-v4-pro:cloud"),
         ("qwen-35", "qwen", "ollama/qwen3.5:cloud"),
         ("glm-52", "glm", "ollama/glm-5.2:cloud"),
@@ -145,8 +145,8 @@ def synthetic_reviews(protocol: dict, summary: dict, packet: dict) -> list[dict]
                 "reviewer_kind": "synthetic_model",
                 "model_family": family,
                 "model_id": model_id,
-                "runtime": "opencode",
-                "runtime_version": "1.17.18",
+                "runtime": "pi",
+                "runtime_version": "0.78.0",
                 "panel_protocol_sha256": panel_sha,
                 "independent_of_bmadx_authorship": True,
                 "mapping_was_not_available": True,
@@ -166,9 +166,9 @@ def synthetic_panel_summary(protocol: dict, packet: dict, reviews: list[dict]) -
         ],
         "complete": True,
         "healthy": True,
-        "expected_call_count": 369,
-        "completed_call_count": 369,
-        "runtime_versions": {"opencode": "1.17.18", "pi": "0.78.0"},
+        "expected_call_count": 325,
+        "completed_call_count": 325,
+        "runtime_versions": {"pi": "0.78.0"},
         "reviewers": [
             {
                 "reviewer_id": review["reviewer_id"],
@@ -283,12 +283,26 @@ class BmadxValueStudyTests(unittest.TestCase):
             )
         )
         schedule = build_panel_schedule(panel, packet)
-        self.assertEqual(len(schedule), 369)
+        self.assertEqual(len(schedule), 325)
         self.assertEqual(sum(call["lane"] == "primary" for call in schedule), 270)
         self.assertEqual(sum(call["lane"] == "stability" for call in schedule), 55)
-        self.assertEqual(sum(call["lane"] == "transport" for call in schedule), 44)
-        self.assertEqual(sum(call["runtime"] == "opencode" for call in schedule), 109)
-        self.assertEqual(sum(call["runtime"] == "pi" for call in schedule), 260)
+        self.assertEqual(sum(call["runtime"] == "pi" for call in schedule), 325)
+
+    def test_synthetic_panel_is_five_family_pi_ollama_only(self) -> None:
+        panel = json.loads(
+            (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        reviewers = panel["reviewers"]
+        self.assertEqual(len(reviewers), 5)
+        self.assertEqual(len({reviewer["family"] for reviewer in reviewers}), 5)
+        self.assertTrue(all(reviewer["runtime"] == "pi" for reviewer in reviewers))
+        self.assertTrue(
+            all(reviewer["model"].startswith("ollama/") for reviewer in reviewers)
+        )
+        self.assertNotIn("opencode", json.dumps(panel).lower())
+        self.assertNotIn("antigravity", json.dumps(panel).lower())
 
     def test_stability_lane_changes_candidate_order(self) -> None:
         summary = synthetic_summary(self.protocol)
@@ -312,11 +326,6 @@ class BmadxValueStudyTests(unittest.TestCase):
             [candidate["candidate_id"] for candidate in stability["candidates"]],
         )
 
-    def test_runtime_parser_extracts_opencode_text_event(self) -> None:
-        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
-        event = {"type": "text", "part": {"type": "text", "text": json.dumps(payload)}}
-        self.assertEqual(parse_runtime_output(json.dumps(event)), payload)
-
     def test_runtime_parser_uses_final_pi_assistant_message(self) -> None:
         payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
         partial = {
@@ -336,20 +345,20 @@ class BmadxValueStudyTests(unittest.TestCase):
         stdout = json.dumps(partial) + "\n" + json.dumps(final)
         self.assertEqual(parse_runtime_output(stdout), payload)
 
-    def test_synthetic_runtime_config_has_no_mcp_and_disables_tools(self) -> None:
+    def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
         panel = json.loads(
             (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(
                 encoding="utf-8"
             )
         )
-        config = minimal_opencode_config(panel)
-        self.assertNotIn("mcp", config)
-        self.assertTrue(
-            all(
-                value is False
-                for value in config["agent"]["bmadx-synthetic-judge"]["tools"].values()
-            )
-        )
+        call = {"reviewer": panel["reviewers"][0], "runtime": "pi"}
+        command, _ = command_for_call(call, "judge this")
+        self.assertEqual(command[0], "pi")
+        self.assertIn("--no-tools", command)
+        self.assertIn("--no-extensions", command)
+        self.assertIn("--no-skills", command)
+        self.assertIn("--no-context-files", command)
+        self.assertNotIn("opencode", command)
 
     def test_candidate_mapping_cannot_be_rebuilt_with_the_wrong_key(self) -> None:
         expected = candidate_id(BLINDING_KEY, "scenario-r1", "case-1")

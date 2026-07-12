@@ -39,14 +39,14 @@
     "runtime_helpers_sha256": "d7b3ff5a68f4e8c5ee152ac7c7c838ed3c5eafa7094b7a672a29cff6fb66a183",
     "review_builder_sha256": "3cd4f47f0e6beb7ea498bab5ced11d1472f03c928717f401dc955acdb7df5c3a",
     "analyzer_sha256": "f0be429e79bcfafa891db87445a71719a3c6db680eb31f4fffcfa5ab91293ac4",
-    "synthetic_panel_runner_sha256": "7c93aa5b5bd1a7f538c791000a8aebe97e1f99c0fbea378b2c6d4327039b4d42"
+    "synthetic_panel_runner_sha256": "df704825a558bb89b2deeeccb4e7a7cb1a9cc3e7afb6f77e5228b9bee308d698"
   },
   "review_policy": {
     "mode": "synthetic_model_panel",
     "minimum_reviewers": 5,
     "minimum_independent_reviewers": 5,
     "required_reviewer_ids": [
-      "gemini-31-pro",
+      "minimax-m3",
       "deepseek-v4-pro",
       "qwen-35",
       "glm-52",
@@ -56,7 +56,7 @@
     "review_order": "absolute_scores_before_preference",
     "synthetic_panel": {
       "path": "benchmark/value-study/synthetic-panel-v1.json",
-      "sha256": "387c2e6a396ae4af837d06c1bea605db96fdfb3cd03039b05b40256084c5fb01",
+      "sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
       "health_required_for_positive_claim": true
     }
   },

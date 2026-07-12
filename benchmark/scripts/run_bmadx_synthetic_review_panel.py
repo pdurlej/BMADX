@@ -9,7 +9,6 @@ import json
 import os
 import random
 import re
-import shutil
 import subprocess
 import tempfile
 import time
@@ -67,10 +66,7 @@ def validate_panel_protocol(
     if panel.get("schema") != "bmadx_synthetic_review_panel.v1":
         raise ValueError("Unsupported synthetic-panel schema")
     runtime = panel.get("runtime") or {}
-    if (
-        runtime.get("primary") != "mixed_by_reviewer"
-        or runtime.get("transport_control") != "opencode_for_pi_reviewers"
-    ):
+    if runtime.get("primary") != "pi_ollama_only":
         raise ValueError("Synthetic-panel runtime routing is not frozen")
     if runtime.get("automatic_retries") != 0:
         raise ValueError("Synthetic panel must fail closed without automatic retries")
@@ -90,15 +86,10 @@ def validate_panel_protocol(
     families = [entry.get("family") for entry in reviewers]
     if len(set(reviewer_ids)) != 5 or len(set(families)) != 5:
         raise ValueError("Reviewer IDs and model families must be unique")
-    runtimes = [entry.get("runtime") for entry in reviewers]
-    if runtimes.count("opencode") != 1 or runtimes.count("pi") != 4:
-        raise ValueError("Synthetic panel requires one OpenCode and four Pi reviewers")
-    if any(
-        entry.get("control_runtime") != "opencode" or not entry.get("control_model")
-        for entry in reviewers
-        if entry.get("runtime") == "pi"
-    ):
-        raise ValueError("Every Pi reviewer requires an OpenCode transport control")
+    if any(entry.get("runtime") != "pi" for entry in reviewers):
+        raise ValueError("Synthetic panel requires five Pi reviewers")
+    if any(not str(entry.get("model", "")).startswith("ollama/") for entry in reviewers):
+        raise ValueError("Synthetic panel requires Ollama-backed reviewer models")
     blocks = len(value_protocol.get("scenarios") or []) * int(
         value_protocol.get("repeats", 0)
     )
@@ -106,16 +97,13 @@ def validate_panel_protocol(
         raise ValueError("Synthetic-panel block count does not match value study")
     primary = blocks * len(reviewers)
     stability = int(panel["stability_blocks_per_reviewer"]) * len(reviewers)
-    ollama_reviewers = sum(bool(entry.get("control_model")) for entry in reviewers)
-    transport = int(panel["transport_blocks_per_ollama_reviewer"]) * ollama_reviewers
-    expected = primary + stability + transport
+    expected = primary + stability
     frozen = (
         panel.get("expected_primary_call_count"),
         panel.get("expected_stability_call_count"),
-        panel.get("expected_transport_call_count"),
         panel.get("expected_call_count"),
     )
-    if frozen != (primary, stability, transport, expected):
+    if frozen != (primary, stability, expected):
         raise ValueError("Synthetic-panel call counts are not internally consistent")
     claim_rules = panel.get("claim_rules") or {}
     if not all(
@@ -123,7 +111,6 @@ def validate_panel_protocol(
         for key in (
             "one_vote_per_model_family",
             "stability_calls_are_not_votes",
-            "transport_calls_are_not_votes",
             "unhealthy_panel_blocks_positive_claim",
             "synthetic_evidence_does_not_claim_human_novice_outcomes",
         )
@@ -166,13 +153,6 @@ def build_panel_schedule(
             reviewer_id,
             "stability",
         )
-        transport = selected_blocks(
-            block_ids,
-            int(panel["transport_blocks_per_ollama_reviewer"]),
-            seed,
-            reviewer_id,
-            "transport",
-        ) if reviewer.get("control_model") else set()
         for block in blocks:
             schedule.append(
                 {
@@ -191,16 +171,6 @@ def build_panel_schedule(
                         "reviewer": reviewer,
                         "block_id": block["block_id"],
                         "runtime": reviewer["runtime"],
-                    }
-                )
-            if block["block_id"] in transport:
-                schedule.append(
-                    {
-                        "call_id": f"transport--{reviewer_id}--{block['block_id']}",
-                        "lane": "transport",
-                        "reviewer": reviewer,
-                        "block_id": block["block_id"],
-                        "runtime": reviewer["control_runtime"],
                     }
                 )
     random.Random(seed).shuffle(schedule)
@@ -256,32 +226,10 @@ def judgment_from_text(text: str) -> dict[str, Any] | None:
     )
 
 
-def text_fragments(value: Any) -> list[str]:
-    fragments: list[str] = []
-    if isinstance(value, dict):
-        if value.get("type") == "text" and isinstance(value.get("text"), str):
-            fragments.append(value["text"])
-        part = value.get("part")
-        if isinstance(part, dict) and part.get("type") == "text" and isinstance(
-            part.get("text"), str
-        ):
-            fragments.append(part["text"])
-        message = value.get("message")
-        if isinstance(message, dict) and message.get("role") == "assistant":
-            fragments.extend(text_fragments(message.get("content")))
-        if isinstance(value.get("content"), list):
-            fragments.extend(text_fragments(value["content"]))
-    elif isinstance(value, list):
-        for item in value:
-            fragments.extend(text_fragments(item))
-    return fragments
-
-
 def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
     direct = judgment_from_text(stdout)
     if direct is not None:
         return direct
-    opencode_fragments: list[str] = []
     pi_final: str | None = None
     for line in stdout.splitlines():
         try:
@@ -299,9 +247,7 @@ def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
                 for item in content
                 if isinstance(item, dict) and item.get("type") == "text"
             )
-        elif event.get("type") == "text":
-            opencode_fragments.extend(text_fragments(event))
-    return judgment_from_text(pi_final or "".join(opencode_fragments))
+    return judgment_from_text(pi_final or "")
 
 
 def validate_judgment(
@@ -338,92 +284,6 @@ def validate_judgment(
     return {"valid": not errors, "errors": sorted(set(errors))}
 
 
-def minimal_opencode_config(panel: dict[str, Any]) -> dict[str, Any]:
-    google_models: dict[str, Any] = {}
-    ollama_models: dict[str, Any] = {}
-    for reviewer in panel["reviewers"]:
-        candidate_models = [reviewer["model"]]
-        if reviewer.get("control_model"):
-            candidate_models.append(reviewer["control_model"])
-        for candidate_model in candidate_models:
-            provider, model = candidate_model.split("/", 1)
-            if provider == "google":
-                google_models[model] = {
-                    "name": model,
-                    "limit": {"context": 1048576, "output": 65535},
-                    "modalities": {"input": ["text"], "output": ["text"]},
-                    "variants": {
-                        "low": {"thinkingLevel": "low"},
-                        "high": {"thinkingLevel": "high"},
-                    },
-                }
-            elif provider == "ollama-cloud":
-                ollama_models[model] = {"name": model}
-    disabled_tools = {
-        name: False
-        for name in (
-            "bash",
-            "edit",
-            "write",
-            "read",
-            "glob",
-            "grep",
-            "webfetch",
-            "task",
-            "skill",
-            "question",
-            "todowrite",
-            "todoread",
-        )
-    }
-    return {
-        "$schema": "https://opencode.ai/config.json",
-        "plugin": ["opencode-antigravity-auth@1.6.0"],
-        "enabled_providers": ["google", "ollama-cloud"],
-        "provider": {
-            "google": {"models": google_models},
-            "ollama-cloud": {
-                "name": "Ollama Cloud",
-                "npm": "@ai-sdk/openai-compatible",
-                "options": {"baseURL": "https://ollama.com/v1"},
-                "models": ollama_models,
-            },
-        },
-        "agent": {
-            "bmadx-synthetic-judge": {
-                "description": "Tool-free blinded benchmark reviewer",
-                "mode": "primary",
-                "prompt": (
-                    "You are a tool-free blinded evaluator. Follow the user-provided "
-                    "rubric and return only the requested JSON object."
-                ),
-                "tools": disabled_tools,
-                "permission": {
-                    "edit": "deny",
-                    "bash": "deny",
-                    "webfetch": "deny",
-                    "doom_loop": "deny",
-                    "external_directory": "deny",
-                },
-            }
-        },
-    }
-
-
-def prepare_opencode_runtime(panel: dict[str, Any], root: Path) -> Path:
-    config_dir = root / "opencode-config"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    (config_dir / "opencode.json").write_text(
-        json.dumps(minimal_opencode_config(panel), indent=2) + "\n",
-        encoding="utf-8",
-    )
-    source_accounts = Path.home() / ".config/opencode/antigravity-accounts.json"
-    if not source_accounts.is_file():
-        raise RuntimeError("Antigravity account metadata is unavailable")
-    (config_dir / "antigravity-accounts.json").symlink_to(source_accounts)
-    return config_dir
-
-
 def runtime_version(command: str) -> str:
     result = subprocess.run(
         [command, "--version"], capture_output=True, text=True, check=False
@@ -434,82 +294,29 @@ def runtime_version(command: str) -> str:
 
 
 def validate_runtimes(panel: dict[str, Any]) -> dict[str, str]:
-    versions = {"opencode": runtime_version("opencode"), "pi": runtime_version("pi")}
+    versions = {"pi": runtime_version("pi")}
     runtime = panel["runtime"]
-    if version_tuple(versions["opencode"]) < version_tuple(
-        runtime["minimum_opencode_version"]
-    ):
-        raise RuntimeError("OpenCode is older than the frozen panel minimum")
     if version_tuple(versions["pi"]) < version_tuple(runtime["minimum_pi_version"]):
         raise RuntimeError("Pi is older than the frozen panel minimum")
-    primary_by_provider: dict[str, set[str]] = {}
     for reviewer in panel["reviewers"]:
-        opencode_model = (
-            reviewer["model"]
-            if reviewer["runtime"] == "opencode"
-            else reviewer.get("control_model")
+        pi_provider, pi_model = reviewer["model"].split("/", 1)
+        if pi_provider != "ollama":
+            raise RuntimeError("Pi primary reviewers must use Ollama")
+        result = subprocess.run(
+            ["pi", "--list-models", pi_model],
+            capture_output=True,
+            text=True,
+            check=False,
         )
-        if opencode_model:
-            provider, _ = opencode_model.split("/", 1)
-            if provider not in primary_by_provider:
-                result = subprocess.run(
-                    ["opencode", "models", provider],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                if result.returncode != 0:
-                    raise RuntimeError(f"OpenCode model listing failed: {provider}")
-                primary_by_provider[provider] = set(result.stdout.splitlines())
-            if opencode_model not in primary_by_provider[provider]:
-                raise RuntimeError(f"OpenCode model unavailable: {opencode_model}")
-        if reviewer["runtime"] == "pi":
-            pi_provider, pi_model = reviewer["model"].split("/", 1)
-            if pi_provider != "ollama":
-                raise RuntimeError("Pi primary reviewers must use Ollama")
-            result = subprocess.run(
-                ["pi", "--list-models", pi_model],
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            model_listing = result.stdout + result.stderr
-            if result.returncode != 0 or pi_model not in model_listing:
-                raise RuntimeError(f"Pi primary model unavailable: {pi_model}")
+        model_listing = result.stdout + result.stderr
+        if result.returncode != 0 or pi_model not in model_listing:
+            raise RuntimeError(f"Pi primary model unavailable: {pi_model}")
     return versions
 
 
-def command_for_call(
-    call: dict[str, Any], prompt: str, config_dir: Path, work_dir: Path
-) -> tuple[list[str], dict[str, str]]:
+def command_for_call(call: dict[str, Any], prompt: str) -> tuple[list[str], dict[str, str]]:
     reviewer = call["reviewer"]
     env = os.environ.copy()
-    if call["runtime"] == "opencode":
-        model_id = (
-            reviewer["model"]
-            if reviewer["runtime"] == "opencode"
-            else reviewer["control_model"]
-        )
-        env["OPENCODE_CONFIG_DIR"] = str(config_dir)
-        env["OPENCODE_DISABLE_PROJECT_CONFIG"] = "1"
-        command = [
-            "opencode",
-            "run",
-            "--format",
-            "json",
-            "--model",
-            model_id,
-            "--agent",
-            "bmadx-synthetic-judge",
-            "--dir",
-            str(work_dir),
-            "--title",
-            call["call_id"],
-        ]
-        if reviewer.get("variant") and reviewer["runtime"] == "opencode":
-            command.extend(["--variant", reviewer["variant"]])
-        command.append(prompt)
-        return command, env
     pi_provider, pi_model = reviewer["model"].split("/", 1)
     command = [
         "pi",
@@ -608,19 +415,13 @@ def finalize(
         review_path = reviews_dir / f"{reviewer_id}.json"
         review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
         stability_metrics = []
-        transport_metrics = []
         for block in packet["blocks"]:
             block_id = block["block_id"]
             base = by_key.get(("primary", reviewer_id, block_id))
             stability = by_key.get(("stability", reviewer_id, block_id))
-            transport = by_key.get(("transport", reviewer_id, block_id))
             if base and stability:
                 stability_metrics.append(
                     comparison_metrics(base["judgment"], stability["judgment"])
-                )
-            if base and transport:
-                transport_metrics.append(
-                    comparison_metrics(base["judgment"], transport["judgment"])
                 )
         stability_jaccard = mean(
             [value["preference_jaccard"] for value in stability_metrics]
@@ -628,12 +429,6 @@ def finalize(
         stability_delta = mean(
             [value["mean_absolute_score_delta"] for value in stability_metrics]
         )
-        transport_jaccard = mean(
-            [value["preference_jaccard"] for value in transport_metrics]
-        ) if transport_metrics else None
-        transport_delta = mean(
-            [value["mean_absolute_score_delta"] for value in transport_metrics]
-        ) if transport_metrics else None
         healthy = (
             len(primary) == int(panel["expected_blocks"])
             and len(stability_metrics) == int(panel["stability_blocks_per_reviewer"])
@@ -642,15 +437,6 @@ def finalize(
             and stability_delta
             <= float(thresholds["maximum_order_stability_mean_absolute_score_delta"])
         )
-        if reviewer.get("control_model"):
-            healthy = healthy and (
-                len(transport_metrics)
-                == int(panel["transport_blocks_per_ollama_reviewer"])
-                and transport_jaccard
-                >= float(thresholds["minimum_transport_preference_jaccard"])
-                and transport_delta
-                <= float(thresholds["maximum_transport_mean_absolute_score_delta"])
-            )
         reviewer_summaries.append(
             {
                 "reviewer_id": reviewer_id,
@@ -661,13 +447,6 @@ def finalize(
                 "stability_block_count": len(stability_metrics),
                 "order_stability_preference_jaccard": round(stability_jaccard, 6),
                 "order_stability_mean_absolute_score_delta": round(stability_delta, 6),
-                "transport_block_count": len(transport_metrics),
-                "transport_preference_jaccard": round(transport_jaccard, 6)
-                if transport_jaccard is not None
-                else None,
-                "transport_mean_absolute_score_delta": round(transport_delta, 6)
-                if transport_delta is not None
-                else None,
             }
         )
     return {
@@ -735,7 +514,6 @@ def main(argv: list[str] | None = None) -> int:
     raw_dir.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="bmadx-panel-") as temp_root:
         temp = Path(temp_root)
-        config_dir = prepare_opencode_runtime(panel, temp)
         work_dir = temp / "workspace"
         work_dir.mkdir()
         for call in schedule:
@@ -743,7 +521,7 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             block = ordered_block(panel, packet_blocks[call["block_id"]], call)
             prompt = build_prompt(prompt_text, packet, block)
-            command, env = command_for_call(call, prompt, config_dir, work_dir)
+            command, env = command_for_call(call, prompt)
             started = time.monotonic()
             try:
                 result = subprocess.run(
@@ -777,9 +555,7 @@ def main(argv: list[str] | None = None) -> int:
                 "lane": call["lane"],
                 "reviewer_id": call["reviewer"]["reviewer_id"],
                 "family": call["reviewer"]["family"],
-                "model_id": call["reviewer"]["model"]
-                if call["runtime"] == call["reviewer"]["runtime"]
-                else call["reviewer"]["control_model"],
+                "model_id": call["reviewer"]["model"],
                 "runtime": call["runtime"],
                 "block_id": call["block_id"],
                 "status": "complete"

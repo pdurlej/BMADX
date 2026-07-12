@@ -2,9 +2,7 @@
   "schema": "bmadx_synthetic_review_panel.v1",
   "panel_id": "bmadx-value-synthetic-panel-v1",
   "runtime": {
-    "primary": "mixed_by_reviewer",
-    "minimum_opencode_version": "1.17.18",
-    "transport_control": "opencode_for_pi_reviewers",
+    "primary": "pi_ollama_only",
     "minimum_pi_version": "0.78.0",
     "automatic_retries": 0,
     "fresh_session_per_call": true,
@@ -18,68 +16,53 @@
   "assignment_seed": 560731,
   "expected_blocks": 54,
   "stability_blocks_per_reviewer": 11,
-  "transport_blocks_per_ollama_reviewer": 11,
   "expected_primary_call_count": 270,
   "expected_stability_call_count": 55,
-  "expected_transport_call_count": 44,
-  "expected_call_count": 369,
+  "expected_call_count": 325,
   "reviewers": [
     {
-      "reviewer_id": "gemini-31-pro",
-      "family": "google-gemini",
-      "runtime": "opencode",
-      "model": "google/antigravity-gemini-3.1-pro",
-      "variant": "high",
-      "control_runtime": null,
-      "control_model": null
+      "reviewer_id": "minimax-m3",
+      "family": "minimax",
+      "runtime": "pi",
+      "model": "ollama/minimax-m3:cloud",
+      "variant": "high"
     },
     {
       "reviewer_id": "deepseek-v4-pro",
       "family": "deepseek",
       "runtime": "pi",
       "model": "ollama/deepseek-v4-pro:cloud",
-      "variant": "high",
-      "control_runtime": "opencode",
-      "control_model": "ollama-cloud/deepseek-v4-pro"
+      "variant": "high"
     },
     {
       "reviewer_id": "qwen-35",
       "family": "qwen",
       "runtime": "pi",
       "model": "ollama/qwen3.5:cloud",
-      "variant": "high",
-      "control_runtime": "opencode",
-      "control_model": "ollama-cloud/qwen3.5"
+      "variant": "high"
     },
     {
       "reviewer_id": "glm-52",
       "family": "glm",
       "runtime": "pi",
       "model": "ollama/glm-5.2:cloud",
-      "variant": "high",
-      "control_runtime": "opencode",
-      "control_model": "ollama-cloud/glm-5.2"
+      "variant": "high"
     },
     {
       "reviewer_id": "kimi-k27-code",
       "family": "kimi",
       "runtime": "pi",
       "model": "ollama/kimi-k2.7-code:cloud",
-      "variant": "high",
-      "control_runtime": "opencode",
-      "control_model": "ollama-cloud/kimi-k2.7-code"
+      "variant": "high"
     }
   ],
   "health_thresholds": {
     "minimum_order_stability_preference_jaccard": 0.7,
-    "maximum_order_stability_mean_absolute_score_delta": 1.0,
-    "minimum_transport_preference_jaccard": 0.6,
-    "maximum_transport_mean_absolute_score_delta": 1.25
+    "maximum_order_stability_mean_absolute_score_delta": 1.0
   },
   "claim_rules": {
     "one_vote_per_model_family": true,
     "stability_calls_are_not_votes": true,
-    "transport_calls_are_not_votes": true,
     "unhealthy_panel_blocks_positive_claim": true,
     "synthetic_evidence_does_not_claim_human_novice_outcomes": true
   }
