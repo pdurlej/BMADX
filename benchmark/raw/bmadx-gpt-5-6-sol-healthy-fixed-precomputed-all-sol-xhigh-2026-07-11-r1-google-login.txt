@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Why: Google OAuth callback handling and session behavior are authentication red-zone changes requiring BMAD ownership and security-focused verification.  
+Gate state: classification and execution allowed; BMAD OK; no warnings.  
+Thinking: high — suggestion only.  
+Next step: BMAD should define the auth flow, account-linking rules, callback security, session lifecycle, failure cases, and verification evidence before implementation.

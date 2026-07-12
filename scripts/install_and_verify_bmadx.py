@@ -45,10 +45,12 @@ def build_parser() -> argparse.ArgumentParser:
 def verification_commands(target: Path) -> list[list[str]]:
     sync_script = target / "scripts" / "sync_bmadx.py"
     test_script = target / "scripts" / "test_sync_bmadx.py"
+    planning_test_script = target / "scripts" / "test_advise_planning_effort.py"
     compat_script = target / "scripts" / "check_codex_compat.py"
     return [
         [sys.executable, str(sync_script), "sync", "--json"],
         [sys.executable, str(test_script)],
+        [sys.executable, str(planning_test_script)],
         [sys.executable, str(compat_script), "--json"],
     ]
 

@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Implementing an existing BMAD story must follow its BMAD-owned workflow and keep code, tests, and process artifacts aligned.  
+Execution: allowed — BMAD check passed; no warnings.  
+Next step: Enter the story implementation flow.

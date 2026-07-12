@@ -1,0 +1,6 @@
+Choice: X4 — Rescue Mode (FUBAR)
+Thinking: high — suggestion only.
+Why: messy ownership plus scaffold-shaped deliverables require BMAD-first recovery planning and a coherent bundle.
+Gate: classification and execution allowed; BMAD healthy; no warnings.
+Scope: plan, scaffold bundle, draft `AGENTS.md`, `.customize.yaml` snippets, and verification matrix.
+Action: classification only; no edits or execution performed.

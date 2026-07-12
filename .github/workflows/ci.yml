@@ -24,8 +24,11 @@ jobs:
         run: |
           python scripts/test_install_bmadx.py
           python scripts/test_install_and_verify_bmadx.py
+          python skill/bmadx/scripts/test_advise_planning_effort.py
           python skill/bmadx/scripts/test_check_codex_compat.py
           python skill/bmadx/scripts/test_sync_bmadx.py
           python benchmark/scripts/test_handoff_packet_schema.py
           python benchmark/scripts/test_run_bmadx_benchmark.py
+          python benchmark/scripts/test_sol_bmadx_ab.py
+          python benchmark/scripts/test_sol_bmadx_causal_canary.py
           python benchmark/scripts/test_verify_bmadx_performance.py

@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode (FUBAR)
+Why: messy ownership plus scaffold-shaped deliverables require BMAD-first project context, architecture, and coordinated verification.
+Gate: classification and execution allowed; BMAD OK; cache unavailable; no warnings.
+Thinking: high — suggestion only.
+Next step: plan from BMAD PRD and architecture, update project context, then define the scaffold bundle, draft configuration artifacts, and verification matrix.

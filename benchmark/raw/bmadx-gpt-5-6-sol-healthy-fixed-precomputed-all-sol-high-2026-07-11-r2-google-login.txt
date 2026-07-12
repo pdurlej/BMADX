@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy
+Why: Google OAuth, callback handling, and session behavior affect the authentication boundary and security contracts.
+Gate: classification and execution allowed; BMAD status OK; no warnings.
+Thinking: high — suggestion only.
+Next step: Define the authentication flow, session lifecycle, failure cases, and verification criteria through the BMAD workflow before implementation.

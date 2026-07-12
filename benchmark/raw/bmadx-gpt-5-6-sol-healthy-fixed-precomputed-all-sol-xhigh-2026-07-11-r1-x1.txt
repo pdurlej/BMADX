@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Why: A typo fix in one React component is a tiny, low-risk local change.
+Thinking: medium — suggestion only.
+Next step: Locate the message, correct the typo, then run the component’s relevant check.

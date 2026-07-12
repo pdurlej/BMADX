@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: This is a bounded copy addition with no auth, billing, or data-model changes.
+Plan:
+1. Add the onboarding email copy variant using the existing template pattern.
+2. Wire it into the existing variant selection without expanding scope.
+Verify:
+1. Run focused email/template tests and confirm rendering and substitutions.
+2. Confirm the diff contains no auth, billing, or data-model changes.

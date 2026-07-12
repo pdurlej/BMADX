@@ -24,8 +24,12 @@ Deeper reading:
 5. [Benchmark Overview](benchmark-overview.md)
 6. [Model Experiments](model-experiments.md)
 7. [GPT-5.6 Repository Audit](audit-2026-07-10-gpt56.md)
-8. [BMADX v0.3 GPT-5.6 Plan](bmadx-v0.3-plan.md)
-9. [Roadmap](roadmap.md)
+8. [Planning Effort Advisor](planning-effort-advisor.md)
+9. [Sol Reasoning Comparison, July 11 2026](sol-reasoning-comparison-2026-07-11.md)
+10. [Plain Sol vs BMADX A/B, July 12 2026](sol-bmadx-ab-2026-07-12.md)
+11. [Oracle Review Response, July 12 2026](oracle-review-response-2026-07-12.md)
+12. [BMADX v0.3 GPT-5.6 Plan](bmadx-v0.3-plan.md)
+13. [Roadmap](roadmap.md)
 
 Historical context:
 

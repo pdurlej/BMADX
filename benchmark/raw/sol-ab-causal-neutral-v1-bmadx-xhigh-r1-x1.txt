@@ -1,0 +1,1 @@
+{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["A single textual typo in one React component is tiny, local, and readily reversible.","Next, locate the message, correct only the typo, and run a focused verification."]}

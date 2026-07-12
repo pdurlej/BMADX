@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Thinking: high — suggestion only.
+Why: The project is explicitly messy and requests a coordinated scaffold bundle, ownership guidance, configuration snippets, and a verification matrix.
+Gate: classification and execution allowed; BMAD healthy, cache unavailable, no warnings.
+Next step: Start from the BMAD PRD and architecture, update `_bmad-output/project-context.md`, then plan and render the bundle with verification evidence.

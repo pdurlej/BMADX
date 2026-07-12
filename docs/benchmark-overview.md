@@ -117,8 +117,11 @@ runtime state, or a second plan store.
 | `advisor` | use the scenario's expected thinking budget: `X1=medium`, `X2=medium`, `X3=high`, `X4=xhigh` |
 
 The recommended performance path uses `--gate-mode precomputed`. The benchmark
-harness runs the compact gate and injects the compact report into the Codex
-session, avoiding extra in-session tool-call variance.
+harness now records the model's classification first and only then runs the
+compact gate against the model-selected route. No route-conditioned gate report
+is injected before classification. Historical precomputed artifacts generated
+before 2026-07-12 are contract-conformance evidence, not independently blinded
+routing evidence.
 
 Canary runs:
 

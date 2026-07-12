@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy
+Thinking: high — suggestion only.
+Why: Destructive data deletion intersects billing protection, retention, and audit/compliance requirements.
+Gate: Classification and execution allowed; BMAD status OK; no warnings.

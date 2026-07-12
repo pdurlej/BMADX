@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode  
+Thinking: high — suggestion only.  
+Why: Migration risk, two failed repairs, shrinking validation deltas, and unclear rollback ownership make this rescue-shaped. Gate permits classification and execution; BMAD is healthy with no warnings.  
+Goal: yes — stop when validation passes, rollback ownership requires human review, or a hard stop blocks safe progress.  
+Loop: yes — max 3 review/repair/validate passes; continue only while delta strictly shrinks, and stop on pass, stalled/increased delta, exhausted passes, or human review.

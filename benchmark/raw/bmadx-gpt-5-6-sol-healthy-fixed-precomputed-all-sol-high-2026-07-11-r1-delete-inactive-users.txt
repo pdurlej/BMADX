@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy  
+Thinking: high — suggestion only.  
+Why: Data deletion intersects billing protection, retention, auditability, and compliance; it is a red-zone change requiring BMAD ownership.  
+Status: Classification and execution allowed; BMAD healthy, cache unavailable, no warnings.  
+Next step: Define retention policy, paid-account exclusions, audit-data preservation, deletion safeguards, and verification evidence before implementation.

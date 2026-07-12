@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: This is a bounded copy change with explicit exclusions from sensitive systems.
+Plan:
+1. Add the onboarding email copy variant following the existing template pattern.
+2. Keep auth, billing, and data models untouched.
+Verify:
+1. Run relevant email/template tests and confirm rendering and variable substitution.
+2. Review the diff to confirm changes are limited to onboarding email copy and tests.

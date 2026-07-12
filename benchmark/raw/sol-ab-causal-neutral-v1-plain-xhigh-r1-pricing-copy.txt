@@ -1,0 +1,1 @@
+{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["The task is a small, localized, reversible copy change in the pricing page hero.","Pricing logic and billing behavior are explicitly out of scope, keeping the change low risk."]}

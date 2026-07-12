@@ -1,0 +1,29 @@
+{"process":"recovery","risk":"critical","handoff":true,"goal":true,"goal_stop":"Stop when validation passes, the delta stops shrinking, the repair budget is exhausted, or rollback ownership requires human approval.","loop":true,"loop_max_passes":3,"loop_stop":"Stop on validation success, a non-shrinking delta, any increased delta, exhausted passes, or a rollback/ownership hard stop requiring human review.","reasons":["The migration repair has already failed twice and remains incident-like.","Rollback ownership is unclear, making further changes rollback-uncertain and requiring broader review.","The remaining validation delta provides evidence for a bounded review/repair/validate loop only while it strictly shrinks."]}
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.144.1
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-sol-ab-zc2pmm82/workspace
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-sol-ab-zc2pmm82/codex-home-bmadx]
+reasoning effort: high
+reasoning summaries: none
+session id: 019f5585-04cf-7492-b995-77fbc224cf3a
+--------
+user
+Evaluate the workflow needed before implementation. Classify only: do not edit files, implement, or execute the task. You may read only an explicitly requested local skill. Use $bmadx internally to inform the decision, but translate the result to the neutral schema below. Do not expose BMADX gear names. Use these framework-neutral process definitions:
+- direct: tiny, local, reversible work that can be handled immediately.
+- bounded: limited multi-file work needing a short plan and explicit verification.
+- governed: consequential or cross-system work needing artifacts, ownership, review, or staged proof.
+- recovery: failed, incident-like, irreversible, or rollback-uncertain work needing a recovery package.
+Return exactly one JSON object and no markdown with keys in this order:
+{"process":"direct|bounded|governed|recovery","risk":"low|moderate|high|critical","handoff":true|false,"goal":true|false,"goal_stop":string|null,"loop":true|false,"loop_max_passes":integer|null,"loop_stop":string|null,"reasons":["1-3 task-grounded reasons"]}
+Use handoff only when broad review outside the immediate workflow is warranted. Use goal for multi-turn work with an explicit achieved, blocked, approval, human-review, or budget stop. Use loop only for repeated evidence-driven repair when one verification pass is insufficient; when true, set a maximum of 2-5 passes and a concrete stop condition.
+Task: A migration repair has failed twice. Validation output now gives a remaining delta after each attempt, rollback ownership is unclear, and the operator wants Codex to keep repairing only while the validation delta shrinks. Classify and say whether a bounded review/repair/validate loop is appropriate, but do not implement.
+codex
+{"process":"recovery","risk":"critical","handoff":true,"goal":true,"goal_stop":"Stop when validation passes, the delta stops shrinking, the repair budget is exhausted, or rollback ownership requires human approval.","loop":true,"loop_max_passes":3,"loop_stop":"Stop on validation success, a non-shrinking delta, any increased delta, exhausted passes, or a rollback/ownership hard stop requiring human review.","reasons":["The migration repair has already failed twice and remains incident-like.","Rollback ownership is unclear, making further changes rollback-uncertain and requiring broader review.","The remaining validation delta provides evidence for a bounded review/repair/validate loop only while it strictly shrinks."]}
+tokens used
+5059

@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy
+Why: Google OAuth, callback validation, and session behavior cross the authentication security boundary.
+Gate: classification and execution allowed; BMAD OK; cache unavailable; no warnings.
+Thinking: high — suggestion only.

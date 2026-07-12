@@ -1,0 +1,4 @@
+Choice: X1 — One-shot  
+Why: A tiny, copy-only pricing hero change with no pricing logic or billing behavior impact.  
+Thinking: medium — suggestion only.  
+Next step: Update the hero copy and visually confirm the page remains unchanged otherwise.

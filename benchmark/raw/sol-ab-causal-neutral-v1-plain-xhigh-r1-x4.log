@@ -1,0 +1,29 @@
+{"process":"governed","risk":"moderate","handoff":true,"goal":true,"goal_stop":"Stop when the plan, scaffold bundle, draft AGENTS.md, .customize.yaml snippets, and verification matrix are complete and ready for human review.","loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["The request spans project planning, repository scaffolding, agent guidance, configuration, and verification artifacts.","A messy project requires explicit scope, ownership, and review before repository-wide conventions are adopted.","The AGENTS.md and customization snippets can influence broad development workflows, warranting cross-project human review."]}
+
+--- STDERR ---
+Reading additional input from stdin...
+OpenAI Codex v0.144.1
+--------
+workdir: /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-sol-ab-k4ifdeq5/workspace
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /var/folders/hz/3nbx2tqj6k1_679y9589pmrw0000gn/T/bmadx-sol-ab-k4ifdeq5/codex-home-plain]
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019f5570-00c8-7832-80ab-a79968ca1561
+--------
+user
+Evaluate the workflow needed before implementation. Classify only: do not edit files, implement, or execute the task. You may read only an explicitly requested local skill. Use your own reasoning without loading or invoking a workflow skill. Use these framework-neutral process definitions:
+- direct: tiny, local, reversible work that can be handled immediately.
+- bounded: limited multi-file work needing a short plan and explicit verification.
+- governed: consequential or cross-system work needing artifacts, ownership, review, or staged proof.
+- recovery: failed, incident-like, irreversible, or rollback-uncertain work needing a recovery package.
+Return exactly one JSON object and no markdown with keys in this order:
+{"process":"direct|bounded|governed|recovery","risk":"low|moderate|high|critical","handoff":true|false,"goal":true|false,"goal_stop":string|null,"loop":true|false,"loop_max_passes":integer|null,"loop_stop":string|null,"reasons":["1-3 task-grounded reasons"]}
+Use handoff only when broad review outside the immediate workflow is warranted. Use goal for multi-turn work with an explicit achieved, blocked, approval, human-review, or budget stop. Use loop only for repeated evidence-driven repair when one verification pass is insufficient; when true, set a maximum of 2-5 passes and a concrete stop condition.
+Task: I need a plan for a messy project, a scaffold bundle, a draft AGENTS.md, .customize.yaml snippets, and a verify matrix.
+codex
+{"process":"governed","risk":"moderate","handoff":true,"goal":true,"goal_stop":"Stop when the plan, scaffold bundle, draft AGENTS.md, .customize.yaml snippets, and verification matrix are complete and ready for human review.","loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["The request spans project planning, repository scaffolding, agent guidance, configuration, and verification artifacts.","A messy project requires explicit scope, ownership, and review before repository-wide conventions are adopted.","The AGENTS.md and customization snippets can influence broad development workflows, warranting cross-project human review."]}
+tokens used
+12 221

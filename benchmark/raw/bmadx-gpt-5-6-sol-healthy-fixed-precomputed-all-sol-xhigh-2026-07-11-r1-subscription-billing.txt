@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy  
+Why: This changes billing rules and permission-sensitive invoice behavior—two red-zone areas requiring BMAD ownership and rigorous verification.  
+Gate: Classification and execution allowed; BMAD OK; no warnings.  
+Thinking: high — suggestion only.

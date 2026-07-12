@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy auth red-zone work; compact gate allows classification and execution.
+Thinking: high — suggestion only.
+Why: Auth-session cleanup must preserve login behavior and requires test-backed verification plus rollback documentation.
+Goal: yes — use `/goal`; achieved when current login behavior remains intact, all tests pass, and the rollback note is documented; stop earlier on approval, hard-stop, or human-review blocking.
+Loop: no — one planned implementation and verification pass is currently sufficient.

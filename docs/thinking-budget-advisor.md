@@ -22,8 +22,9 @@ global Codex defaults.
 | GPT-5.6 Luna | `medium` | `medium` | `high` | `xhigh` |
 
 Use `xhigh`, not `extra_high`. Current Sol and Terra also expose `max` and
-`ultra`; Luna exposes `max`. BMADX accepts those values but does not recommend
-them automatically until model-specific benchmark evidence exists.
+`ultra`; Luna exposes `max`. Execution does not default to those values. The
+separate [Planning Effort Advisor](planning-effort-advisor.md) may recommend
+them from explicit criteria with operator confirmation.
 
 ## When BMADX should show it
 
@@ -60,7 +61,8 @@ starts at `high` for the same shape and escalates only with evidence.
 
 The benchmark parser validates `Thinking:` against the task shape and active
 model profile while rejecting global config mutation. `max` and `ultra` are
-recognized Codex values, but the advisor does not select them by default.
+recognized Codex values, but the execution advisor does not select them by
+default.
 
 Do not claim token savings from the advisor until healthy and degraded benchmark
 runs show the savings without red-zone under-escalation, `X4` false positives,

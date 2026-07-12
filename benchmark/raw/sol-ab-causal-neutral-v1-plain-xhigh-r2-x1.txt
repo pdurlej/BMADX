@@ -1,0 +1,1 @@
+{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["A single error-message typo in one React component is tiny, local, and readily reversible.","Next, locate the exact string, correct it, and run a focused verification of the affected component."]}

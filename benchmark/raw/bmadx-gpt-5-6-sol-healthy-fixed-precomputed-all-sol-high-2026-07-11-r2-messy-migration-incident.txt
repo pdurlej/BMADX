@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode  
+Thinking: high — suggestion only.  
+Why: Partial migration failure, unclear ownership, risky rollback, and recovery scaffolding match X4/FUBAR criteria.  
+Gate: classification and execution allowed; BMAD status OK; no warnings.  
+Next step: BMAD-owned recovery planning should establish recovery, verification, rollback, and rollout owners before execution.

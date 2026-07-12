@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode (FUBAR)
+Why: A partially failed migration, unclear ownership, risky rollback, and need for a recovery scaffold are explicit X4 triggers.
+Gate: classification and execution allowed; BMAD available; cache miss; no warnings.
+Thinking: high — suggestion only.
+Next step: BMAD-owned recovery planning should establish rollout and verification owners before any database action.

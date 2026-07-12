@@ -23,6 +23,9 @@ early testers.
 
 Current public version: `v0.3.1`
 
+Main development line: `v0.3.2-dev`, adding criteria-based planning effort and
+reproducible Sol reasoning comparisons.
+
 GPT-5.6 Sol, Terra, and Luna passed their first subscription-backed healthy
 canaries on 2026-07-10. They remain candidate profiles until repeated healthy
 and degraded BMADX benchmarks pass.
@@ -283,6 +286,8 @@ More detail:
 - [scripts/install_and_verify_bmadx.py](scripts/install_and_verify_bmadx.py)
 - [scripts/install_bmadx.py](scripts/install_bmadx.py)
 - [benchmark/scripts/run_bmadx_benchmark.py](benchmark/scripts/run_bmadx_benchmark.py)
+- [benchmark/scripts/run_sol_bmadx_ab.py](benchmark/scripts/run_sol_bmadx_ab.py)
+- [Plain Sol vs BMADX A/B](docs/sol-bmadx-ab-2026-07-12.md)
 - [samples/fubar-bundle](samples/fubar-bundle)
 
 ## Contributing

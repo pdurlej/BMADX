@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: A bounded cross-file backend change needs coordinated implementation and verification.
+Plan:
+1. Trace the existing field flow and identify the four backend touchpoints.
+2. Add `status` consistently across the model, validation, service, and API layers.
+Verify:
+1. Run focused backend tests covering accepted, rejected, and persisted status values.
+2. Run the backend test suite and confirm all four files use compatible types and defaults.

@@ -116,6 +116,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=str(date.today()),
         help="Date stamp used in output file names (default: today)",
     )
+    parser.add_argument(
+        "--run-label",
+        default=None,
+        type=model_slug,
+        help="Optional filename-safe label that keeps experiments from overwriting artifacts",
+    )
     args = parser.parse_args(argv)
     try:
         args.groups = parse_groups(args.groups)
@@ -123,6 +129,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error(str(exc))
     if args.repeat < 1:
         parser.error("--repeat must be >= 1")
+    args.run_label = args.run_label or ""
     return args
 
 
@@ -153,15 +160,9 @@ def groups_slug(groups: list[str]) -> str:
 def compact_gate_hint(gate_report: dict | None) -> str:
     if not gate_report:
         return "run compact gate."
-    warning = gate_report.get("warning") or "none"
     return (
-        "use precomputed compact gate; do not run tools. "
-        f"Gate: gear={gate_report.get('requested_gear')} "
-        f"class={str(gate_report.get('classification_allowed')).lower()} "
-        f"exec={str(gate_report.get('execution_allowed')).lower()} "
-        f"bmad={gate_report.get('bmad_status')} "
-        f"cache={str(gate_report.get('cache_used')).lower()} "
-        f"warn={warning}."
+        "use route-independent precomputed BMAD health; do not run tools. "
+        f"BMAD status={gate_report.get('bmad_status')}."
     )
 
 
@@ -172,6 +173,7 @@ def build_prompt(
     include_handoff: bool = False,
     include_goal_loop: bool = False,
     gate_report: dict | None = None,
+    post_classification_gate: bool = False,
 ) -> str:
     content = scenario_path.read_text(encoding="utf-8")
     task_line = next(
@@ -179,7 +181,11 @@ def build_prompt(
         "",
     )
     task = task_line.partition("Task:")[2].strip()
-    gate_instruction = compact_gate_hint(gate_report)
+    gate_instruction = (
+        "commit the classification first; the harness runs the compact gate afterward; do not run tools."
+        if post_classification_gate
+        else compact_gate_hint(gate_report)
+    )
     allowed_reasoning, reasoning_mapping = reasoning_prompt_contract(model)
     prompt = (
         f"Use $bmadx. Classify only; {gate_instruction} "
@@ -230,10 +236,12 @@ def summary_path_for(
     reasoning_policy: str = "fixed",
     gate_mode: str = "precomputed",
     group_slug_value: str = "all",
+    run_label: str = "",
 ) -> Path:
+    label_suffix = f"-{run_label}" if run_label else ""
     return (
         BENCHMARK_ROOT
-        / f"summary-{date_stamp}-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}-bmadx.json"
+        / f"summary-{date_stamp}-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}{label_suffix}-bmadx.json"
     )
 
 
@@ -335,7 +343,7 @@ def validate_warmup_payload(profile: str, payload: dict) -> None:
         raise RuntimeError("Degraded BMADX warmup unexpectedly produced an ok, healthy dependency report.")
 
 
-def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path | None = None) -> None:
+def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path | None = None) -> dict:
     command = [
         sys.executable,
         str(codex_home / "skills" / "bmadx" / "scripts" / "sync_bmadx.py"),
@@ -353,7 +361,9 @@ def warmup_profile(codex_home: Path, profile: str, healthy_release_fixture: Path
         raise RuntimeError(
             f"Warmup BMADX failed for profile {profile}: {result.stderr.strip() or result.stdout.strip()}"
         )
-    validate_warmup_payload(profile, parse_json_report(result.stdout))
+    payload = parse_json_report(result.stdout)
+    validate_warmup_payload(profile, payload)
+    return payload
 
 
 def precompute_compact_gate(
@@ -448,6 +458,7 @@ def run_case(
     reasoning_policy: str,
     gate_mode: str,
     group_slug_value: str,
+    run_label: str,
     repeat_index: int,
 ) -> dict:
     scenario_path = Path(spec["path"])
@@ -460,19 +471,13 @@ def run_case(
     case_spec["expected_reasoning_effort"] = expected_reasoning
     case_reasoning = effective_reasoning(case_spec, reasoning, reasoning_policy)
     gate_report = None
-    if gate_mode == "precomputed":
-        gate_report = precompute_compact_gate(
-            codex_home,
-            profile,
-            str(spec["expected_gear"]),
-            healthy_release_fixture,
-        )
     prompt = build_prompt(
         scenario_path,
         model=model,
         include_handoff=spec.get("expected_handoff") is not None,
         include_goal_loop=spec.get("expected_goal") is not None or spec.get("expected_loop") is not None,
         gate_report=gate_report,
+        post_classification_gate=gate_mode == "precomputed",
     )
     command = build_codex_command(
         prompt,
@@ -494,8 +499,10 @@ def run_case(
     duration_seconds = time.perf_counter() - started_at
     stdout = result.stdout.rstrip() + "\n"
     stderr = sanitize_stderr(result.stderr.rstrip()) + "\n"
+    label_suffix = f"-{run_label}" if run_label else ""
     raw_base = RAW_ROOT / (
-        f"bmadx-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}-r{repeat_index}-{scenario_key}"
+        f"bmadx-{model_slug_value}-{profile}-{reasoning_policy}-{gate_mode}-{group_slug_value}"
+        f"{label_suffix}-r{repeat_index}-{scenario_key}"
     )
     raw_base.with_suffix(".txt").write_text(stdout, encoding="utf-8")
     raw_base.with_suffix(".log").write_text(stdout + "\n--- STDERR ---\n" + stderr, encoding="utf-8")
@@ -507,6 +514,13 @@ def run_case(
     if tokens is None:
         raise RuntimeError(f"codex exec did not report token usage for {scenario_key}")
     validation = validate_case(stdout, stderr, tokens, case_spec)
+    if gate_mode == "precomputed" and validation["selected_gear"]:
+        gate_report = precompute_compact_gate(
+            codex_home,
+            profile,
+            str(validation["selected_gear"]),
+            healthy_release_fixture,
+        )
     return {
         "case": f"bmadx-{profile}-{scenario_key}",
         "framework": "bmadx",
@@ -577,6 +591,7 @@ def run_scenario_group(
     reasoning_policy: str,
     gate_mode: str,
     group_slug_value: str,
+    run_label: str,
     repeat_index: int,
 ) -> list[dict]:
     return [
@@ -595,6 +610,7 @@ def run_scenario_group(
             reasoning_policy=reasoning_policy,
             gate_mode=gate_mode,
             group_slug_value=group_slug_value,
+            run_label=run_label,
             repeat_index=repeat_index,
         )
         for scenario_key, spec in scenarios.items()
@@ -653,6 +669,7 @@ def build_summary(
     gate_mode: str = "precomputed",
     groups: list[str] | None = None,
     group_slug_value: str = "all",
+    run_label: str = "",
     repeat: int = 1,
     cost_per_million_tokens: float | None = None,
 ) -> dict:
@@ -677,6 +694,7 @@ def build_summary(
             "reasoning_applied": not oss,
             "groups": groups,
             "group_slug": group_slug_value,
+            "run_label": run_label,
             "repeat": repeat,
             "mcp_startup": "no servers",
         },
@@ -780,6 +798,7 @@ def main() -> int:
             "reasoning_policy": args.reasoning_policy,
             "gate_mode": args.gate_mode,
             "group_slug_value": group_slug_value,
+            "run_label": args.run_label,
         }
         core_cases: list[dict] = []
         boundary_cases: list[dict] = []
@@ -864,6 +883,7 @@ def main() -> int:
         gate_mode=args.gate_mode,
         groups=args.groups,
         group_slug_value=group_slug_value,
+        run_label=args.run_label,
         repeat=args.repeat,
         cost_per_million_tokens=args.cost_per_million_tokens,
     )
@@ -874,6 +894,7 @@ def main() -> int:
         args.reasoning_policy,
         args.gate_mode,
         group_slug_value,
+        args.run_label,
     )
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(
@@ -888,6 +909,7 @@ def main() -> int:
                 "reasoning_policy": args.reasoning_policy,
                 "gate_mode": args.gate_mode,
                 "group_slug": group_slug_value,
+                "run_label": args.run_label,
                 "repeat": args.repeat,
             },
             indent=2,

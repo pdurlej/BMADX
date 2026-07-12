@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Thinking: medium — suggestion only.
+Why: A bounded backend change across four known files needs coordinated implementation and verification.
+Plan:
+1. Add the status field to the relevant backend models, contracts, and mappings across all four files.
+2. Follow existing field conventions and update affected serialization or processing paths.
+Verify:
+1. Run focused backend tests covering status input, persistence, and output.
+2. Run the relevant type checks and test suite to catch cross-file regressions.

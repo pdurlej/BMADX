@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode  
+Thinking: high — suggestion only.  
+Why: The messy project, unclear structure, and scaffold-shaped bundle require BMAD-first ownership and architecture recovery.  
+Gate: classification and execution allowed; BMAD healthy; cache miss; no warnings.  
+Next step: Begin with BMAD PRD and architecture before drafting the requested bundle and verification matrix.

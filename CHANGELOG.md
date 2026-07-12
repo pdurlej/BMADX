@@ -4,7 +4,26 @@ All notable changes to this repository will be documented here.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Added
+
+- Criteria-based planning-effort advisor that reports `Y/8` signals and may
+  recommend `high`, `xhigh`, `max`, or operator-confirmed `ultra` without
+  changing gear, BMAD gates, execution effort, or Codex configuration.
+- Optional benchmark `--run-label` for isolated raw and summary artifacts.
+- Framework-neutral, checkpointed plain-Sol versus BMADX A/B runner with
+  deterministic interleaving and shared scoring.
+- A/B runner v2 hardening: pinned per-call BMAD fixture, cleared inherited BMAD
+  environment, per-call filesystem isolation and hashes, exact resume manifest,
+  atomic checkpoints, explicit timeout, provenance hashes, and collision-safe names.
+
+### Benchmarks
+
+- GPT-5.6 Sol fixed-effort comparison for `medium`, `high`, and `xhigh` across
+  all groups with two repeats; retained as supplied-route contract conformance
+  because the legacy precomputed gate exposed the expected gear.
+- Blinded 180-case GPT-5.6 Sol A/B found a 13.33-16.67 percentage-point BMADX
+  exact-scorer gain at each tested effort, with higher token and latency cost;
+  external review classifies this as directional assigned-arm evidence only.
 
 ## [0.3.1] - 2026-07-10
 

@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy  
+Why: Data deletion intersects billing protections, retention, auditability, and compliance; it requires explicit eligibility and preservation rules.  
+Gate: execution allowed; BMAD OK; no warnings.  
+Thinking: high — suggestion only.

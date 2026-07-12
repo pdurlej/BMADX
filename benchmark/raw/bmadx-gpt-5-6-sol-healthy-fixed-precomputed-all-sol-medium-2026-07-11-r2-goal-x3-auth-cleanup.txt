@@ -1,0 +1,5 @@
+Choice: X3 — BMAD-heavy auth work; classification and execution are allowed by the precomputed gate.
+Why: Auth-session cleanup is red-zone work and must preserve current login behavior.
+Thinking: high — suggestion only.
+Goal: yes — use `/goal`; achieved when tests pass and the rollback note is documented, or stop on approval, hard-stop, or human-review blocking.
+Loop: no — multi-turn work alone does not require repeated repair passes.

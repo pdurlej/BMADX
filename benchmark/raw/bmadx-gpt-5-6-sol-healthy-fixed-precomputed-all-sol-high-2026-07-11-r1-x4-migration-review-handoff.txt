@@ -1,0 +1,5 @@
+Choice: X4 — Rescue Mode
+Why: Failed migration, unclear rollback ownership, production risk, large logs, and mandatory broad review make this recovery-shaped work.
+Thinking: high — suggestion only.
+Handoff: yes
+Next step: Establish ownership, evidence, rollback boundaries, and repair approval before issuing commands.

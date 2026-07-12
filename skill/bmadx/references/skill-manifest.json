@@ -1,6 +1,6 @@
 {
   "name": "bmadx",
-  "skill_version": "0.3.1",
+  "skill_version": "0.3.2-dev",
   "target_codex_profile": "codex-model-profiled",
   "supported_model_profiles": [
     "gpt-5.5",
@@ -27,6 +27,7 @@
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/planning-effort.md",
     "references/model-profiles.json",
     "references/model-compatibility.md",
     "references/goal-loop.md",
@@ -39,6 +40,8 @@
     "scripts/sync_bmadx.py",
     "scripts/check_codex_compat.py",
     "scripts/test_check_codex_compat.py",
+    "scripts/advise_planning_effort.py",
+    "scripts/test_advise_planning_effort.py",
     "scripts/test_sync_bmadx.py",
     "scripts/render_fubar_bundle.py",
     "assets/templates/AGENTS.repo.md",
@@ -80,5 +83,5 @@
     "_bmad/_config/agents",
     "_bmad-output/project-context.md"
   ],
-  "notes": "BMAD-first low-friction overlay with explicit GPT-5.5 and GPT-5.6 Sol/Terra/Luna profiles, concise X1/X2 response contracts, compact gate, and mixed-metric benchmark guardrails"
+  "notes": "BMAD-first low-friction overlay with model-aware execution advice, criteria-based planning effort, concise X1/X2 contracts, compact gate, and mixed-metric benchmark guardrails"
 }

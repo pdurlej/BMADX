@@ -1,0 +1,4 @@
+Choice: X3 — BMAD-heavy red-zone work  
+Why: Permanent data deletion intersects billing protection, retention, auditability, privacy, and rollback risk.  
+Gate: classification and execution allowed; BMAD available; no warnings.  
+Thinking: high — suggestion only.

@@ -1,0 +1,4 @@
+Choice: X1 — One-shot
+Thinking: medium — suggestion only.
+Why: This is a tiny, purely textual hero-copy change; pricing logic and billing behavior remain untouched.
+Next step: Update only the pricing hero copy, then confirm the pricing UI still renders correctly.

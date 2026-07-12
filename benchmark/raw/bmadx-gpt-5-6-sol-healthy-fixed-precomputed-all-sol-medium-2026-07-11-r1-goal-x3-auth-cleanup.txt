@@ -1,0 +1,6 @@
+Choice: X3 — BMAD-heavy auth work  
+Why: Auth is a red zone, and the existing BMAD story owns behavior preservation, testing, and rollback documentation.  
+Gate: classification and execution allowed; BMAD healthy; no warnings.  
+Thinking: high — suggestion only  
+Goal: yes — use `/goal`; achieved when current login behavior is preserved, tests pass, and the rollback note is documented; stop if blocked, approval is required, or human review is needed.  
+Loop: no — one implementation and verification pass is currently sufficient; multi-turn work alone does not justify a loop.

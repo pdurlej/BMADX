@@ -134,3 +134,21 @@ Start on `high`, not `max/ultra`.
 7. Stop on the first safety-critical failure and preserve dated evidence.
 
 Do not create new planning files unless the decision no longer fits this plan.
+
+## Post-release v0.3.2 Evidence
+
+Status: implementation in progress.
+
+- Sol `medium/high/xhigh` fixed-effort comparison completed across all groups,
+  repeat `2`.
+- Decision quality: `29/30`, `30/30`, `30/30` respectively.
+- `high` is the default recommendation for consequential Sol planning;
+  `xhigh` requires explicit complexity signals.
+- Planning `max/ultra` uses a visible eight-signal rubric and operator
+  confirmation; it remains provisional until planning-specific evidence.
+- The first neutral plain-Sol control produced directional assigned-arm gains,
+  but external review found fixture, activation, isolation, resume, and scorer
+  limits. Its v1 summary is historical evidence, not causal proof.
+- A/B runner v2 hardening is complete locally. The next live run must use an
+  opaque activation check, independently adjudicated held-out scenarios, and a
+  placebo/BMADX-only/BMADX+real-BMAD decomposition at `high` before effort work.

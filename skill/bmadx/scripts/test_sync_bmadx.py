@@ -28,6 +28,7 @@ LOCAL_FILES = [
     "references/architecture-guardrails.md",
     "references/broad-handoff.md",
     "references/thinking-budget.md",
+    "references/planning-effort.md",
     "references/model-profiles.json",
     "references/model-compatibility.md",
     "references/goal-loop.md",
@@ -40,6 +41,8 @@ LOCAL_FILES = [
     "scripts/sync_bmadx.py",
     "scripts/check_codex_compat.py",
     "scripts/test_check_codex_compat.py",
+    "scripts/advise_planning_effort.py",
+    "scripts/test_advise_planning_effort.py",
     "scripts/test_sync_bmadx.py",
     "scripts/render_fubar_bundle.py",
     "assets/templates/AGENTS.repo.md",
@@ -69,7 +72,7 @@ def write(path: Path, content: str) -> None:
 def build_manifest() -> dict:
     return {
         "name": "bmadx",
-        "skill_version": "0.3.1",
+        "skill_version": "0.3.2-dev",
         "target_codex_profile": "codex-model-profiled",
         "required_bmad_references": BMAD_REFS,
         "tracked_local_files": LOCAL_FILES,
@@ -112,6 +115,7 @@ def make_root(tmp: Path) -> Path:
     write(root / "references" / "architecture-guardrails.md", "Architecture Guardrail Card\n")
     write(root / "references" / "broad-handoff.md", "Broad Orchestrator Handoff\n")
     write(root / "references" / "thinking-budget.md", "Thinking Budget Advisor\n")
+    write(root / "references" / "planning-effort.md", "Planning Effort Advisor\n")
     write(root / "references" / "model-profiles.json", '{"profiles": {}}\n')
     write(root / "references" / "model-compatibility.md", "Codex Model Compatibility\n")
     write(root / "references" / "goal-loop.md", "Goal and Loop Discipline\n")
@@ -124,6 +128,8 @@ def make_root(tmp: Path) -> Path:
     write(root / "scripts" / "sync_bmadx.py", "placeholder\n")
     write(root / "scripts" / "check_codex_compat.py", "placeholder\n")
     write(root / "scripts" / "test_check_codex_compat.py", "placeholder\n")
+    write(root / "scripts" / "advise_planning_effort.py", "placeholder\n")
+    write(root / "scripts" / "test_advise_planning_effort.py", "placeholder\n")
     write(root / "scripts" / "test_sync_bmadx.py", "placeholder\n")
     write(root / "scripts" / "render_fubar_bundle.py", "placeholder\n")
     write(
@@ -512,7 +518,7 @@ class SyncBmadxTests(unittest.TestCase):
                     "remediation",
                 },
             )
-            self.assertEqual(payload["skill_version"], "0.3.1")
+            self.assertEqual(payload["skill_version"], "0.3.2-dev")
             self.assertEqual(payload["requested_gear"], "X1")
             self.assertTrue(payload["execution_allowed"])
             self.assertEqual(payload["bmad_status"], "warning")

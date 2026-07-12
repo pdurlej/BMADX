@@ -1,0 +1,9 @@
+Choice: X2 — Regular
+Why: A bounded copy-only change with no auth, billing, or data-model impact.
+Thinking: medium — suggestion only.
+Plan:
+1. Add the onboarding email copy variant following the existing template pattern.
+2. Keep changes limited to email content and variant selection.
+Verify:
+1. Confirm the new variant renders with the expected subject and body.
+2. Run relevant email tests and confirm protected areas remain unchanged.

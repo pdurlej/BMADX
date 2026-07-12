@@ -1,0 +1,4 @@
+Choice: X4 — Rescue Mode
+Why: Failed production migration, unclear rollback ownership, production risk, and required broad review make this recovery work.
+Thinking: high — suggestion only
+Handoff: yes
