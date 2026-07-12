@@ -137,7 +137,7 @@ def validate_panel_protocol(
 
 def deterministic_seed(seed: int, material: str) -> int:
     digest = hashlib.sha256(f"{seed}:{material}".encode()).digest()
-    return int.from_bytes(digest[:8])
+    return int.from_bytes(digest[:8], "big")
 
 
 def selected_blocks(

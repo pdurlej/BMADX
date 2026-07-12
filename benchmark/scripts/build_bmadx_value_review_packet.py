@@ -116,7 +116,8 @@ def build_packet(
             for case in block_cases
         ]
         order_seed = int.from_bytes(
-            hashlib.sha256(blinding_key + f":{block_id}:order".encode()).digest()[:8]
+            hashlib.sha256(blinding_key + f":{block_id}:order".encode()).digest()[:8],
+            "big",
         )
         random.Random(order_seed).shuffle(candidates)
         blocks.append(

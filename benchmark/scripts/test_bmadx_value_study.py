@@ -19,6 +19,7 @@ from bmadx_value_contract import (
 from build_bmadx_value_review_packet import build_packet, json_sha
 from run_bmadx_value_study import (
     DEFAULT_PROTOCOL,
+    REAL_BMAD_SKILL,
     build_schedule,
     load_protocol,
     load_resume,
@@ -26,6 +27,7 @@ from run_bmadx_value_study import (
     task_from_path,
     validate_protocol,
 )
+from run_sol_bmadx_ab import tree_sha256
 from run_bmadx_synthetic_review_panel import (
     build_panel_schedule,
     minimal_opencode_config,
@@ -226,7 +228,17 @@ class BmadxValueStudyTests(unittest.TestCase):
 
     def test_protocol_validates_against_frozen_sources(self) -> None:
         completed = type("Completed", (), {"returncode": 0})()
-        with patch("run_bmadx_value_study.subprocess.run", return_value=completed):
+        def frozen_external_bmad_hash(path: Path, **kwargs: object) -> str:
+            if Path(path).name == REAL_BMAD_SKILL:
+                return self.protocol["source_hashes"]["real_bmad_tree_sha256"]
+            return tree_sha256(path, **kwargs)
+
+        with patch(
+            "run_bmadx_value_study.subprocess.run", return_value=completed
+        ), patch(
+            "run_bmadx_value_study.tree_sha256",
+            side_effect=frozen_external_bmad_hash,
+        ):
             schedule = validate_protocol(self.protocol, DEFAULT_PROTOCOL)
         self.assertEqual(len(schedule), 162)
 
