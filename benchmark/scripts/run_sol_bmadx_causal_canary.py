@@ -39,7 +39,7 @@ from run_sol_bmadx_ab import (
 from sol_bmadx_ab_contract import build_causal_prompt, score_causal_response, task_from_scenario
 
 
-DEFAULT_PROTOCOL = BENCHMARK_ROOT / "protocols" / "sol-bmadx-causal-canary-v1.1.json"
+DEFAULT_PROTOCOL = BENCHMARK_ROOT / "protocols" / "sol-bmadx-causal-canary-v1.2.json"
 REAL_BMAD_SKILL = "bmad-method-codex"
 ARMS = ("placebo", "bmadx_stub", "bmadx_real")
 STUB_REFERENCES = (
@@ -74,7 +74,7 @@ def load_protocol(path: Path) -> dict[str, Any]:
 
 
 def validate_protocol(protocol: dict[str, Any], scenarios: dict[str, dict]) -> None:
-    if protocol.get("schema") != "sol_bmadx_causal_canary.v1.1":
+    if protocol.get("schema") != "sol_bmadx_causal_canary.v1.2":
         raise ValueError("Unsupported causal canary protocol schema")
     if protocol.get("model") != "gpt-5.6-sol" or protocol.get("effort") != "high":
         raise ValueError("Canary model and effort must remain frozen at gpt-5.6-sol/high")
@@ -84,6 +84,8 @@ def validate_protocol(protocol: dict[str, Any], scenarios: dict[str, dict]) -> N
         "bmad_dependency",
     ]:
         raise ValueError("Canary filesystem mutation scope is not frozen")
+    if protocol.get("schedule") != "scenario-stratified arm shuffle; safety-critical placebo last":
+        raise ValueError("Canary schedule policy is not frozen")
     assignments = protocol.get("assignments")
     if not isinstance(assignments, list) or len(assignments) != protocol.get("expected_call_count"):
         raise ValueError("Assignment count does not match expected_call_count")
@@ -116,6 +118,15 @@ def validate_protocol(protocol: dict[str, Any], scenarios: dict[str, dict]) -> N
     for item in assignments:
         if item.get("effort") != protocol["effort"] or item.get("repeat_index") != 1:
             raise ValueError("Assignment effort and repeat index must match the frozen protocol")
+    for scenario, metadata in scenario_protocol.items():
+        if metadata.get("safety_critical"):
+            scenario_arms = [
+                item["arm"]
+                for item in assignments
+                if item.get("scenario") == scenario
+            ]
+            if scenario_arms[-1:] != ["placebo"]:
+                raise ValueError(f"Safety-critical placebo must run last: {scenario}")
     for scenario, metadata in scenario_protocol.items():
         if scenario not in scenarios:
             raise ValueError(f"Unknown protocol scenario: {scenario}")
@@ -352,6 +363,11 @@ def case_id(protocol: dict[str, Any], assignment: dict[str, Any]) -> str:
     )
 
 
+def raw_artifact_paths(stem: str) -> tuple[Path, Path]:
+    base = RAW_ROOT / stem
+    return Path(f"{base}.txt"), Path(f"{base}.log")
+
+
 def protected_hashes(home: Path, workdir: Path, alias: str) -> dict[str, str]:
     return {
         "workspace": tree_sha256(workdir),
@@ -427,9 +443,9 @@ def run_assignment(
         stdout = result.stdout.rstrip() + "\n"
         stderr = sanitize_stderr(result.stderr.rstrip()) + "\n"
         stem = case_id(protocol, assignment)
-        raw_base = RAW_ROOT / stem
-        raw_base.with_suffix(".txt").write_text(stdout, encoding="utf-8")
-        raw_base.with_suffix(".log").write_text(
+        raw_txt, raw_log = raw_artifact_paths(stem)
+        raw_txt.write_text(stdout, encoding="utf-8")
+        raw_log.write_text(
             stdout + "\n--- STDERR ---\n" + stderr, encoding="utf-8"
         )
         if result.returncode != 0:
@@ -465,8 +481,8 @@ def run_assignment(
             "filesystem_mutation_detected": protected_before != protected_after,
             "setup": setup,
             **score,
-            "raw_txt": repo_relative(raw_base.with_suffix(".txt")),
-            "raw_log": repo_relative(raw_base.with_suffix(".log")),
+            "raw_txt": repo_relative(raw_txt),
+            "raw_log": repo_relative(raw_log),
         }
 
 

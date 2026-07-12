@@ -17,6 +17,7 @@ from run_sol_bmadx_causal_canary import (
     install_stub_bmad,
     load_protocol,
     protected_hashes,
+    raw_artifact_paths,
     validate_protocol,
 )
 from sol_bmadx_ab_contract import build_causal_prompt, score_causal_response
@@ -115,6 +116,14 @@ class SolBmadxCausalCanaryTests(unittest.TestCase):
             after = protected_hashes(home, workdir, "wf-placebo")
         self.assertNotEqual(before["assigned_skill"], after["assigned_skill"])
         self.assertNotEqual(before["workspace"], after["workspace"])
+
+    def test_raw_artifact_paths_preserve_dotted_protocol_version(self) -> None:
+        raw_txt, raw_log = raw_artifact_paths(
+            "canary-sol-bmadx-causal-canary-v1.2-gpt-5-6-sol-o01-placebo-x1"
+        )
+        self.assertTrue(raw_txt.name.endswith("-o01-placebo-x1.txt"))
+        self.assertTrue(raw_log.name.endswith("-o01-placebo-x1.log"))
+        self.assertNotEqual(raw_txt, raw_log)
 
     def test_causal_scorer_requires_exact_nonce(self) -> None:
         nonce = "c" * 32
