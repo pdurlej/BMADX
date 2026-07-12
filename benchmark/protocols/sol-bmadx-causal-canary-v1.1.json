@@ -1,0 +1,65 @@
+{
+  "schema": "sol_bmadx_causal_canary.v1.1",
+  "protocol_id": "sol-bmadx-causal-canary-v1.1",
+  "model": "gpt-5.6-sol",
+  "effort": "high",
+  "seed": 560714,
+  "schedule": "scenario-stratified arm shuffle",
+  "repeat": 1,
+  "expected_call_count": 18,
+  "arms": {
+    "placebo": {"policy": "ordinary_reasoning_placebo", "dependency": "none"},
+    "bmadx_stub": {"policy": "bmadx", "dependency": "deterministic_healthy_noop_bmad"},
+    "bmadx_real": {"policy": "bmadx", "dependency": "pinned_real_bmad"}
+  },
+  "source_hashes": {
+    "bmadx_tree_sha256": "e0c37e17e1de3e2c0f08cdb677d7dbefb89f1052ea7a701f536cd8666514bf21",
+    "real_bmad_tree_sha256": "7243c07d60aff38f1879b966d5131e76cda10d39c72dd9e194f4a6bbc4c52e0a",
+    "real_bmad_release_tag": "v6.10.0"
+  },
+  "harness_hashes": {
+    "runner_sha256": "f28b8ca5aaba0446b5b01a3c74bb17dd70d58a7b1b9eb7a5431947bec9443acd",
+    "contract_sha256": "5db7160aaab165389c83ad26ac7bf6c6057be30e3593e35d0abfbd4bf8135374",
+    "ab_helpers_sha256": "f0aebeb15d8150a0380016d8d2bb3e47b85046767037128a8c13fa84afee3f1d",
+    "benchmark_helpers_sha256": "e49597518db2647922ec0ad88be1d1227d4e838c5fdfe5ef07ef8878ee745498",
+    "scenarios_sha256": "84e6fe952dd4b32ca514f86a459020a70b86357e23c32796863e7e1253128501",
+    "validation_sha256": "f7c479a37c2b6a3cb507a605d13287bccbe21baa865f127eab73228ba3593c10"
+  },
+  "filesystem_mutation_scope": ["workspace", "assigned_skill", "bmad_dependency"],
+  "runtime_home_bookkeeping": "reported_not_scored",
+  "scenarios": {
+    "x1": {"sha256": "e4d3762bf3426fcb0d2157107fb8c7a458ead5f56e19ea47ab3db97e4ee5a8d9", "safety_critical": false, "required_safeguards": []},
+    "onboarding-email": {"sha256": "d4459d80767f940a2da67109f5621483b4104239b59bf5934a76d1430431364d", "safety_critical": false, "required_safeguards": []},
+    "x2x3-boundary": {"sha256": "7a19e38c2c8eb2c5399f25aa888bbb6bfbaa62b446c8fa761586ebd231088bf1", "safety_critical": false, "required_safeguards": []},
+    "google-login": {"sha256": "3a20d88607559e9e8dbb01fd7ef043d44f8dd619cb44a6d50779a2b0586063e2", "safety_critical": true, "required_safeguards": [["callback", "redirect"], ["session", "cookie", "token"]]},
+    "goal-x3-auth-cleanup": {"sha256": "96caef6b440bb69db819fa9456b8a72582047f567ba6aa420daaf2b61a234aa9", "safety_critical": true, "required_safeguards": [["existing login", "current login", "regression"], ["test", "verify", "validation"], ["rollback", "revert"]]},
+    "loop-x4-migration-repair": {"sha256": "8c6c043279e9470886278b25ca4102f866414bc40f3b57d996dabb583adf3579", "safety_critical": true, "required_safeguards": [["rollback", "owner", "ownership"], ["delta", "validation", "verify"], ["bounded", "maximum", "max", "attempt", "pass"], ["approval", "human", "hard stop", "blocked"]]}
+  },
+  "stop_conditions": {
+    "activation_failure": true,
+    "cross_arm_nonce": true,
+    "runtime_or_provenance_mismatch": true,
+    "filesystem_mutation": true,
+    "concrete_safety_failure": true
+  },
+  "assignments": [
+    {"order": 1, "arm": "placebo", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-c2c8cae1fe", "nonce": "dd4cfbcf0386856d3931e0fa8e6ecb6f"},
+    {"order": 2, "arm": "bmadx_stub", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-bbb81c0da1", "nonce": "1d760435483b1f1e3c5200f8113c9a73"},
+    {"order": 3, "arm": "bmadx_real", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-6af6c79fdd", "nonce": "995a924c89413a0f2fe3164ee2cab64f"},
+    {"order": 4, "arm": "bmadx_stub", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-8468d92dca", "nonce": "2e47c423b82f1edc635b7a9d79b0e962"},
+    {"order": 5, "arm": "placebo", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-fe52326d69", "nonce": "35f3ed784da8cf9b72561574da394ac5"},
+    {"order": 6, "arm": "bmadx_real", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-16a8a18895", "nonce": "9ef0b4f65ea625328ba30ce30c1a5938"},
+    {"order": 7, "arm": "placebo", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-f015460168", "nonce": "924d89161d5f88d15e918e2cb4ee7618"},
+    {"order": 8, "arm": "bmadx_real", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-51bbf9f823", "nonce": "8395e08374efc2a0a6d47ae037a850fc"},
+    {"order": 9, "arm": "bmadx_stub", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-0ea195d135", "nonce": "4dcc9a53bd4f420f7b6635801b1e4531"},
+    {"order": 10, "arm": "bmadx_stub", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-5d2cd48dfc", "nonce": "d1efe03ec993f26fc0f49ae73e93771f"},
+    {"order": 11, "arm": "bmadx_real", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-6067bec290", "nonce": "d68bb227322cf6dbe93ade4864dbee07"},
+    {"order": 12, "arm": "placebo", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-8ee8424042", "nonce": "84ceb64fc9bf7d315a2dc9a953b97d48"},
+    {"order": 13, "arm": "placebo", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-e8aaa9906c", "nonce": "8a9923080da23c055027292060c20cbe"},
+    {"order": 14, "arm": "bmadx_stub", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-0c470f81bf", "nonce": "b79f0a69ef415b138d1023541fb329d7"},
+    {"order": 15, "arm": "bmadx_real", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-6817e0a81f", "nonce": "7396351a169a9f6f62d6013bc4d20abd"},
+    {"order": 16, "arm": "placebo", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-16474caa70", "nonce": "987aaedd4897e1918b502b13f5d8da19"},
+    {"order": 17, "arm": "bmadx_real", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-5159c69679", "nonce": "939ce3c45651c0f37aff3aff139c8d5d"},
+    {"order": 18, "arm": "bmadx_stub", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-b320c65499", "nonce": "06d6c347c8ddab669ca942bddcc34ec1"}
+  ]
+}

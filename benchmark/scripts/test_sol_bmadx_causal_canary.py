@@ -16,6 +16,7 @@ from run_sol_bmadx_causal_canary import (
     install_placebo_skill,
     install_stub_bmad,
     load_protocol,
+    protected_hashes,
     validate_protocol,
 )
 from sol_bmadx_ab_contract import build_causal_prompt, score_causal_response
@@ -87,6 +88,33 @@ class SolBmadxCausalCanaryTests(unittest.TestCase):
         self.assertEqual(payload["action"], "ok")
         self.assertEqual(payload["latest_release"]["tag"], "stub-healthy-v1")
         self.assertIn("No workflow guidance", skill)
+
+    def test_protected_hashes_ignore_runtime_bookkeeping(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            home = root / "home"
+            workdir = root / "workspace"
+            install_placebo_skill(home, "wf-placebo", "a" * 32)
+            workdir.mkdir()
+            before = protected_hashes(home, workdir, "wf-placebo")
+            (home / "models_cache.json").write_text("{}\n", encoding="utf-8")
+            (home / "state_5.sqlite").write_bytes(b"runtime bookkeeping")
+            after = protected_hashes(home, workdir, "wf-placebo")
+        self.assertEqual(before, after)
+
+    def test_protected_hashes_detect_assigned_skill_and_workspace_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            home = root / "home"
+            workdir = root / "workspace"
+            install_placebo_skill(home, "wf-placebo", "a" * 32)
+            workdir.mkdir()
+            before = protected_hashes(home, workdir, "wf-placebo")
+            (home / "skills" / "wf-placebo" / "extra.txt").write_text("changed\n")
+            (workdir / "output.txt").write_text("changed\n")
+            after = protected_hashes(home, workdir, "wf-placebo")
+        self.assertNotEqual(before["assigned_skill"], after["assigned_skill"])
+        self.assertNotEqual(before["workspace"], after["workspace"])
 
     def test_causal_scorer_requires_exact_nonce(self) -> None:
         nonce = "c" * 32

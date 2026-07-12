@@ -39,7 +39,7 @@ from run_sol_bmadx_ab import (
 from sol_bmadx_ab_contract import build_causal_prompt, score_causal_response, task_from_scenario
 
 
-DEFAULT_PROTOCOL = BENCHMARK_ROOT / "protocols" / "sol-bmadx-causal-canary-v1.json"
+DEFAULT_PROTOCOL = BENCHMARK_ROOT / "protocols" / "sol-bmadx-causal-canary-v1.1.json"
 REAL_BMAD_SKILL = "bmad-method-codex"
 ARMS = ("placebo", "bmadx_stub", "bmadx_real")
 STUB_REFERENCES = (
@@ -74,10 +74,16 @@ def load_protocol(path: Path) -> dict[str, Any]:
 
 
 def validate_protocol(protocol: dict[str, Any], scenarios: dict[str, dict]) -> None:
-    if protocol.get("schema") != "sol_bmadx_causal_canary.v1":
+    if protocol.get("schema") != "sol_bmadx_causal_canary.v1.1":
         raise ValueError("Unsupported causal canary protocol schema")
     if protocol.get("model") != "gpt-5.6-sol" or protocol.get("effort") != "high":
         raise ValueError("Canary model and effort must remain frozen at gpt-5.6-sol/high")
+    if protocol.get("filesystem_mutation_scope") != [
+        "workspace",
+        "assigned_skill",
+        "bmad_dependency",
+    ]:
+        raise ValueError("Canary filesystem mutation scope is not frozen")
     assignments = protocol.get("assignments")
     if not isinstance(assignments, list) or len(assignments) != protocol.get("expected_call_count"):
         raise ValueError("Assignment count does not match expected_call_count")
@@ -346,6 +352,14 @@ def case_id(protocol: dict[str, Any], assignment: dict[str, Any]) -> str:
     )
 
 
+def protected_hashes(home: Path, workdir: Path, alias: str) -> dict[str, str]:
+    return {
+        "workspace": tree_sha256(workdir),
+        "assigned_skill": tree_sha256(home / "skills" / alias),
+        "bmad_dependency": tree_sha256(home / "skills" / REAL_BMAD_SKILL),
+    }
+
+
 def arm_summary(cases: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "case_count": len(cases),
@@ -395,7 +409,7 @@ def run_assignment(
             reasoning=protocol["effort"],
         )
         home_before = tree_sha256(home)
-        workspace_before = tree_sha256(workdir)
+        protected_before = protected_hashes(home, workdir, assignment["alias"])
         started_at = datetime.now(timezone.utc).isoformat()
         started = time.perf_counter()
         try:
@@ -433,7 +447,7 @@ def run_assignment(
             safety_critical=scenario_meta["safety_critical"],
         )
         home_after = tree_sha256(home)
-        workspace_after = tree_sha256(workdir)
+        protected_after = protected_hashes(home, workdir, assignment["alias"])
         return {
             "case_id": stem,
             **assignment,
@@ -445,9 +459,10 @@ def run_assignment(
             "scenario_sha256": sha256_file(Path(spec["path"])),
             "home_sha256_before": home_before,
             "home_sha256_after": home_after,
-            "workspace_sha256_before": workspace_before,
-            "workspace_sha256_after": workspace_after,
-            "filesystem_mutation_detected": home_before != home_after or workspace_before != workspace_after,
+            "runtime_home_bookkeeping_mutation_detected": home_before != home_after,
+            "protected_sha256_before": protected_before,
+            "protected_sha256_after": protected_after,
+            "filesystem_mutation_detected": protected_before != protected_after,
             "setup": setup,
             **score,
             "raw_txt": repo_relative(raw_base.with_suffix(".txt")),
