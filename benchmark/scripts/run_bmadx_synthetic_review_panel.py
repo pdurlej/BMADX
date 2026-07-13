@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import os
@@ -22,7 +23,7 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
 DEFAULT_REVIEW_AMENDMENT = (
-    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.1.json"
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.2.json"
 )
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
@@ -133,18 +134,20 @@ def validate_review_amendment(
 ) -> None:
     expected = {
         "schema": "bmadx_review_runner_amendment.v1",
+        "amendment_id": "pi-unambiguous-score-key-normalization-v1.2",
         "value_protocol_sha256": sha256_file(protocol_path),
         "panel_protocol_sha256": sha256_file(panel_path),
-        "original_runner_sha256": (
-            "df704825a558bb89b2deeeccb4e7a7cb1a9cc3e7afb6f77e5228b9bee308d698"
+        "previous_amendment_sha256": (
+            "e58159c34c2e417bf642734f55b75e2fde404991cd1295f02c85b27518803f5b"
         ),
         "amended_runner_sha256": sha256_file(Path(__file__)),
-        "valid_votes_before_amendment": 0,
+        "valid_votes_before_amendment": 83,
         "invalid_canary_calls_before_amendment": 1,
         "restart_panel_from_zero": True,
         "changes_candidate_order": False,
         "changes_rubric_or_scoring": False,
         "changes_models_or_call_counts": False,
+        "normalizes_only_one_unambiguous_numeric_dimension_key": True,
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise ValueError("Synthetic review-runner amendment is not frozen")
@@ -280,6 +283,47 @@ def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
                 if isinstance(item, dict) and item.get("type") == "text"
             )
     return judgment_from_text(pi_final or "")
+
+
+def normalize_judgment_keys(judgment: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if judgment is None:
+        return []
+    allowed = set(REVIEW_DIMENSIONS) | {
+        "candidate_id",
+        "safety_omission",
+        "fatal_flaw",
+        "notes",
+    }
+    normalizations = []
+    for index, review in enumerate(judgment.get("candidate_reviews") or []):
+        if not isinstance(review, dict):
+            continue
+        missing = [dimension for dimension in REVIEW_DIMENSIONS if dimension not in review]
+        unknown_numeric = [
+            key
+            for key, value in review.items()
+            if key not in allowed
+            and isinstance(value, int)
+            and not isinstance(value, bool)
+            and 1 <= value <= 7
+        ]
+        if len(missing) != 1 or len(unknown_numeric) != 1:
+            continue
+        source = unknown_numeric[0]
+        target = missing[0]
+        similarity = difflib.SequenceMatcher(None, source, target).ratio()
+        if similarity < 0.85:
+            continue
+        review[target] = review.pop(source)
+        normalizations.append(
+            {
+                "candidate_index": index,
+                "source_key": source,
+                "target_key": target,
+                "similarity": round(similarity, 6),
+            }
+        )
+    return normalizations
 
 
 def validate_judgment(
@@ -593,6 +637,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 returncode = 124
             judgment = parse_runtime_output(stdout)
+            normalizations = normalize_judgment_keys(judgment)
             validation = validate_judgment(judgment, block)
             record = {
                 "call_id": call["call_id"],
@@ -608,6 +653,7 @@ def main(argv: list[str] | None = None) -> int:
                 "duration_seconds": round(time.monotonic() - started, 3),
                 "returncode": returncode,
                 "validation_errors": validation["errors"],
+                "normalizations": normalizations,
                 "stderr_present": bool(stderr),
                 "stderr_sha256": hashlib.sha256(stderr.encode()).hexdigest(),
                 "judgment": judgment,

@@ -1,0 +1,16 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "pi-unambiguous-score-key-normalization-v1.2",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
+  "previous_amendment_sha256": "e58159c34c2e417bf642734f55b75e2fde404991cd1295f02c85b27518803f5b",
+  "amended_runner_sha256": "dec0ab8ee3d4e121536a8046d9517b7f20b817ec5e75a416a258ea24cc507555",
+  "reason": "Normalize one unambiguous near-match numeric rubric-dimension key before schema validation.",
+  "valid_votes_before_amendment": 83,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true
+}

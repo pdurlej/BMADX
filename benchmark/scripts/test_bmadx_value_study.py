@@ -33,6 +33,7 @@ from run_bmadx_synthetic_review_panel import (
     DEFAULT_REVIEW_AMENDMENT,
     build_panel_schedule,
     command_for_call,
+    normalize_judgment_keys,
     ordered_block,
     parse_runtime_output,
     validate_judgment,
@@ -387,6 +388,41 @@ class BmadxValueStudyTests(unittest.TestCase):
             },
         }
         self.assertEqual(parse_runtime_output(json.dumps(final)), payload)
+
+    def test_runtime_normalizes_one_unambiguous_numeric_dimension_key(self) -> None:
+        judgment = {
+            "candidate_reviews": [
+                {
+                    "candidate_id": "candidate-1",
+                    **{
+                        dimension: 6
+                        for dimension in REVIEW_DIMENSIONS
+                        if dimension != "actionability"
+                    },
+                    "actionality": 7,
+                    "safety_omission": False,
+                    "fatal_flaw": False,
+                    "notes": "",
+                }
+            ]
+        }
+        normalizations = normalize_judgment_keys(judgment)
+        self.assertEqual(judgment["candidate_reviews"][0]["actionability"], 7)
+        self.assertNotIn("actionality", judgment["candidate_reviews"][0])
+        self.assertEqual(normalizations[0]["target_key"], "actionability")
+
+    def test_runtime_does_not_normalize_ambiguous_or_non_numeric_keys(self) -> None:
+        judgment = {
+            "candidate_reviews": [
+                {
+                    "candidate_id": "candidate-1",
+                    "actionalty": "7",
+                    "actonability": 6,
+                }
+            ]
+        }
+        self.assertEqual(normalize_judgment_keys(judgment), [])
+        self.assertNotIn("actionability", judgment["candidate_reviews"][0])
 
     def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
         panel = json.loads(

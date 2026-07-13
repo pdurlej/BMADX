@@ -17,6 +17,12 @@ markdown fence. No valid vote was recorded. Review-runner amendment v1.1 adds
 only deterministic fence normalization and restarts all 325 calls from zero;
 it is frozen in `benchmark/value-study/review-runner-amendment-v1.1.json`.
 
+The v1.1 review run then stopped after 83 valid judgments when Kimi emitted the
+unambiguous numeric key typo `actionality` for `actionability`. No failed call
+was counted. Amendment v1.2 adds a generic near-match normalization only when
+one required numeric dimension and one unknown numeric key map unambiguously;
+every normalization is checkpointed, and all 325 calls restart from zero.
+
 ## Estimands
 
 Primary:
