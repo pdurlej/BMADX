@@ -28,6 +28,11 @@ The v1.2 review run stopped after 58 valid judgments when Kimi used
 frozen generic rubric suffixes before the same one-key near-match rule. It does
 not infer missing values or alter scores, and restarts all calls from zero.
 
+The v1.3 review run stopped after 9 valid judgments when DeepSeek copied one
+character of an opaque candidate ID incorrectly. Amendment v1.4 normalizes an
+ID only when exactly one unused expected ID is at edit distance one, applies
+the same substitution to preferences, records it, and restarts from zero.
+
 ## Estimands
 
 Primary:

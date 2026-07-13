@@ -23,7 +23,7 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
 DEFAULT_REVIEW_AMENDMENT = (
-    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.3.json"
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.4.json"
 )
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
@@ -134,14 +134,14 @@ def validate_review_amendment(
 ) -> None:
     expected = {
         "schema": "bmadx_review_runner_amendment.v1",
-        "amendment_id": "pi-canonical-score-key-normalization-v1.3",
+        "amendment_id": "pi-opaque-id-normalization-v1.4",
         "value_protocol_sha256": sha256_file(protocol_path),
         "panel_protocol_sha256": sha256_file(panel_path),
         "previous_amendment_sha256": (
-            "1ac910dfb70778070263f9d351b06bdf15aaf4f2d4414bc9a8c8e23651875bfe"
+            "d9ba136fa4d5ec7ea1d5a9fb8e6b8200b6f80183186d14b99c0a5248d57be255"
         ),
         "amended_runner_sha256": sha256_file(Path(__file__)),
-        "valid_votes_before_amendment": 58,
+        "valid_votes_before_amendment": 9,
         "invalid_canary_calls_before_amendment": 1,
         "restart_panel_from_zero": True,
         "changes_candidate_order": False,
@@ -149,6 +149,7 @@ def validate_review_amendment(
         "changes_models_or_call_counts": False,
         "normalizes_only_one_unambiguous_numeric_dimension_key": True,
         "canonicalizes_only_frozen_generic_rubric_suffixes": True,
+        "normalizes_only_unique_distance_one_candidate_ids": True,
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise ValueError("Synthetic review-runner amendment is not frozen")
@@ -340,6 +341,73 @@ def normalize_judgment_keys(judgment: dict[str, Any] | None) -> list[dict[str, A
                 "source_stem": source_stem,
                 "target_stem": target_stem,
                 "similarity": round(similarity, 6),
+            }
+        )
+    return normalizations
+
+
+def edit_distance_at_most_one(left: str, right: str) -> bool:
+    if left == right or abs(len(left) - len(right)) > 1:
+        return False
+    if len(left) == len(right):
+        return sum(a != b for a, b in zip(left, right, strict=True)) == 1
+    shorter, longer = (left, right) if len(left) < len(right) else (right, left)
+    short_index = 0
+    long_index = 0
+    edits = 0
+    while short_index < len(shorter) and long_index < len(longer):
+        if shorter[short_index] == longer[long_index]:
+            short_index += 1
+            long_index += 1
+            continue
+        edits += 1
+        long_index += 1
+        if edits > 1:
+            return False
+    return True
+
+
+def normalize_candidate_ids(
+    judgment: dict[str, Any] | None, block: dict[str, Any]
+) -> list[dict[str, Any]]:
+    if judgment is None:
+        return []
+    expected = [candidate["candidate_id"] for candidate in block["candidates"]]
+    reviews = judgment.get("candidate_reviews") or []
+    observed = {
+        review.get("candidate_id")
+        for review in reviews
+        if isinstance(review, dict) and review.get("candidate_id") in expected
+    }
+    normalizations = []
+    for index, review in enumerate(reviews):
+        if not isinstance(review, dict):
+            continue
+        source = review.get("candidate_id")
+        if not isinstance(source, str) or source in expected:
+            continue
+        matches = [
+            candidate_id
+            for candidate_id in expected
+            if candidate_id not in observed
+            and edit_distance_at_most_one(source, candidate_id)
+        ]
+        if len(matches) != 1:
+            continue
+        target = matches[0]
+        review["candidate_id"] = target
+        preferred = judgment.get("preferred_candidate_ids") or []
+        judgment["preferred_candidate_ids"] = [
+            target if candidate_id == source else candidate_id
+            for candidate_id in preferred
+        ]
+        observed.add(target)
+        normalizations.append(
+            {
+                "candidate_index": index,
+                "source_candidate_id": source,
+                "target_candidate_id": target,
+                "edit_distance": 1,
             }
         )
     return normalizations
@@ -657,6 +725,7 @@ def main(argv: list[str] | None = None) -> int:
                 returncode = 124
             judgment = parse_runtime_output(stdout)
             normalizations = normalize_judgment_keys(judgment)
+            normalizations.extend(normalize_candidate_ids(judgment, block))
             validation = validate_judgment(judgment, block)
             record = {
                 "call_id": call["call_id"],

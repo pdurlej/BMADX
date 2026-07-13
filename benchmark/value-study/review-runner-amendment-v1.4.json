@@ -1,0 +1,18 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "pi-opaque-id-normalization-v1.4",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
+  "previous_amendment_sha256": "d9ba136fa4d5ec7ea1d5a9fb8e6b8200b6f80183186d14b99c0a5248d57be255",
+  "amended_runner_sha256": "4cc93efe184263f006a6d28bacb987e8ff3a53fe1ad2da566839d4f7c992ed21",
+  "reason": "Normalize a copied opaque candidate ID only when exactly one unused expected ID is at edit distance one.",
+  "valid_votes_before_amendment": 9,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true
+}

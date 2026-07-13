@@ -34,6 +34,7 @@ from run_bmadx_synthetic_review_panel import (
     build_panel_schedule,
     command_for_call,
     normalize_judgment_keys,
+    normalize_candidate_ids,
     ordered_block,
     parse_runtime_output,
     validate_judgment,
@@ -445,6 +446,46 @@ class BmadxValueStudyTests(unittest.TestCase):
         self.assertEqual(judgment["candidate_reviews"][0]["safeguard_coverage"], 7)
         self.assertEqual(normalizations[0]["source_stem"], "safeguard")
         self.assertEqual(normalizations[0]["target_stem"], "safeguard")
+
+    def test_runtime_normalizes_one_unique_candidate_id_typo(self) -> None:
+        block = {
+            "candidates": [
+                {"candidate_id": "candidate-3f4a9cba0481"},
+                {"candidate_id": "candidate-bae827b74208"},
+            ]
+        }
+        judgment = {
+            "candidate_reviews": [
+                {"candidate_id": "candidate-3f4c9cba0481"},
+                {"candidate_id": "candidate-bae827b74208"},
+            ],
+            "preferred_candidate_ids": ["candidate-3f4c9cba0481"],
+        }
+        normalizations = normalize_candidate_ids(judgment, block)
+        self.assertEqual(
+            judgment["candidate_reviews"][0]["candidate_id"],
+            "candidate-3f4a9cba0481",
+        )
+        self.assertEqual(
+            judgment["preferred_candidate_ids"], ["candidate-3f4a9cba0481"]
+        )
+        self.assertEqual(normalizations[0]["edit_distance"], 1)
+
+    def test_runtime_does_not_normalize_ambiguous_candidate_id(self) -> None:
+        block = {
+            "candidates": [
+                {"candidate_id": "candidate-aaa1"},
+                {"candidate_id": "candidate-aaa2"},
+            ]
+        }
+        judgment = {
+            "candidate_reviews": [{"candidate_id": "candidate-aaa3"}],
+            "preferred_candidate_ids": ["candidate-aaa3"],
+        }
+        self.assertEqual(normalize_candidate_ids(judgment, block), [])
+        self.assertEqual(
+            judgment["candidate_reviews"][0]["candidate_id"], "candidate-aaa3"
+        )
 
     def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
         panel = json.loads(
