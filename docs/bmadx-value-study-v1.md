@@ -38,6 +38,13 @@ complete fenced judgment in its final `thinking` item and emitted no `text`.
 Amendment v1.5 uses that item only when text is empty and the entire thinking
 value parses as a complete judgment; mixed reasoning plus JSON remains invalid.
 
+The v1.5 review run stopped after 53 valid judgments when DeepSeek corrupted an
+opaque candidate ID by two edits and returned the otherwise complete review set
+in a different order. Amendment v1.6 maps an ID only to a unique nearest unused
+expected ID at edit distance at most two, then reorders only an exact complete
+candidate set to the presented order. It does not alter scores or preferences,
+records both transformations, and restarts all calls from zero.
+
 ## Estimands
 
 Primary:

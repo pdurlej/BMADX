@@ -35,6 +35,7 @@ from run_bmadx_synthetic_review_panel import (
     command_for_call,
     normalize_judgment_keys,
     normalize_candidate_ids,
+    normalize_candidate_order,
     ordered_block,
     parse_runtime_output,
     validate_judgment,
@@ -517,6 +518,49 @@ class BmadxValueStudyTests(unittest.TestCase):
         self.assertEqual(normalize_candidate_ids(judgment, block), [])
         self.assertEqual(
             judgment["candidate_reviews"][0]["candidate_id"], "candidate-aaa3"
+        )
+
+    def test_runtime_normalizes_unique_distance_two_candidate_id(self) -> None:
+        block = {
+            "candidates": [
+                {"candidate_id": "candidate-ae441c0e8ed3"},
+                {"candidate_id": "candidate-f9842b9ac2c7"},
+                {"candidate_id": "candidate-a9d712046e27"},
+            ]
+        }
+        judgment = {
+            "candidate_reviews": [
+                {"candidate_id": "candidate-a9d712b6e27"},
+            ],
+            "preferred_candidate_ids": ["candidate-a9d712b6e27"],
+        }
+        normalizations = normalize_candidate_ids(judgment, block)
+        self.assertEqual(normalizations[0]["edit_distance"], 2)
+        self.assertEqual(
+            judgment["candidate_reviews"][0]["candidate_id"],
+            "candidate-a9d712046e27",
+        )
+
+    def test_runtime_reorders_only_complete_candidate_set(self) -> None:
+        block = {
+            "candidates": [
+                {"candidate_id": "candidate-a"},
+                {"candidate_id": "candidate-b"},
+                {"candidate_id": "candidate-c"},
+            ]
+        }
+        judgment = {
+            "candidate_reviews": [
+                {"candidate_id": "candidate-c"},
+                {"candidate_id": "candidate-a"},
+                {"candidate_id": "candidate-b"},
+            ]
+        }
+        normalizations = normalize_candidate_order(judgment, block)
+        self.assertEqual(len(normalizations), 1)
+        self.assertEqual(
+            [review["candidate_id"] for review in judgment["candidate_reviews"]],
+            ["candidate-a", "candidate-b", "candidate-c"],
         )
 
     def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
