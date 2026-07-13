@@ -29,11 +29,14 @@ from run_bmadx_value_study import (
 )
 from run_sol_bmadx_ab import tree_sha256
 from run_bmadx_synthetic_review_panel import (
+    DEFAULT_PANEL,
+    DEFAULT_REVIEW_AMENDMENT,
     build_panel_schedule,
     command_for_call,
     ordered_block,
     parse_runtime_output,
     validate_judgment,
+    validate_review_amendment,
 )
 
 
@@ -228,19 +231,37 @@ class BmadxValueStudyTests(unittest.TestCase):
 
     def test_protocol_validates_against_frozen_sources(self) -> None:
         completed = type("Completed", (), {"returncode": 0})()
+        actual_sha256_file = __import__(
+            "run_bmadx_value_study"
+        ).sha256_file
+
         def frozen_external_bmad_hash(path: Path, **kwargs: object) -> str:
             if Path(path).name == REAL_BMAD_SKILL:
                 return self.protocol["source_hashes"]["real_bmad_tree_sha256"]
             return tree_sha256(path, **kwargs)
+
+        def frozen_generation_harness_hash(path: Path) -> str:
+            if Path(path).name == "run_bmadx_synthetic_review_panel.py":
+                return self.protocol["harness_hashes"][
+                    "synthetic_panel_runner_sha256"
+                ]
+            return actual_sha256_file(path)
 
         with patch(
             "run_bmadx_value_study.subprocess.run", return_value=completed
         ), patch(
             "run_bmadx_value_study.tree_sha256",
             side_effect=frozen_external_bmad_hash,
+        ), patch(
+            "run_bmadx_value_study.sha256_file",
+            side_effect=frozen_generation_harness_hash,
         ):
             schedule = validate_protocol(self.protocol, DEFAULT_PROTOCOL)
         self.assertEqual(len(schedule), 162)
+
+    def test_review_runner_amendment_binds_current_runner(self) -> None:
+        amendment = json.loads(DEFAULT_REVIEW_AMENDMENT.read_text(encoding="utf-8"))
+        validate_review_amendment(amendment, DEFAULT_PROTOCOL, DEFAULT_PANEL)
 
     def test_live_protocol_validation_requires_independent_scenario_audit(self) -> None:
         completed = type("Completed", (), {"returncode": 0})()
@@ -353,6 +374,19 @@ class BmadxValueStudyTests(unittest.TestCase):
         }
         stdout = json.dumps(partial) + "\n" + json.dumps(final)
         self.assertEqual(parse_runtime_output(stdout), payload)
+
+    def test_runtime_parser_accepts_single_json_fence(self) -> None:
+        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
+        final = {
+            "type": "message_end",
+            "message": {
+                "role": "assistant",
+                "content": [
+                    {"type": "text", "text": f"```json\n{json.dumps(payload)}\n```"}
+                ],
+            },
+        }
+        self.assertEqual(parse_runtime_output(json.dumps(final)), payload)
 
     def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
         panel = json.loads(

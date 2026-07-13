@@ -12,6 +12,11 @@ all 162 calls from zero with the same design and a frozen native output schema.
 The stopped v1 run is preserved in
 `artifacts/bmadx-value-study-generation-failure-v1.zip`.
 
+The first Pi review canary returned a valid judgment inside one outer JSON
+markdown fence. No valid vote was recorded. Review-runner amendment v1.1 adds
+only deterministic fence normalization and restarts all 325 calls from zero;
+it is frozen in `benchmark/value-study/review-runner-amendment-v1.1.json`.
+
 ## Estimands
 
 Primary:

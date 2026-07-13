@@ -21,6 +21,9 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
+DEFAULT_REVIEW_AMENDMENT = (
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.1.json"
+)
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
 
@@ -28,6 +31,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--protocol", type=Path, default=DEFAULT_PROTOCOL)
     parser.add_argument("--panel-protocol", type=Path, default=DEFAULT_PANEL)
+    parser.add_argument(
+        "--review-amendment", type=Path, default=DEFAULT_REVIEW_AMENDMENT
+    )
     parser.add_argument("--packet", type=Path)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--confirm-call-count", type=int)
@@ -122,6 +128,28 @@ def validate_panel_protocol(
         raise ValueError("Synthetic-review prompt hash mismatch")
 
 
+def validate_review_amendment(
+    amendment: dict[str, Any], protocol_path: Path, panel_path: Path
+) -> None:
+    expected = {
+        "schema": "bmadx_review_runner_amendment.v1",
+        "value_protocol_sha256": sha256_file(protocol_path),
+        "panel_protocol_sha256": sha256_file(panel_path),
+        "original_runner_sha256": (
+            "df704825a558bb89b2deeeccb4e7a7cb1a9cc3e7afb6f77e5228b9bee308d698"
+        ),
+        "amended_runner_sha256": sha256_file(Path(__file__)),
+        "valid_votes_before_amendment": 0,
+        "invalid_canary_calls_before_amendment": 1,
+        "restart_panel_from_zero": True,
+        "changes_candidate_order": False,
+        "changes_rubric_or_scoring": False,
+        "changes_models_or_call_counts": False,
+    }
+    if any(amendment.get(key) != value for key, value in expected.items()):
+        raise ValueError("Synthetic review-runner amendment is not frozen")
+
+
 def deterministic_seed(seed: int, material: str) -> int:
     digest = hashlib.sha256(f"{seed}:{material}".encode()).digest()
     return int.from_bytes(digest[:8], "big")
@@ -213,8 +241,12 @@ def build_prompt(
 
 
 def judgment_from_text(text: str) -> dict[str, Any] | None:
+    candidate = text.strip()
+    fenced = re.fullmatch(r"```(?:json)?\s*\n([\s\S]*?)\n```", candidate)
+    if fenced:
+        candidate = fenced.group(1).strip()
     try:
-        value = json.loads(text.strip())
+        value = json.loads(candidate)
     except json.JSONDecodeError:
         return None
     return (
@@ -378,6 +410,8 @@ def finalize(
     calls: list[dict[str, Any]],
     output_dir: Path,
     versions: dict[str, str],
+    amendment_sha: str,
+    runner_sha: str,
 ) -> dict[str, Any]:
     by_key = {
         (call["lane"], call["reviewer_id"], call["block_id"]): call
@@ -408,6 +442,8 @@ def finalize(
             "runtime": reviewer["runtime"],
             "runtime_version": versions[reviewer["runtime"]],
             "panel_protocol_sha256": panel_sha,
+            "review_amendment_sha256": amendment_sha,
+            "panel_runner_sha256": runner_sha,
             "independent_of_bmadx_authorship": True,
             "mapping_was_not_available": True,
             "blocks": blocks,
@@ -454,6 +490,8 @@ def finalize(
         "protocol_id": packet["protocol_id"],
         "packet_sha256": packet_sha,
         "panel_protocol_sha256": panel_sha,
+        "review_amendment_sha256": amendment_sha,
+        "panel_runner_sha256": runner_sha,
         "complete": len(calls) == int(panel["expected_call_count"])
         and all(call.get("status") == "complete" for call in calls),
         "healthy": all(entry["healthy"] for entry in reviewer_summaries),
@@ -468,7 +506,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     value_protocol = load_protocol(args.protocol)
     panel = load_json(args.panel_protocol)
+    amendment = load_json(args.review_amendment)
     validate_panel_protocol(panel, value_protocol)
+    validate_review_amendment(amendment, args.protocol, args.panel_protocol)
+    amendment_sha = sha256_file(args.review_amendment)
+    runner_sha = sha256_file(Path(__file__))
     versions = validate_runtimes(panel)
     if args.validate_only:
         print(
@@ -477,6 +519,8 @@ def main(argv: list[str] | None = None) -> int:
                     "status": "valid",
                     "expected_call_count": panel["expected_call_count"],
                     "runtime_versions": versions,
+                    "review_amendment_sha256": amendment_sha,
+                    "panel_runner_sha256": runner_sha,
                 },
                 indent=2,
             )
@@ -500,7 +544,7 @@ def main(argv: list[str] | None = None) -> int:
         checkpoint = load_json(checkpoint_path)
         if checkpoint.get("panel_protocol_sha256") != panel_sha or checkpoint.get(
             "packet_sha256"
-        ) != packet_sha:
+        ) != packet_sha or checkpoint.get("review_amendment_sha256") != amendment_sha:
             raise ValueError("Resume provenance mismatch")
         calls = list(checkpoint.get("calls") or [])
     elif checkpoint_path.exists():
@@ -583,6 +627,7 @@ def main(argv: list[str] | None = None) -> int:
                         "schema": "bmadx_synthetic_panel_checkpoint.v1",
                         "panel_protocol_sha256": panel_sha,
                         "packet_sha256": packet_sha,
+                        "review_amendment_sha256": amendment_sha,
                         "calls": calls,
                     },
                     indent=2,
@@ -593,7 +638,16 @@ def main(argv: list[str] | None = None) -> int:
             if record["status"] != "complete":
                 print(json.dumps(record, indent=2))
                 return 1
-    summary = finalize(panel, panel_sha, packet, calls, output_dir, versions)
+    summary = finalize(
+        panel,
+        panel_sha,
+        packet,
+        calls,
+        output_dir,
+        versions,
+        amendment_sha,
+        runner_sha,
+    )
     (output_dir / "panel-summary.json").write_text(
         json.dumps(summary, indent=2) + "\n", encoding="utf-8"
     )
