@@ -244,7 +244,16 @@ class BmadxValueStudyTests(unittest.TestCase):
 
     def test_live_protocol_validation_requires_independent_scenario_audit(self) -> None:
         completed = type("Completed", (), {"returncode": 0})()
-        with patch("run_bmadx_value_study.subprocess.run", return_value=completed):
+        pending_audit = {
+            "schema": "bmadx_value_scenario_audit.v1",
+            "scenario_manifest_sha256": self.protocol["scenario_manifest_sha256"],
+            "status": "pending_independent_review",
+        }
+        with patch(
+            "run_bmadx_value_study.subprocess.run", return_value=completed
+        ), patch(
+            "run_bmadx_value_study.load_scenario_audit", return_value=pending_audit
+        ):
             with self.assertRaisesRegex(ValueError, "scenario audit"):
                 validate_protocol(self.protocol, DEFAULT_PROTOCOL, require_audit=True)
 

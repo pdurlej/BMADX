@@ -1,1 +1,0 @@
-Task: Add a correlation field across request logs, one internal event, and the support diagnostics view. No customer-facing behavior should change.

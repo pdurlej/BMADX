@@ -159,8 +159,8 @@ Status: implementation in progress.
 - The replacement decision-value study v1 is pre-registered at 18 scenario
   clusters, three arms, three repeats, and 162 Sol/high calls. It uses blinded
   preference plus frozen quality/cost/safety gates instead of the project exact
-  scorer. Live execution is blocked until an independent pre-run scenario audit
-  is approved and committed.
+  scorer. The revised 18-scenario manifest passed independent pre-run audit;
+  live execution is ready under operator-approved quota.
 - Its review stage is now a preregistered five-family Ollama Cloud panel run
   entirely through Pi: 270 primary judgments and 55 order-stability judgments.
   Synthetic evidence is sufficient for the first cross-model claim, but not for

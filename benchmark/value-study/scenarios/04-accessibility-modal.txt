@@ -1,0 +1,1 @@
+Task: Make an existing account-settings modal usable by keyboard and screen-reader users. The design system has accessible primitives, but focus order, error announcements, and acceptance criteria are incomplete.

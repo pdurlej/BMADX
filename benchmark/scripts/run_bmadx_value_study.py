@@ -459,6 +459,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     if args.validate_only:
         audit = load_scenario_audit(protocol)
+        audit_approved = (
+            audit.get("status") == "approved_before_live_run"
+            and audit.get("independent_of_bmadx_authorship") is True
+            and audit.get("completed_before_live_run") is True
+        )
         print(
             json.dumps(
                 {
@@ -468,7 +473,11 @@ def main(argv: list[str] | None = None) -> int:
                     "repeat_count": protocol["repeats"],
                     "call_count": len(schedule),
                     "scenario_audit_status": audit.get("status"),
-                    "status": "valid_but_live_run_requires_approved_scenario_audit",
+                    "status": (
+                        "ready_for_live_run"
+                        if audit_approved
+                        else "valid_but_live_run_requires_approved_scenario_audit"
+                    ),
                 },
                 indent=2,
             )

@@ -1,1 +1,1 @@
-Task: Stabilize a release-blocking integration suite after three unrelated patches failed. Failures are intermittent, fixture ownership is unclear, and there is no credible pass criterion beyond rerunning.
+Task: Stabilize a release-blocking integration suite after three unrelated patches failed. Failures are intermittent and fixture ownership is unclear. Success requires three consecutive clean-worker CI runs with no quarantined tests.

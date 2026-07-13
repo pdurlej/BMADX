@@ -1,1 +1,1 @@
-Task: Correct one misleading validation message in a single React component. Keep behavior unchanged.
+Task: A validation message in one React component does not match the rule users actually encounter. Determine and implement the appropriate correction.

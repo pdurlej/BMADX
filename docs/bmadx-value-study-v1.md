@@ -6,8 +6,8 @@ Use a pre-registered, arm-blinded, three-arm study to measure whether BMADX adds
 decision and planning value over ordinary reasoning, and what that value costs.
 Do not use the earlier exact scorer as the primary outcome.
 
-This study is ready for independent scenario audit. Live execution is blocked
-until that audit is approved and committed before any model response exists.
+The revised 18-scenario manifest passed independent pre-run audit and is ready
+for live execution. The approval is committed before any Sol response exists.
 
 ## Estimands
 
