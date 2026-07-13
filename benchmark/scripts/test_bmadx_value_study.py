@@ -390,6 +390,38 @@ class BmadxValueStudyTests(unittest.TestCase):
         }
         self.assertEqual(parse_runtime_output(json.dumps(final)), payload)
 
+    def test_runtime_parser_uses_complete_thinking_when_final_text_is_empty(self) -> None:
+        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
+        final = {
+            "type": "message_end",
+            "message": {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "thinking",
+                        "thinking": f"```json\n{json.dumps(payload)}\n```",
+                    }
+                ],
+            },
+        }
+        self.assertEqual(parse_runtime_output(json.dumps(final)), payload)
+
+    def test_runtime_parser_does_not_extract_json_from_mixed_thinking(self) -> None:
+        payload = {"block_id": "b", "candidate_reviews": [], "preferred_candidate_ids": []}
+        final = {
+            "type": "message_end",
+            "message": {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "thinking",
+                        "thinking": f"analysis first\n{json.dumps(payload)}",
+                    }
+                ],
+            },
+        }
+        self.assertIsNone(parse_runtime_output(json.dumps(final)))
+
     def test_runtime_normalizes_one_unambiguous_numeric_dimension_key(self) -> None:
         judgment = {
             "candidate_reviews": [

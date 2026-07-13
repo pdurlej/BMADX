@@ -23,7 +23,7 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
 DEFAULT_REVIEW_AMENDMENT = (
-    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.4.json"
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.5.json"
 )
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
@@ -134,14 +134,14 @@ def validate_review_amendment(
 ) -> None:
     expected = {
         "schema": "bmadx_review_runner_amendment.v1",
-        "amendment_id": "pi-opaque-id-normalization-v1.4",
+        "amendment_id": "pi-final-thinking-judgment-fallback-v1.5",
         "value_protocol_sha256": sha256_file(protocol_path),
         "panel_protocol_sha256": sha256_file(panel_path),
         "previous_amendment_sha256": (
-            "d9ba136fa4d5ec7ea1d5a9fb8e6b8200b6f80183186d14b99c0a5248d57be255"
+            "e0c5bc38454e37792f4de59152c2dc0f375b053d17adcb4824b59d21b0a2d495"
         ),
         "amended_runner_sha256": sha256_file(Path(__file__)),
-        "valid_votes_before_amendment": 9,
+        "valid_votes_before_amendment": 78,
         "invalid_canary_calls_before_amendment": 1,
         "restart_panel_from_zero": True,
         "changes_candidate_order": False,
@@ -150,6 +150,7 @@ def validate_review_amendment(
         "normalizes_only_one_unambiguous_numeric_dimension_key": True,
         "canonicalizes_only_frozen_generic_rubric_suffixes": True,
         "normalizes_only_unique_distance_one_candidate_ids": True,
+        "uses_complete_final_thinking_only_when_text_is_empty": True,
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise ValueError("Synthetic review-runner amendment is not frozen")
@@ -268,6 +269,7 @@ def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
     if direct is not None:
         return direct
     pi_final: str | None = None
+    pi_thinking: str | None = None
     for line in stdout.splitlines():
         try:
             event = json.loads(line)
@@ -284,7 +286,12 @@ def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
                 for item in content
                 if isinstance(item, dict) and item.get("type") == "text"
             )
-    return judgment_from_text(pi_final or "")
+            pi_thinking = "".join(
+                item.get("thinking", "")
+                for item in content
+                if isinstance(item, dict) and item.get("type") == "thinking"
+            )
+    return judgment_from_text(pi_final or "") or judgment_from_text(pi_thinking or "")
 
 
 def dimension_key_stem(value: str) -> str:

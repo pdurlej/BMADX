@@ -33,6 +33,11 @@ character of an opaque candidate ID incorrectly. Amendment v1.4 normalizes an
 ID only when exactly one unused expected ID is at edit distance one, applies
 the same substitution to preferences, records it, and restarts from zero.
 
+The v1.4 review run stopped after 78 valid judgments when Kimi placed the
+complete fenced judgment in its final `thinking` item and emitted no `text`.
+Amendment v1.5 uses that item only when text is empty and the entire thinking
+value parses as a complete judgment; mixed reasoning plus JSON remains invalid.
+
 ## Estimands
 
 Primary:
