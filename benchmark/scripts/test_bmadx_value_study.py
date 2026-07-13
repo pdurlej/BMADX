@@ -32,7 +32,9 @@ from run_bmadx_synthetic_review_panel import (
     DEFAULT_PANEL,
     DEFAULT_REVIEW_AMENDMENT,
     build_panel_schedule,
+    build_prompt,
     command_for_call,
+    normalize_candidate_aliases,
     normalize_judgment_keys,
     normalize_candidate_ids,
     normalize_candidate_order,
@@ -539,6 +541,51 @@ class BmadxValueStudyTests(unittest.TestCase):
         self.assertEqual(
             judgment["candidate_reviews"][0]["candidate_id"],
             "candidate-a9d712046e27",
+        )
+
+    def test_review_prompt_uses_short_position_bound_aliases(self) -> None:
+        block = {
+            "block_id": "b",
+            "task": "task",
+            "candidates": [
+                {"candidate_id": "candidate-one", "response": {}},
+                {"candidate_id": "candidate-two", "response": {}},
+                {"candidate_id": "candidate-three", "response": {}},
+            ],
+        }
+        prompt = build_prompt("judge", {"rubric": {}}, block)
+        payload = json.loads(prompt.split("JSON input:\n", 1)[1])
+        self.assertEqual(
+            [candidate["candidate_id"] for candidate in payload["candidates"]],
+            ["A", "B", "C"],
+        )
+        self.assertNotIn("candidate-one", prompt)
+
+    def test_runtime_maps_only_complete_exact_candidate_alias_set(self) -> None:
+        block = {
+            "candidates": [
+                {"candidate_id": "candidate-one"},
+                {"candidate_id": "candidate-two"},
+                {"candidate_id": "candidate-three"},
+            ]
+        }
+        judgment = {
+            "candidate_reviews": [
+                {"candidate_id": "C"},
+                {"candidate_id": "A"},
+                {"candidate_id": "B"},
+            ],
+            "preferred_candidate_ids": ["C", "A"],
+        }
+        normalizations = normalize_candidate_aliases(judgment, block)
+        self.assertEqual(len(normalizations), 1)
+        self.assertEqual(
+            [review["candidate_id"] for review in judgment["candidate_reviews"]],
+            ["candidate-three", "candidate-one", "candidate-two"],
+        )
+        self.assertEqual(
+            judgment["preferred_candidate_ids"],
+            ["candidate-three", "candidate-one"],
         )
 
     def test_runtime_reorders_only_complete_candidate_set(self) -> None:

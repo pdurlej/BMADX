@@ -45,6 +45,13 @@ expected ID at edit distance at most two, then reorders only an exact complete
 candidate set to the presented order. It does not alter scores or preferences,
 records both transformations, and restarts all calls from zero.
 
+The v1.6 review run stopped after 191 valid judgments when DeepSeek corrupted
+two of three opaque candidate IDs beyond the frozen unambiguous distance bound.
+Amendment v1.7 presents the already randomized candidates as position-bound
+`A/B/C` aliases and maps back only a complete exact alias set. This removes the
+irrelevant long-ID copying task without changing content, order, rubric,
+scores, or preferences, and restarts all calls from zero.
+
 ## Estimands
 
 Primary:

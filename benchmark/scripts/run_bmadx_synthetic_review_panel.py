@@ -23,9 +23,10 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
 DEFAULT_REVIEW_AMENDMENT = (
-    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.6.json"
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.7.json"
 )
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
+CANDIDATE_ALIASES = ("A", "B", "C")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -134,14 +135,14 @@ def validate_review_amendment(
 ) -> None:
     expected = {
         "schema": "bmadx_review_runner_amendment.v1",
-        "amendment_id": "pi-candidate-canonicalization-v1.6",
+        "amendment_id": "pi-short-candidate-aliases-v1.7",
         "value_protocol_sha256": sha256_file(protocol_path),
         "panel_protocol_sha256": sha256_file(panel_path),
         "previous_amendment_sha256": (
-            "18827db142c152a8d0ad106beeba36396ca10f630ba2c12c32c9631f30845118"
+            "1962fb5728d5675d915541ed5de0b8c3f452ce7ce52a0cd639462a56d95836d6"
         ),
         "amended_runner_sha256": sha256_file(Path(__file__)),
-        "valid_votes_before_amendment": 53,
+        "valid_votes_before_amendment": 191,
         "invalid_canary_calls_before_amendment": 1,
         "restart_panel_from_zero": True,
         "changes_candidate_order": False,
@@ -153,6 +154,8 @@ def validate_review_amendment(
         "uses_complete_final_thinking_only_when_text_is_empty": True,
         "normalizes_only_unique_nearest_distance_two_candidate_ids": True,
         "reorders_only_complete_expected_candidate_sets": True,
+        "presents_only_position_bound_candidate_aliases": True,
+        "maps_only_complete_exact_candidate_alias_sets": True,
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise ValueError("Synthetic review-runner amendment is not frozen")
@@ -237,11 +240,15 @@ def ordered_block(
 def build_prompt(
     prompt_text: str, packet: dict[str, Any], block: dict[str, Any]
 ) -> str:
+    candidates = [
+        {**candidate, "candidate_id": CANDIDATE_ALIASES[index]}
+        for index, candidate in enumerate(block["candidates"])
+    ]
     payload = {
         "block_id": block["block_id"],
         "task": block["task"],
         "rubric": packet["rubric"],
-        "candidates": block["candidates"],
+        "candidates": candidates,
     }
     return prompt_text.rstrip() + "\n\nJSON input:\n" + json.dumps(
         payload, sort_keys=True, separators=(",", ":")
@@ -421,6 +428,42 @@ def normalize_candidate_ids(
             }
         )
     return normalizations
+
+
+def normalize_candidate_aliases(
+    judgment: dict[str, Any] | None, block: dict[str, Any]
+) -> list[dict[str, Any]]:
+    if judgment is None:
+        return []
+    expected = [candidate["candidate_id"] for candidate in block["candidates"]]
+    if len(expected) != len(CANDIDATE_ALIASES):
+        return []
+    reviews = judgment.get("candidate_reviews") or []
+    preferred = judgment.get("preferred_candidate_ids") or []
+    if len(reviews) != len(expected) or any(
+        not isinstance(review, dict) for review in reviews
+    ):
+        return []
+    observed = [review.get("candidate_id") for review in reviews]
+    aliases = set(CANDIDATE_ALIASES)
+    if set(observed) != aliases or len(set(observed)) != len(aliases):
+        return []
+    if not preferred or not set(preferred).issubset(aliases):
+        return []
+    alias_map = dict(zip(CANDIDATE_ALIASES, expected, strict=True))
+    for review in reviews:
+        review["candidate_id"] = alias_map[review["candidate_id"]]
+    judgment["preferred_candidate_ids"] = [
+        alias_map[candidate_id] for candidate_id in preferred
+    ]
+    return [
+        {
+            "candidate_alias_map": [
+                {"alias": alias, "candidate_id": alias_map[alias]}
+                for alias in CANDIDATE_ALIASES
+            ]
+        }
+    ]
 
 
 def normalize_candidate_order(
@@ -756,6 +799,7 @@ def main(argv: list[str] | None = None) -> int:
                 returncode = 124
             judgment = parse_runtime_output(stdout)
             normalizations = normalize_judgment_keys(judgment)
+            normalizations.extend(normalize_candidate_aliases(judgment, block))
             normalizations.extend(normalize_candidate_ids(judgment, block))
             normalizations.extend(normalize_candidate_order(judgment, block))
             validation = validate_judgment(judgment, block)

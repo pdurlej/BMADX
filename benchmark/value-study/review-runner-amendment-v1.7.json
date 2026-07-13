@@ -1,0 +1,23 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "pi-short-candidate-aliases-v1.7",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
+  "previous_amendment_sha256": "1962fb5728d5675d915541ed5de0b8c3f452ce7ce52a0cd639462a56d95836d6",
+  "amended_runner_sha256": "13e8790505b7bd2187ce31d81f263d1706357c97426f8c33e9b16b9ffd0a3197",
+  "reason": "Present position-bound A/B/C aliases and map back only a complete exact alias set, avoiding irrelevant opaque-ID copying errors.",
+  "valid_votes_before_amendment": 191,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true
+}
