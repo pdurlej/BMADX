@@ -187,6 +187,13 @@ def validate_protocol(
     rubric_path = REPO_ROOT / str(rubric.get("path") or "")
     if not rubric_path.is_file() or sha256_file(rubric_path) != rubric.get("sha256"):
         raise ValueError("Review rubric hash mismatch")
+    response_schema = protocol.get("response_schema") or {}
+    response_schema_path = REPO_ROOT / str(response_schema.get("path") or "")
+    if (
+        not response_schema_path.is_file()
+        or sha256_file(response_schema_path) != response_schema.get("sha256")
+    ):
+        raise ValueError("Value-response schema hash mismatch")
     review_policy = protocol.get("review_policy") or {}
     synthetic_panel = review_policy.get("synthetic_panel") or {}
     synthetic_panel_path = REPO_ROOT / str(synthetic_panel.get("path") or "")
@@ -352,6 +359,8 @@ def run_case(
             model=protocol["model"],
             reasoning=protocol["effort"],
         )
+        response_schema_path = REPO_ROOT / protocol["response_schema"]["path"]
+        command[-1:-1] = ["--output-schema", str(response_schema_path)]
         protected_before = protected_hashes(home, workdir, item["alias"])
         home_before = tree_sha256(home)
         started_at = datetime.now(timezone.utc).isoformat()

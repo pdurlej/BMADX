@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "activation_nonce",
+    "process",
+    "risk",
+    "handoff",
+    "goal",
+    "goal_stop",
+    "loop",
+    "loop_max_passes",
+    "loop_stop",
+    "recommended_actions",
+    "verification",
+    "safeguards",
+    "operator_questions",
+    "reasons"
+  ],
+  "properties": {
+    "activation_nonce": {"type": "string", "minLength": 1},
+    "process": {"enum": ["direct", "bounded", "governed", "recovery"]},
+    "risk": {"enum": ["low", "moderate", "high", "critical"]},
+    "handoff": {"type": "boolean"},
+    "goal": {"type": "boolean"},
+    "goal_stop": {"type": ["string", "null"]},
+    "loop": {"type": "boolean"},
+    "loop_max_passes": {"type": ["integer", "null"], "minimum": 2, "maximum": 5},
+    "loop_stop": {"type": ["string", "null"]},
+    "recommended_actions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 5,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "safeguards": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "operator_questions": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

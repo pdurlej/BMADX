@@ -6,8 +6,11 @@ Use a pre-registered, arm-blinded, three-arm study to measure whether BMADX adds
 decision and planning value over ordinary reasoning, and what that value costs.
 Do not use the earlier exact scorer as the primary outcome.
 
-The revised 18-scenario manifest passed independent pre-run audit and is ready
-for live execution. The approval is committed before any Sol response exists.
+The revised 18-scenario manifest passed independent pre-run audit. Generation
+v1 stopped at call 130 when Sol emitted malformed JSON. Protocol v1.1 restarts
+all 162 calls from zero with the same design and a frozen native output schema.
+The stopped v1 run is preserved in
+`artifacts/bmadx-value-study-generation-failure-v1.zip`.
 
 ## Estimands
 
@@ -121,8 +124,8 @@ pre-registered; do not tune them after seeing results.
    openssl rand -hex 32 > /tmp/bmadx-value-blinding-key
    python3 benchmark/scripts/build_bmadx_value_review_packet.py \
      --protocol benchmark/value-study/protocol-v1.json \
-     --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/summary.json \
-     --output-dir benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review \
+     --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/summary.json \
+     --output-dir benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review \
      --blinding-key-file /tmp/bmadx-value-blinding-key
    ```
 
@@ -139,8 +142,8 @@ pre-registered; do not tune them after seeing results.
 
    ```bash
    python3 benchmark/scripts/run_bmadx_synthetic_review_panel.py \
-     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/review-packet.json \
-     --output-dir benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel \
+     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/review-packet.json \
+     --output-dir benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel \
      --confirm-call-count 325
    ```
 
@@ -152,16 +155,16 @@ summary, and the same key. Report the frozen
    ```bash
    python3 benchmark/scripts/analyze_bmadx_value_study.py \
      --protocol benchmark/value-study/protocol-v1.json \
-     --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/summary.json \
-     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/review-packet.json \
-     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/panel-summary.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/minimax-m3.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/deepseek-v4-pro.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/qwen-35.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/glm-52.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/review/synthetic-panel/reviews/kimi-k27-code.json \
+     --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/summary.json \
+     --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/review-packet.json \
+     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/panel-summary.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/minimax-m3.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/deepseek-v4-pro.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/qwen-35.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/glm-52.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/kimi-k27-code.json \
      --blinding-key-file /tmp/bmadx-value-blinding-key \
-     --output benchmark/value-study/runs/sol-bmadx-decision-value-v1-gpt-5-6-sol/analysis.json
+     --output benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/analysis.json
    ```
 
 ## Why This Is More Objective

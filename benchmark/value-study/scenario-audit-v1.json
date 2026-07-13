@@ -1,6 +1,6 @@
 {
   "schema": "bmadx_value_scenario_audit.v1",
-  "protocol_id": "sol-bmadx-decision-value-v1",
+  "protocol_id": "sol-bmadx-decision-value-v1.1",
   "scenario_manifest_sha256": "690df4f119c1253bd0c008f570e55cfb4939f30da6de28258bf147ed71ca0df5",
   "status": "approved_before_live_run",
   "reviewer_id": "audit-reviewer-2026-07-13-01",

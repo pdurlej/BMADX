@@ -1,6 +1,6 @@
 {
   "schema": "bmadx_value_study.v1",
-  "protocol_id": "sol-bmadx-decision-value-v1",
+  "protocol_id": "sol-bmadx-decision-value-v1.1",
   "scope": "decision_and_planning_value_not_implementation_quality",
   "model": "gpt-5.6-sol",
   "effort": "high",
@@ -20,6 +20,10 @@
     "path": "benchmark/value-study/rubric-v1.json",
     "sha256": "3341c50a21c6fe590dd124bb259a8c1cc3f6190caa4874d19431e1239945b706"
   },
+  "response_schema": {
+    "path": "benchmark/value-study/value-response-schema-v1.json",
+    "sha256": "757f71e0643c5fd51b12c00b40d3a6b0139b17804f59e65103cdffe9780deae5"
+  },
   "quality_failures_are_outcomes": true,
   "integrity_stop_conditions": [
     "activation_failure",
@@ -34,7 +38,7 @@
     "real_bmad_release_tag": "v6.10.0"
   },
   "harness_hashes": {
-    "runner_sha256": "89578ac71943b0c7b0632d210cec9acfad35bc321000b27000dcb04ad8c307ea",
+    "runner_sha256": "82354f3eb61b290dc9a5e086337ac713e2b4502fe9e3ca1fcb4224184d7c67ed",
     "contract_sha256": "b987e5564b1bbcaeef97d745a88c597a9c86cfee54db13156b14b678d2c6602f",
     "runtime_helpers_sha256": "d7b3ff5a68f4e8c5ee152ac7c7c838ed3c5eafa7094b7a672a29cff6fb66a183",
     "review_builder_sha256": "3cd4f47f0e6beb7ea498bab5ced11d1472f03c928717f401dc955acdb7df5c3a",
