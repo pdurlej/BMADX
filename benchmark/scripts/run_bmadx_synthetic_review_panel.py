@@ -23,7 +23,7 @@ from run_bmadx_value_study import DEFAULT_PROTOCOL, REPO_ROOT, load_protocol
 
 DEFAULT_PANEL = REPO_ROOT / "benchmark/value-study/synthetic-panel-v1.json"
 DEFAULT_REVIEW_AMENDMENT = (
-    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.2.json"
+    REPO_ROOT / "benchmark/value-study/review-runner-amendment-v1.3.json"
 )
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
@@ -134,20 +134,21 @@ def validate_review_amendment(
 ) -> None:
     expected = {
         "schema": "bmadx_review_runner_amendment.v1",
-        "amendment_id": "pi-unambiguous-score-key-normalization-v1.2",
+        "amendment_id": "pi-canonical-score-key-normalization-v1.3",
         "value_protocol_sha256": sha256_file(protocol_path),
         "panel_protocol_sha256": sha256_file(panel_path),
         "previous_amendment_sha256": (
-            "e58159c34c2e417bf642734f55b75e2fde404991cd1295f02c85b27518803f5b"
+            "1ac910dfb70778070263f9d351b06bdf15aaf4f2d4414bc9a8c8e23651875bfe"
         ),
         "amended_runner_sha256": sha256_file(Path(__file__)),
-        "valid_votes_before_amendment": 83,
+        "valid_votes_before_amendment": 58,
         "invalid_canary_calls_before_amendment": 1,
         "restart_panel_from_zero": True,
         "changes_candidate_order": False,
         "changes_rubric_or_scoring": False,
         "changes_models_or_call_counts": False,
         "normalizes_only_one_unambiguous_numeric_dimension_key": True,
+        "canonicalizes_only_frozen_generic_rubric_suffixes": True,
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise ValueError("Synthetic review-runner amendment is not frozen")
@@ -285,6 +286,20 @@ def parse_runtime_output(stdout: str) -> dict[str, Any] | None:
     return judgment_from_text(pi_final or "")
 
 
+def dimension_key_stem(value: str) -> str:
+    for suffix in (
+        "_quality",
+        "_coverage",
+        "_burden",
+        "_calibration",
+        "_correctness",
+    ):
+        if value.endswith(suffix):
+            value = value[: -len(suffix)]
+            break
+    return value.removesuffix("s")
+
+
 def normalize_judgment_keys(judgment: dict[str, Any] | None) -> list[dict[str, Any]]:
     if judgment is None:
         return []
@@ -311,7 +326,9 @@ def normalize_judgment_keys(judgment: dict[str, Any] | None) -> list[dict[str, A
             continue
         source = unknown_numeric[0]
         target = missing[0]
-        similarity = difflib.SequenceMatcher(None, source, target).ratio()
+        source_stem = dimension_key_stem(source)
+        target_stem = dimension_key_stem(target)
+        similarity = difflib.SequenceMatcher(None, source_stem, target_stem).ratio()
         if similarity < 0.85:
             continue
         review[target] = review.pop(source)
@@ -320,6 +337,8 @@ def normalize_judgment_keys(judgment: dict[str, Any] | None) -> list[dict[str, A
                 "candidate_index": index,
                 "source_key": source,
                 "target_key": target,
+                "source_stem": source_stem,
+                "target_stem": target_stem,
                 "similarity": round(similarity, 6),
             }
         )

@@ -424,6 +424,28 @@ class BmadxValueStudyTests(unittest.TestCase):
         self.assertEqual(normalize_judgment_keys(judgment), [])
         self.assertNotIn("actionability", judgment["candidate_reviews"][0])
 
+    def test_runtime_normalizes_generic_rubric_suffix_alias(self) -> None:
+        judgment = {
+            "candidate_reviews": [
+                {
+                    "candidate_id": "candidate-1",
+                    **{
+                        dimension: 6
+                        for dimension in REVIEW_DIMENSIONS
+                        if dimension != "safeguard_coverage"
+                    },
+                    "safeguards": 7,
+                    "safety_omission": False,
+                    "fatal_flaw": False,
+                    "notes": "",
+                }
+            ]
+        }
+        normalizations = normalize_judgment_keys(judgment)
+        self.assertEqual(judgment["candidate_reviews"][0]["safeguard_coverage"], 7)
+        self.assertEqual(normalizations[0]["source_stem"], "safeguard")
+        self.assertEqual(normalizations[0]["target_stem"], "safeguard")
+
     def test_synthetic_runtime_command_is_isolated_pi_only(self) -> None:
         panel = json.loads(
             (DEFAULT_PROTOCOL.parent / "synthetic-panel-v1.json").read_text(

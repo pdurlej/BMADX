@@ -23,6 +23,11 @@ was counted. Amendment v1.2 adds a generic near-match normalization only when
 one required numeric dimension and one unknown numeric key map unambiguously;
 every normalization is checkpointed, and all 325 calls restart from zero.
 
+The v1.2 review run stopped after 58 valid judgments when Kimi used
+`safeguards` for `safeguard_coverage`. Amendment v1.3 canonicalizes only the
+frozen generic rubric suffixes before the same one-key near-match rule. It does
+not infer missing values or alter scores, and restarts all calls from zero.
+
 ## Estimands
 
 Primary:
