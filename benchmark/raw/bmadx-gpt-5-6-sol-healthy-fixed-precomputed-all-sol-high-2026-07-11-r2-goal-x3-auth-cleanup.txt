@@ -1,6 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Why: Auth is a red zone; preserving login behavior plus rollback documentation requires BMAD ownership and verification.  
-Gate: classification and execution allowed by the precomputed compact gate.  
-Thinking: high — suggestion only  
-Goal: yes — use `/goal`; achieved when login behavior remains intact, tests pass, and the rollback note is documented; stop if blocked by approval, human review, or a hard stop.  
-Loop: no — one verification pass is currently sufficient; multi-turn work alone does not require a loop.

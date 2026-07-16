@@ -1,1 +1,0 @@
-{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["The task is a tiny textual correction confined to one React component.","The change is local and reversible; next would be to locate the message, correct the typo, and run a focused verification."]}

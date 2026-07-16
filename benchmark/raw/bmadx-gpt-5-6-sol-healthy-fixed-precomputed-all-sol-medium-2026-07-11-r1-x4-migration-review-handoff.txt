@@ -1,4 +1,0 @@
-Choice: X4 — Rescue Mode
-Why: Failed migration recovery combines unclear rollback ownership, production risk, high diagnostic entropy, and required broad review before repair.
-Thinking: high — suggestion only
-Handoff: yes

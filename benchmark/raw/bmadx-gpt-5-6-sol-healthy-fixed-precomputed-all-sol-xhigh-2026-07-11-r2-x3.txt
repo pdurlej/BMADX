@@ -1,5 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Thinking: high — suggestion only.  
-Why: Implementing an existing BMAD story requires BMAD-owned execution, artifact alignment, and formal verification.  
-Status: Classification and execution are allowed; BMAD check passed with no warnings.  
-Next step: Enter the BMAD story implementation flow using the existing story and its process artifacts as the source of truth.

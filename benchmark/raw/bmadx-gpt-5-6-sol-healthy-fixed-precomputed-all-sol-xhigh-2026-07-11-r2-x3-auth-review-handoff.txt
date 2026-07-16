@@ -1,4 +1,0 @@
-Choice: X3 — BMAD-heavy architecture work  
-Why: Authentication is a red zone, and conflicting auth systems plus unclear session ownership require architecture review before implementation.  
-Thinking: high — suggestion only  
-Handoff: yes

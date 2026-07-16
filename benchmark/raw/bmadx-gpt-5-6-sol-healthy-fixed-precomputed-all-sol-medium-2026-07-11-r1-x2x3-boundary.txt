@@ -1,5 +1,0 @@
-Choice: X3 — BMAD-heavy
-Why: The change spans four backend files and belongs to an existing BMAD story, so implementation must remain owned by and aligned with that story’s process artifacts.
-Gate: classification and execution allowed; BMAD healthy; cache unavailable; no warnings.
-Thinking: high — suggestion only.
-Next step: Continue through the existing BMAD story, keeping implementation and verification traceable to its acceptance criteria and artifacts.

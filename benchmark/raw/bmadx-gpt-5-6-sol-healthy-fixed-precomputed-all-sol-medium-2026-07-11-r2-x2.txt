@@ -1,9 +1,0 @@
-Choice: X2 — Regular
-Thinking: medium — suggestion only.
-Why: Bounded cross-file backend change with clear scope and no red-zone risk.
-Plan:
-1. Trace the existing status model and propagation pattern across the 4 backend files.
-2. Add the new field consistently while preserving validation, serialization, and compatibility.
-Verify:
-1. Run focused backend tests covering accepted, missing, and invalid status values.
-2. Run the relevant type-check/lint suite and review the 4-file diff for consistency.

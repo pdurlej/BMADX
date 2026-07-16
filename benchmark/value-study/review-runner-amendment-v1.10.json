@@ -1,0 +1,52 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "replace-unhealthy-minimax-with-gemma-v1.10",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "abb21dc0bf9e77021f90b658ea3bf3d2c028f82d7c74a354c91538e8a8a5e5b9",
+  "previous_amendment_sha256": "5ca6588f6e68d126926158abc84efb8e3afdfd6872dce2b335124af0cf3c9e62",
+  "amended_runner_sha256": "9e081a52e64014c28eeb235bbce3d62fdfe9f3afc60f56a9eaa623b8ffbeb713",
+  "amended_analyzer_sha256": "beba1e544e470dce33dff8d4ec08d4f9d7207cf50c4f940a1a26ccc023184def",
+  "arm_map_builder_sha256": "ddb7c5cf261a8e8a73eeb53293600118ee96f0a5d69aa949f70425a96f36f875",
+  "reviewer_canary_runner_sha256": "a159d155e087cec678a06d947c1fafcbc8fb64f2d4eb071b428b4b521059a070",
+  "reviewer_selection_protocol_sha256": "d9128092fdc4915bf6b6fd5f47439e503fa529ba7dba23c63a88b96d63497139",
+  "selected_reviewer_canary_sha256": "9056dfe4c59a8862e1429dc33689c159401de7cb54d008033004716127aa3684",
+  "reason": "Replace MiniMax after it returned the blinded input instead of a judgment during a fail-closed full-panel run. Gemma 4 was the first reviewer in the frozen candidate order and passed all three schema-only canaries; scores were not inspected for selection.",
+  "trigger_call_id": "primary--minimax-m3--billing-invoice-r1",
+  "valid_votes_before_amendment": 133,
+  "invalid_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": true,
+  "generation_outputs_unchanged": true,
+  "replaced_reviewer": {
+    "from_reviewer_id": "minimax-m3",
+    "from_family": "minimax",
+    "to_reviewer_id": "gemma-4-31b",
+    "to_family": "gemma"
+  },
+  "retained_prior_replacement": {
+    "from_reviewer_id": "deepseek-v4-pro",
+    "from_family": "deepseek",
+    "to_reviewer_id": "mistral-large-3",
+    "to_family": "mistral"
+  },
+  "required_reviewer_ids": [
+    "gemma-4-31b",
+    "mistral-large-3",
+    "qwen-35",
+    "glm-52",
+    "kimi-k27-code"
+  ],
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "normalizes_only_unique_distance_one_boolean_flag_keys": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true,
+  "unblinding_method": "exact_redacted_review_payload_sha256_arm_map",
+  "missing_original_blinding_key_disclosed": true
+}

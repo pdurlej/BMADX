@@ -1,0 +1,69 @@
+{
+  "schema": "bmadx_synthetic_review_panel.v1",
+  "panel_id": "bmadx-value-synthetic-panel-v1.10",
+  "runtime": {
+    "primary": "pi_ollama_only",
+    "minimum_pi_version": "0.78.0",
+    "automatic_retries": 0,
+    "fresh_session_per_call": true,
+    "project_context_disabled": true,
+    "tools_disabled": true
+  },
+  "prompt": {
+    "path": "benchmark/value-study/synthetic-review-prompt-v1.md",
+    "sha256": "6c9f5d5488b6bd30f60808f469ade5f0aade3d66bc57768bd25549238c178bef"
+  },
+  "assignment_seed": 560731,
+  "expected_blocks": 54,
+  "stability_blocks_per_reviewer": 11,
+  "expected_primary_call_count": 270,
+  "expected_stability_call_count": 55,
+  "expected_call_count": 325,
+  "reviewers": [
+    {
+      "reviewer_id": "gemma-4-31b",
+      "family": "gemma",
+      "runtime": "pi",
+      "model": "ollama/gemma4:31b-cloud",
+      "variant": null
+    },
+    {
+      "reviewer_id": "mistral-large-3",
+      "family": "mistral",
+      "runtime": "pi",
+      "model": "ollama/mistral-large-3:675b-cloud",
+      "variant": null
+    },
+    {
+      "reviewer_id": "qwen-35",
+      "family": "qwen",
+      "runtime": "pi",
+      "model": "ollama/qwen3.5:cloud",
+      "variant": "high"
+    },
+    {
+      "reviewer_id": "glm-52",
+      "family": "glm",
+      "runtime": "pi",
+      "model": "ollama/glm-5.2:cloud",
+      "variant": "high"
+    },
+    {
+      "reviewer_id": "kimi-k27-code",
+      "family": "kimi",
+      "runtime": "pi",
+      "model": "ollama/kimi-k2.7-code:cloud",
+      "variant": "high"
+    }
+  ],
+  "health_thresholds": {
+    "minimum_order_stability_preference_jaccard": 0.7,
+    "maximum_order_stability_mean_absolute_score_delta": 1.0
+  },
+  "claim_rules": {
+    "one_vote_per_model_family": true,
+    "stability_calls_are_not_votes": true,
+    "unhealthy_panel_blocks_positive_claim": true,
+    "synthetic_evidence_does_not_claim_human_novice_outcomes": true
+  }
+}

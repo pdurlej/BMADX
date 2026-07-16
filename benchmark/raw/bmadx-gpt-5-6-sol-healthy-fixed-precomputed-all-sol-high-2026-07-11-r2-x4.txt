@@ -1,5 +1,0 @@
-Choice: X4 — Rescue Mode (FUBAR)
-Thinking: high — suggestion only.
-Why: messy project ownership plus scaffold-shaped deliverables requires BMAD-first recovery and a coherent verification path.
-Gate: classification allowed; execution allowed; BMAD healthy; no warnings.
-Next step: establish BMAD PRD and architecture before producing the scaffold bundle, AGENTS.md draft, `.customize.yaml` snippets, and verification matrix.

@@ -1,7 +1,0 @@
-Choice: X4 — Rescue Mode  
-Why: migration red zone, two failed repairs, shrinking-delta control, and unclear rollback ownership require BMAD-first recovery governance.  
-Gate: classification and execution allowed; classification only requested.  
-Thinking: high — suggestion only.  
-Goal: yes — stop when validation passes, attempts are exhausted, or rollback ownership requires approval/human review.  
-Loop: yes — max 3 review/repair/validate passes; stop on pass, non-shrinking delta, exhausted passes, hard stop, approval, or human review.  
-Next step: clarify rollback ownership before any implementation; the bounded loop is appropriate only while each validation delta strictly shrinks.

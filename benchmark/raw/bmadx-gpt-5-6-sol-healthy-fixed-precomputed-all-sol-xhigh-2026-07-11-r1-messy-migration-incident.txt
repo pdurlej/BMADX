@@ -1,4 +1,0 @@
-Choice: X4 — Rescue Mode/FUBAR  
-Why: Partial migration failure, unclear ownership, risky rollback, and scaffolded recovery with rollout accountability are rescue-shaped red-zone work.  
-Gate: classification and execution allowed; BMAD OK; cache unavailable; no warnings.  
-Thinking: high — suggestion only.

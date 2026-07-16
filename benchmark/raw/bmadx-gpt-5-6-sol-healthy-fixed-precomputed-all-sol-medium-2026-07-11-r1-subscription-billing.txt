@@ -1,4 +1,0 @@
-Choice: X3 — BMAD-heavy
-Why: Billing and account permissions are red-zone concerns requiring BMAD ownership and careful contract-level verification.
-Gate: classification and execution allowed; BMAD healthy; cache unavailable; no warnings.
-Thinking: high — suggestion only.

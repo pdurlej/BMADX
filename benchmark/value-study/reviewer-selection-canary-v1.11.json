@@ -1,0 +1,27 @@
+{
+  "schema": "bmadx_reviewer_selection_canary.v1",
+  "reason": "Replace Kimi only for schema instability after it omitted all required score fields for one candidate during a fail-closed full-panel run.",
+  "selection_rule": "first_reviewer_in_frozen_order_with_all_schema_valid_calls",
+  "scores_must_not_influence_selection": true,
+  "canary_block_ids": [
+    "secret-exposure-incident-r2",
+    "billing-invoice-r1",
+    "worker-retry-r3"
+  ],
+  "candidate_reviewers": [
+    {
+      "reviewer_id": "nemotron-3-ultra",
+      "family": "nemotron",
+      "runtime": "pi",
+      "model": "ollama/nemotron-3-ultra:cloud",
+      "variant": null
+    },
+    {
+      "reviewer_id": "gpt-oss-120b",
+      "family": "gpt-oss",
+      "runtime": "pi",
+      "model": "ollama/gpt-oss:120b-cloud",
+      "variant": "high"
+    }
+  ]
+}

@@ -1,4 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Thinking: high — suggestion only.  
-Why: The change spans four backend files and is owned by an existing BMAD story, so implementation and verification must remain aligned with its process artifacts.  
-Next step: Continue through the existing story’s implementation and verification workflow; execution is allowed.

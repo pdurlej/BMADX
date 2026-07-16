@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from bmadx_value_contract import REVIEW_DIMENSIONS, candidate_id
+from build_bmadx_value_arm_map import response_sha
 from build_bmadx_value_review_packet import json_sha, read_blinding_key
 from run_bmadx_value_study import load_protocol
 
@@ -24,9 +25,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--packet", type=Path, required=True)
     parser.add_argument("--review", type=Path, action="append", required=True)
     parser.add_argument("--panel-summary", type=Path)
-    parser.add_argument("--blinding-key-file", type=Path, required=True)
+    parser.add_argument("--review-amendment", type=Path)
+    unblinding = parser.add_mutually_exclusive_group(required=True)
+    unblinding.add_argument("--blinding-key-file", type=Path)
+    unblinding.add_argument("--arm-map", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args(argv)
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def mean(values: list[float]) -> float:
@@ -60,15 +68,31 @@ def validate_inputs(
     summary: dict[str, Any],
     packet: dict[str, Any],
     reviews: list[dict[str, Any]],
-    blinding_key: bytes,
+    blinding_key: bytes | None,
     panel_summary: dict[str, Any] | None = None,
+    arm_map: dict[str, Any] | None = None,
+    review_amendment: dict[str, Any] | None = None,
+    protocol_sha256: str | None = None,
+    review_amendment_sha256: str | None = None,
 ) -> None:
     if summary.get("complete") is not True:
         raise ValueError("Analysis requires a complete integrity-healthy study")
     if packet.get("rubric_sha256") != (protocol.get("rubric") or {}).get("sha256"):
         raise ValueError("Review packet rubric hash mismatch")
-    if packet.get("blinding_key_sha256") != hashlib.sha256(blinding_key).hexdigest():
+    if (blinding_key is None) == (arm_map is None):
+        raise ValueError("Provide exactly one unblinding mechanism")
+    if blinding_key is not None and packet.get("blinding_key_sha256") != hashlib.sha256(
+        blinding_key
+    ).hexdigest():
         raise ValueError("Blinding key does not match the review packet")
+    if arm_map is not None and (
+        arm_map.get("schema") != "bmadx_value_arm_map.v1"
+        or arm_map.get("complete") is not True
+        or arm_map.get("protocol_id") != protocol.get("protocol_id")
+        or arm_map.get("summary_sha256") != json_sha(summary)
+        or arm_map.get("packet_sha256") != json_sha(packet)
+    ):
+        raise ValueError("Arm-map provenance mismatch")
     if not reviews or len(reviews) < int(
         protocol["review_policy"]["minimum_reviewers"]
     ):
@@ -86,7 +110,54 @@ def validate_inputs(
             "Every reviewer must attest that the arm mapping was unavailable"
         )
     packet_hash = json_sha(packet)
-    review_policy = protocol.get("review_policy") or {}
+    review_policy = json.loads(json.dumps(protocol.get("review_policy") or {}))
+    if review_amendment is not None:
+        required_ids = review_amendment.get("required_reviewer_ids") or []
+        retained = review_amendment.get("retained_prior_replacements") or []
+        retained_by_source = {
+            item.get("from_reviewer_id"): item
+            for item in retained
+            if isinstance(item, dict)
+        }
+        if (
+            review_amendment.get("schema") != "bmadx_review_runner_amendment.v1"
+            or review_amendment.get("amendment_id")
+            != "resume-after-ollama-transport-outage-v1.13"
+            or review_amendment.get("value_protocol_sha256") != protocol_sha256
+            or review_amendment.get("restart_panel_from_zero") is not False
+            or review_amendment.get("resume_stopped_checkpoint") is not True
+            or review_amendment.get("changes_models_or_call_counts") is not False
+            or review_amendment.get("changes_provider_attempt_count_policy")
+            is not True
+            or review_amendment.get("generation_outputs_unchanged") is not True
+            or review_amendment.get(
+                "normalizes_only_unique_distance_one_boolean_flag_keys"
+            )
+            is not True
+            or retained_by_source.get("deepseek-v4-pro", {}).get("to_reviewer_id")
+            != "mistral-large-3"
+            or retained_by_source.get("minimax-m3", {}).get("to_reviewer_id")
+            != "gemma-4-31b"
+            or retained_by_source.get("kimi-k27-code", {}).get("to_reviewer_id")
+            != "nemotron-3-ultra"
+            or review_amendment.get(
+                "maximum_provider_attempts_per_scientific_call"
+            )
+            != 4
+            or review_amendment.get("maximum_schema_attempts_per_scientific_call")
+            != 2
+            or review_amendment.get("transport_failures_do_not_consume_schema_attempts")
+            is not True
+            or review_amendment.get("retries_only_without_valid_judgment") is not True
+            or review_amendment.get("failed_attempts_remain_auditable") is not True
+            or len(required_ids) != 5
+            or len(set(required_ids)) != 5
+        ):
+            raise ValueError("Review-only amendment provenance mismatch")
+        review_policy["required_reviewer_ids"] = required_ids
+        review_policy.setdefault("synthetic_panel", {})["sha256"] = review_amendment[
+            "panel_protocol_sha256"
+        ]
     if review_policy.get("mode") == "synthetic_model_panel":
         required_ids = set(review_policy.get("required_reviewer_ids") or [])
         if set(reviewer_ids) != required_ids:
@@ -104,6 +175,11 @@ def validate_inputs(
             panel_summary.get("protocol_id") != protocol.get("protocol_id")
             or panel_summary.get("packet_sha256") != packet_hash
             or panel_summary.get("panel_protocol_sha256") != panel_ref.get("sha256")
+            or (
+                review_amendment is not None
+                and panel_summary.get("review_amendment_sha256")
+                != review_amendment_sha256
+            )
         ):
             raise ValueError("Synthetic panel provenance mismatch")
         panel_reviewers = {
@@ -120,6 +196,11 @@ def validate_inputs(
                 or review.get("model_family") != panel_entry.get("family")
                 or review.get("model_id") != panel_entry.get("model_id")
                 or review.get("panel_protocol_sha256") != panel_ref.get("sha256")
+                or (
+                    review_amendment is not None
+                    and review.get("review_amendment_sha256")
+                    != review_amendment_sha256
+                )
                 or panel_entry.get("healthy") is not True
                 or panel_entry.get("primary_review_sha256") != json_sha(review)
             ):
@@ -167,16 +248,60 @@ def analyze(
     summary: dict[str, Any],
     packet: dict[str, Any],
     reviews: list[dict[str, Any]],
-    blinding_key: bytes,
+    blinding_key: bytes | None,
     panel_summary: dict[str, Any] | None = None,
+    arm_map: dict[str, Any] | None = None,
+    review_amendment: dict[str, Any] | None = None,
+    protocol_sha256: str | None = None,
+    review_amendment_sha256: str | None = None,
 ) -> dict[str, Any]:
     validate_inputs(
-        protocol, summary, packet, reviews, blinding_key, panel_summary
+        protocol,
+        summary,
+        packet,
+        reviews,
+        blinding_key,
+        panel_summary,
+        arm_map,
+        review_amendment,
+        protocol_sha256,
+        review_amendment_sha256,
     )
-    candidate_to_case = {}
-    for case in summary["cases"]:
-        block_id = f"{case['scenario']}-r{case['repeat_index']}"
-        candidate_to_case[candidate_id(blinding_key, block_id, case["case_id"])] = case
+    cases_by_id = {case["case_id"]: case for case in summary["cases"]}
+    if arm_map is not None:
+        entries = arm_map.get("entries") or []
+        if len(entries) != len(cases_by_id):
+            raise ValueError("Arm map does not cover the exact generation case count")
+        packet_candidates = {
+            candidate["candidate_id"]: (block["block_id"], response_sha(candidate["response"]))
+            for block in packet["blocks"]
+            for candidate in block["candidates"]
+        }
+        if {entry.get("candidate_id") for entry in entries} != set(packet_candidates):
+            raise ValueError("Arm map does not cover the exact blinded candidate set")
+        candidate_to_case = {}
+        for entry in entries:
+            case = cases_by_id.get(entry.get("case_id"))
+            block_id = (
+                f"{case['scenario']}-r{case['repeat_index']}" if case is not None else None
+            )
+            packet_block, packet_response_sha = packet_candidates[entry["candidate_id"]]
+            if (
+                case is None
+                or entry.get("arm") != case.get("arm")
+                or entry.get("block_id") != block_id
+                or entry.get("block_id") != packet_block
+                or entry.get("response_sha256") != packet_response_sha
+                or entry.get("candidate_id") in candidate_to_case
+            ):
+                raise ValueError("Arm-map candidate mapping mismatch")
+            candidate_to_case[entry["candidate_id"]] = case
+    else:
+        candidate_to_case = {}
+        assert blinding_key is not None
+        for case in summary["cases"]:
+            block_id = f"{case['scenario']}-r{case['repeat_index']}"
+            candidate_to_case[candidate_id(blinding_key, block_id, case["case_id"])] = case
 
     dimension_values: dict[str, dict[str, list[float]]] = {
         arm: {dimension: [] for dimension in REVIEW_DIMENSIONS}
@@ -329,6 +454,7 @@ def analyze(
         else None,
         "scenario_cluster_count": len(protocol["scenarios"]),
         "case_count": len(summary["cases"]),
+        "unblinding_method": "arm_map" if arm_map is not None else "blinding_key",
     }
 
 
@@ -343,13 +469,25 @@ def main(argv: list[str] | None = None) -> int:
         if args.panel_summary
         else None
     )
+    review_amendment = (
+        json.loads(args.review_amendment.read_text(encoding="utf-8"))
+        if args.review_amendment
+        else None
+    )
+    arm_map = (
+        json.loads(args.arm_map.read_text(encoding="utf-8")) if args.arm_map else None
+    )
     result = analyze(
         protocol,
         summary,
         packet,
         reviews,
-        read_blinding_key(args.blinding_key_file),
+        read_blinding_key(args.blinding_key_file) if args.blinding_key_file else None,
         panel_summary,
+        arm_map,
+        review_amendment,
+        sha256_file(args.protocol),
+        sha256_file(args.review_amendment) if args.review_amendment else None,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")

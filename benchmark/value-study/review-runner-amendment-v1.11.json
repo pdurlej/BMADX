@@ -1,0 +1,68 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "replace-unhealthy-kimi-with-nemotron-v1.11",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "c9071e179ad4fa858df0527b240723ff550c5a28dbb2e24c996ffe057794697a",
+  "previous_amendment_sha256": "1d90fe1af6b12464b3f1fcc8f5a2d5ad6c0752e3da1417abe11d29095adf1167",
+  "amended_runner_sha256": "b51fc958a3fb83b65651b0aaedde653869e30168200e18174333dd63226010f2",
+  "amended_analyzer_sha256": "7856b9b080c55076d53e1eda2be62f48ac312c2c4fc02ef8b90e1eaf30bef56f",
+  "arm_map_builder_sha256": "ddb7c5cf261a8e8a73eeb53293600118ee96f0a5d69aa949f70425a96f36f875",
+  "reviewer_canary_runner_sha256": "79ee33f4e6ef7d61818975969aa1538f4483c2d4a593868db45e1e71e7f10da9",
+  "reviewer_selection_protocol_sha256": "10782ecfaede78fde85cd180b76a16da2bf795d1ced2efab5d42318e44246575",
+  "selected_reviewer_canary_sha256": "cebf2ee631308086c294ec545d2c97f4d470fa4f357a03d9bc149c3d8fd56ba3",
+  "panel_schema_preflight_sha256": "f9b2d9ea4a009693eb5afc1ecb5046121205552e8bd66bda0cff7238d34592e3",
+  "panel_preflight_summary_sha256s": [
+    "ff047056d8669615398a293ca3d7fd183c3d3f0230d87678a3798a8ac18654ac",
+    "ce8b59c743d5a66888885da24310a889739b89282b2804063e70180791d118fa",
+    "adda6845e90bea2c9d56bf1f4d46a9e96ecd5a3f8f34871a0dcfd5bf1420b5b6",
+    "588afaffea5182909e49849907c9ab06b1551ca78f6ba583d61f68ea8ba27fcb",
+    "6e00bc83e7655d2917fbe033f7369a7439fb4a89e5a9f134610645b795e37332"
+  ],
+  "reason": "Replace Kimi after it omitted all required score fields for one candidate during the first call of a fail-closed full-panel run. Nemotron was the first reviewer in the frozen candidate order and passed 3/3 selection canaries. Every final reviewer then passed 4/4 panel preflight calls, including reversed candidate order. Scores were not inspected for selection or acceptance.",
+  "trigger_call_id": "stability--kimi-k27-code--secret-exposure-incident-r2",
+  "valid_votes_before_amendment": 0,
+  "invalid_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": true,
+  "generation_outputs_unchanged": true,
+  "replaced_reviewer": {
+    "from_reviewer_id": "kimi-k27-code",
+    "from_family": "kimi",
+    "to_reviewer_id": "nemotron-3-ultra",
+    "to_family": "nemotron"
+  },
+  "retained_prior_replacements": [
+    {
+      "from_reviewer_id": "deepseek-v4-pro",
+      "from_family": "deepseek",
+      "to_reviewer_id": "mistral-large-3",
+      "to_family": "mistral"
+    },
+    {
+      "from_reviewer_id": "minimax-m3",
+      "from_family": "minimax",
+      "to_reviewer_id": "gemma-4-31b",
+      "to_family": "gemma"
+    }
+  ],
+  "required_reviewer_ids": [
+    "gemma-4-31b",
+    "mistral-large-3",
+    "qwen-35",
+    "glm-52",
+    "nemotron-3-ultra"
+  ],
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "normalizes_only_unique_distance_one_boolean_flag_keys": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true,
+  "unblinding_method": "exact_redacted_review_payload_sha256_arm_map",
+  "missing_original_blinding_key_disclosed": true
+}

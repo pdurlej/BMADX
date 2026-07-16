@@ -1,5 +1,0 @@
-Choice: X3 — BMAD-heavy
-Why: This is irreversible data deletion involving paid-account protection and audit-retention obligations.
-Gate: classification and execution allowed; BMAD status OK.
-Thinking: high — suggestion only.
-Next step: define retention, paid-account exclusion, audit preservation, dry-run, approval, rollback, and verification requirements through BMAD before execution.

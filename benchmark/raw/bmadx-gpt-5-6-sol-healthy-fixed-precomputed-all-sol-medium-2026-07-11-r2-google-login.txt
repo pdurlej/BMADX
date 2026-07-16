@@ -1,6 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Why: Google OAuth, callback handling, and session behavior cross the authentication security boundary.  
-Gate: classification and execution allowed; BMAD healthy; cache unavailable; no warnings.  
-Ownership: BMAD defines the auth architecture, callback contract, account-linking rules, session lifecycle, and security acceptance criteria before implementation.  
-Verification: validate OAuth success/failure, state/nonce protection, callback errors, session creation/rotation/expiry, logout, and returning-user behavior.  
-Thinking: high — suggestion only.

@@ -1,9 +1,0 @@
-Choice: X2 — Regular
-Thinking: medium — suggestion only.
-Why: bounded backend change across four files, with no indicated red-zone or architectural risk.
-Plan:
-1. Identify the existing field propagation pattern across the four backend files.
-2. Add the status field consistently while preserving current interfaces and behavior.
-Verify:
-1. Run focused tests covering status handling and existing behavior.
-2. Confirm all four files use compatible naming, types, serialization, and defaults.

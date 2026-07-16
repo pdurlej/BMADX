@@ -1,5 +1,0 @@
-Choice: X4 — Rescue Mode  
-Why: A migration red zone with repeated failure and unclear rollback ownership is rescue-shaped; the precomputed gate permits classification.  
-Thinking: high — suggestion only  
-Goal: yes — achieve zero validation delta with rollback ownership confirmed; stop on success, blocked approval/hard-stop, human review, or budget exhaustion.  
-Loop: yes — max 3 review -> repair -> validate passes; continue only while delta strictly shrinks, stopping on pass, stalled/increased delta, exhausted passes, or required human approval.

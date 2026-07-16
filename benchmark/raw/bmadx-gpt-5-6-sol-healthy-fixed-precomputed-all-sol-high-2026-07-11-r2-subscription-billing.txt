@@ -1,4 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Why: Billing discounts and account permissions are red-zone changes affecting financial correctness and authorization.  
-Gate: classification and execution allowed; BMAD ready; no warnings.  
-Thinking: high — suggestion only.

@@ -12,6 +12,26 @@ all 162 calls from zero with the same design and a frozen native output schema.
 The stopped v1 run is preserved in
 `artifacts/bmadx-value-study-generation-failure-v1.zip`.
 
+## Final v1.13 Outcome
+
+The review panel completed 325/325 scientific judgments on 2026-07-16, using
+329 provider attempts. Three calls required at least one schema-only or
+transport-only retry. The run remained blinded.
+
+The frozen health gate failed before arm analysis: GLM 5.2 reached preference-
+order Jaccard `0.590909` and Nemotron 3 Ultra reached `0.651515`, below the
+preregistered `0.70` minimum. Gemma 4, Mistral Large 3, and Qwen 3.5 passed.
+The panel was therefore not eligible for unblinding, and no BMADX value-added
+claim is allowed. See
+[BMADX Decision-Value Study Results](bmadx-value-study-results-2026-07-16.md).
+
+Amendments v1.8-v1.13 replaced schema-unstable reviewers using frozen canary
+order, added a complete-panel schema preflight, separated invalid judgments
+from transport failures, and preserved failed attempts across an exact
+checkpoint resume. None changed candidate content, scoring, arm identity, or
+the 325 scientific judgments. The final protocol and gate artifacts are
+machine-readable under `benchmark/value-study/`.
+
 The first Pi review canary returned a valid judgment inside one outer JSON
 markdown fence. No valid vote was recorded. Review-runner amendment v1.1 adds
 only deterministic fence normalization and restarts all 325 calls from zero;
@@ -96,13 +116,13 @@ Keep that key outside the packet and unavailable to reviewers. Reveal and
 archive it only after all reviews are signed, so the final analysis remains
 reproducible without making the review mapping reversible in advance.
 
-Five preregistered model families score every response independently: MiniMax,
-DeepSeek, Qwen, GLM, and Kimi. Each family has exactly one primary vote and
-must attest that the arm mapping was unavailable. Reviewers score absolute
-dimensions before choosing a preferred candidate. The rubric is frozen in
-`benchmark/value-study/rubric-v1.json`; panel identities, runtimes, health
-gates, and call counts are frozen in
-`benchmark/value-study/synthetic-panel-v1.json`.
+The final panel families were Gemma, Mistral, Qwen, GLM, and Nemotron. Each
+family had exactly one primary vote and attested that the arm mapping was
+unavailable. Reviewers scored absolute dimensions before choosing a preferred
+candidate. The rubric is frozen in `benchmark/value-study/rubric-v1.json`;
+final identities, runtimes, health gates, retry boundaries, and call counts are
+frozen in `benchmark/value-study/synthetic-panel-v1.13.json` and
+`benchmark/value-study/review-runner-amendment-v1.13.json`.
 
 Every reviewer receives its own deterministic candidate order. Eleven of 54
 blocks per reviewer are repeated with a rotated order to measure position
@@ -187,8 +207,18 @@ pre-registered; do not tune them after seeing results.
      --confirm-call-count 325
    ```
 
-10. Run `analyze_bmadx_value_study.py` with all five review files, the panel
-summary, and the same key. Report the frozen
+10. Evaluate the panel health gate before making the arm map available:
+
+   ```bash
+   python3 benchmark/scripts/evaluate_bmadx_panel_gate.py \
+     --panel-protocol benchmark/value-study/synthetic-panel-v1.13.json \
+     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/panel-summary.json \
+     --output benchmark/value-study/results/panel-gate-v1.13.json
+   ```
+
+11. Only when the gate reports `eligible_for_unblinding`, run
+`analyze_bmadx_value_study.py` with all five review files, the panel summary,
+and the frozen key or exact arm map. Report the frozen
    verdict plus every failed gate, not only the headline preference. Archive
    the key only after reviews are final.
 
@@ -197,13 +227,14 @@ summary, and the same key. Report the frozen
      --protocol benchmark/value-study/protocol-v1.json \
      --summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/summary.json \
      --packet benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/review-packet.json \
-     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/panel-summary.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/minimax-m3.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/deepseek-v4-pro.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/qwen-35.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/glm-52.json \
-     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel/reviews/kimi-k27-code.json \
-     --blinding-key-file /tmp/bmadx-value-blinding-key \
+     --panel-summary benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/panel-summary.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/reviews/gemma-4-31b.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/reviews/mistral-large-3.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/reviews/qwen-35.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/reviews/glm-52.json \
+     --review benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/review/synthetic-panel-v1.13/reviews/nemotron-3-ultra.json \
+     --review-amendment benchmark/value-study/review-runner-amendment-v1.13.json \
+     --arm-map /secure/path/bmadx-value-arm-map.json \
      --output benchmark/value-study/runs/sol-bmadx-decision-value-v1.1-gpt-5-6-sol/analysis.json
    ```
 

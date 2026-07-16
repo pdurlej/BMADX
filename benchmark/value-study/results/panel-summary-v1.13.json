@@ -1,0 +1,69 @@
+{
+  "schema": "bmadx_synthetic_panel_summary.v1",
+  "protocol_id": "sol-bmadx-decision-value-v1.1",
+  "packet_sha256": "4e5a7d6e7f3e2dce33ab826bf4e710f178c1264f78998315ae230b15252989e7",
+  "panel_protocol_sha256": "6ca59a0b932dde4213bc5ae2ea18624982e386adfc9ca5f1386b9c29a32fc475",
+  "review_amendment_sha256": "edbe174b7d2ceacca3b5d0c63ad815bfcd3ea4db1309921f5b394d5d29c02dd0",
+  "panel_runner_sha256": "c2986e690fdc93f5c29cbd95e96af4e18a07166e3aa17adc33cce8bcb60abe02",
+  "complete": true,
+  "healthy": false,
+  "expected_call_count": 325,
+  "completed_call_count": 325,
+  "provider_attempt_count": 329,
+  "retried_call_count": 3,
+  "runtime_versions": {
+    "pi": "0.80.6"
+  },
+  "reviewers": [
+    {
+      "reviewer_id": "gemma-4-31b",
+      "family": "gemma",
+      "model_id": "ollama/gemma4:31b-cloud",
+      "healthy": true,
+      "primary_review_sha256": "ca91d56085e2ad8a0bed8695219b9d388134182e67c313e48c7711cac0783662",
+      "stability_block_count": 11,
+      "order_stability_preference_jaccard": 0.712121,
+      "order_stability_mean_absolute_score_delta": 0.134199
+    },
+    {
+      "reviewer_id": "mistral-large-3",
+      "family": "mistral",
+      "model_id": "ollama/mistral-large-3:675b-cloud",
+      "healthy": true,
+      "primary_review_sha256": "6b40aa71d5e2961404d85202f607c349f81616b7db3b7ee301f890a480f2c008",
+      "stability_block_count": 11,
+      "order_stability_preference_jaccard": 0.727273,
+      "order_stability_mean_absolute_score_delta": 0.21645
+    },
+    {
+      "reviewer_id": "qwen-35",
+      "family": "qwen",
+      "model_id": "ollama/qwen3.5:cloud",
+      "healthy": true,
+      "primary_review_sha256": "ba4fb7d39770793a7930a40c2d608846c1a0feed169096283e8b067e20fd10f4",
+      "stability_block_count": 11,
+      "order_stability_preference_jaccard": 0.727273,
+      "order_stability_mean_absolute_score_delta": 0.424242
+    },
+    {
+      "reviewer_id": "glm-52",
+      "family": "glm",
+      "model_id": "ollama/glm-5.2:cloud",
+      "healthy": false,
+      "primary_review_sha256": "e24f3347c980017c9516ee40843611eed223937fdfe550aa3b7e701d0e413705",
+      "stability_block_count": 11,
+      "order_stability_preference_jaccard": 0.590909,
+      "order_stability_mean_absolute_score_delta": 0.467532
+    },
+    {
+      "reviewer_id": "nemotron-3-ultra",
+      "family": "nemotron",
+      "model_id": "ollama/nemotron-3-ultra:cloud",
+      "healthy": false,
+      "primary_review_sha256": "9b08abb24716f2fc1f76e8bb068b5fcf12a3c09c804e10c9c56cdec77dacb36e",
+      "stability_block_count": 11,
+      "order_stability_preference_jaccard": 0.651515,
+      "order_stability_mean_absolute_score_delta": 0.709957
+    }
+  ]
+}

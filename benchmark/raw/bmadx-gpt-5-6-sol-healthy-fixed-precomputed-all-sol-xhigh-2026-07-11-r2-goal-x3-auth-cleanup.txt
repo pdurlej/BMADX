@@ -1,6 +1,0 @@
-Choice: X3 — BMAD-heavy auth red-zone work.
-Why: Existing authentication behavior, tests, and rollback documentation require BMAD-owned verification.
-Execution: allowed by the precomputed compact gate.
-Thinking: high — suggestion only
-Goal: yes — use `/goal`; achieved when login behavior is preserved, tests pass, and the rollback note is documented; stop if blocked or human approval is required.
-Loop: no — one verification pass should suffice; multi-turn goal work alone does not justify repeated repair passes.

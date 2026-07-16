@@ -1,4 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Why: Google OAuth, callback handling, and session behavior are auth red-zone work requiring security and architecture review.  
-Gate: classification and execution allowed; BMAD status OK; no warnings.  
-Thinking: high — suggestion only.

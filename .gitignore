@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 .DS_Store
 skill/bmadx/state/*.json
+benchmark/value-study/runs/

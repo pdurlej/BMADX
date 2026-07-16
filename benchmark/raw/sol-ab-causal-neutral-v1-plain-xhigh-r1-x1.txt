@@ -1,1 +1,0 @@
-{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["The change is a tiny, local text correction in one React component.","It is reversible and needs only a targeted check before reporting completion and the next step."]}

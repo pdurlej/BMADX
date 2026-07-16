@@ -1,4 +1,0 @@
-Choice: X1 — One-shot
-Why: A small, purely textual hero-copy change with explicit billing and pricing logic boundaries.
-Thinking: medium — suggestion only.
-Next step: Update only the pricing hero copy, then confirm pricing behavior remains untouched.

@@ -1,0 +1,41 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "replace-unhealthy-deepseek-with-mistral-v1.8",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "7e2b1e9f87aa287659a8615e5ea9528ac99380cf1c928b039f56177974044c46",
+  "previous_amendment_sha256": "3f61c920c75e142a8663addc13e1f7beb3654d52005d89f373df9e877797f585",
+  "amended_runner_sha256": "434e277de0578e242857a168cfd92d6532550ac9060bd2dd209a24edd99681e8",
+  "amended_analyzer_sha256": "e492968f1123b58bb1637e0413918a73ff0b72d5068bb07529c1b7248259d850",
+  "arm_map_builder_sha256": "ddb7c5cf261a8e8a73eeb53293600118ee96f0a5d69aa949f70425a96f36f875",
+  "reason": "Replace the methodologically unhealthy DeepSeek reviewer after it omitted candidate C under exact A/B/C aliases. Preserve the frozen generation outputs, rubric, candidate order, call counts, and fail-closed validation.",
+  "valid_votes_before_amendment": 158,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": true,
+  "generation_outputs_unchanged": true,
+  "replaced_reviewer": {
+    "from_reviewer_id": "deepseek-v4-pro",
+    "from_family": "deepseek",
+    "to_reviewer_id": "mistral-large-3",
+    "to_family": "mistral"
+  },
+  "required_reviewer_ids": [
+    "minimax-m3",
+    "mistral-large-3",
+    "qwen-35",
+    "glm-52",
+    "kimi-k27-code"
+  ],
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true,
+  "unblinding_method": "exact_redacted_review_payload_sha256_arm_map",
+  "missing_original_blinding_key_disclosed": true
+}

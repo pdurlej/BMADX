@@ -1,0 +1,73 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "allow-one-schema-only-retry-v1.12",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "176586ea8fa2ef910d36ad3b6a7264b3e6bfcf4da930f617caacc4de3f81afbb",
+  "previous_amendment_sha256": "0f0f408418edb004d394c7cc04d59ee13eb9f52c815897fc739b973e0fcb30a7",
+  "amended_runner_sha256": "718a7edefb978091fff6998ba8d0ff3b36bb30b7e8408c9457cecb8befe73008",
+  "amended_analyzer_sha256": "b0deba2773b336db6b898705b7d2e693ad46b7ebc485ec68b8d850ced6051b70",
+  "arm_map_builder_sha256": "ddb7c5cf261a8e8a73eeb53293600118ee96f0a5d69aa949f70425a96f36f875",
+  "reviewer_canary_runner_sha256": "79ee33f4e6ef7d61818975969aa1538f4483c2d4a593868db45e1e71e7f10da9",
+  "reviewer_selection_protocol_sha256": "10782ecfaede78fde85cd180b76a16da2bf795d1ced2efab5d42318e44246575",
+  "selected_reviewer_canary_sha256": "cebf2ee631308086c294ec545d2c97f4d470fa4f357a03d9bc149c3d8fd56ba3",
+  "panel_schema_preflight_sha256": "f9b2d9ea4a009693eb5afc1ecb5046121205552e8bd66bda0cff7238d34592e3",
+  "panel_preflight_summary_sha256s": [
+    "ff047056d8669615398a293ca3d7fd183c3d3f0230d87678a3798a8ac18654ac",
+    "ce8b59c743d5a66888885da24310a889739b89282b2804063e70180791d118fa",
+    "adda6845e90bea2c9d56bf1f4d46a9e96ecd5a3f8f34871a0dcfd5bf1420b5b6",
+    "588afaffea5182909e49849907c9ab06b1551ca78f6ba583d61f68ea8ba27fcb",
+    "6e00bc83e7655d2917fbe033f7369a7439fb4a89e5a9f134610645b795e37332"
+  ],
+  "reason": "Allow one fresh-session retry only when an attempt has no valid judgment. The v1.11 run stopped after GLM returned an otherwise complete review with malformed JSON syntax in one key. A valid judgment is never retried, so score content cannot trigger replacement; every failed attempt remains hash-bound and auditable.",
+  "trigger_call_id": "primary--glm-52--accessibility-modal-r3",
+  "valid_votes_before_amendment": 150,
+  "invalid_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "changes_provider_attempt_count_policy": true,
+  "generation_outputs_unchanged": true,
+  "retained_prior_replacements": [
+    {
+      "from_reviewer_id": "deepseek-v4-pro",
+      "from_family": "deepseek",
+      "to_reviewer_id": "mistral-large-3",
+      "to_family": "mistral"
+    },
+    {
+      "from_reviewer_id": "minimax-m3",
+      "from_family": "minimax",
+      "to_reviewer_id": "gemma-4-31b",
+      "to_family": "gemma"
+    },
+    {
+      "from_reviewer_id": "kimi-k27-code",
+      "from_family": "kimi",
+      "to_reviewer_id": "nemotron-3-ultra",
+      "to_family": "nemotron"
+    }
+  ],
+  "required_reviewer_ids": [
+    "gemma-4-31b",
+    "mistral-large-3",
+    "qwen-35",
+    "glm-52",
+    "nemotron-3-ultra"
+  ],
+  "maximum_attempts_per_scientific_call": 2,
+  "retries_only_without_valid_judgment": true,
+  "retry_preserves_prompt_order_and_model": true,
+  "failed_attempts_remain_auditable": true,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "normalizes_only_unique_distance_one_boolean_flag_keys": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true,
+  "unblinding_method": "exact_redacted_review_payload_sha256_arm_map",
+  "missing_original_blinding_key_disclosed": true
+}

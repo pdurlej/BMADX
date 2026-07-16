@@ -1,6 +1,0 @@
-Choice: X4 — Rescue Mode  
-Why: Migration red-zone work, two failed repairs, unclear rollback ownership, and delta-driven recovery require BMAD-first rescue discipline.  
-Gate: classification and execution allowed; BMAD healthy; no warnings.  
-Thinking: high — suggestion only.  
-Goal: yes — stop when validation passes, rollback ownership blocks progress, approval/human review is required, or the repair budget is exhausted.  
-Loop: yes — max 3 review/repair/validate passes; continue only while the delta shrinks, and stop on pass, stalled/increased delta, exhausted passes, or human review.

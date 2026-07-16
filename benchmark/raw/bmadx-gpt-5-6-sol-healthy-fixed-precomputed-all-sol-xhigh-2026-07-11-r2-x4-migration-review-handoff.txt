@@ -1,4 +1,0 @@
-Choice: X4 — Rescue Mode
-Why: Failed migration, unclear rollback ownership, production risk, and broad pre-repair review require incident-recovery governance.
-Thinking: high — suggestion only
-Handoff: yes

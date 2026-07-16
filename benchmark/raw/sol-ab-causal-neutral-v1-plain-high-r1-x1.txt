@@ -1,1 +1,0 @@
-{"process":"direct","risk":"low","handoff":false,"goal":false,"goal_stop":null,"loop":false,"loop_max_passes":null,"loop_stop":null,"reasons":["A one-line text correction in one React component is tiny, local, and reversible.","The next step is to locate the error message, correct the typo, and run a focused verification."]}

@@ -1,5 +1,0 @@
-Choice: X4 — Rescue Mode  
-Why: Partial migration failure, unclear ownership, risky rollback, and recovery scaffolding are explicitly rescue-shaped.  
-Gate: classification allowed; execution allowed; BMAD OK; no warnings.  
-Thinking: high — suggestion only.  
-Next step: Scaffold a BMAD recovery plan assigning migration, rollback, verification, rollout, and approval owners.

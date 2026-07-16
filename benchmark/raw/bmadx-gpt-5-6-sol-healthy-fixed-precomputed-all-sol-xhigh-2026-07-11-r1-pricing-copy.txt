@@ -1,4 +1,0 @@
-Choice: X1 — One-shot  
-Why: A tiny, purely textual hero-copy change with no pricing logic or billing behavior impact.  
-Thinking: medium — suggestion only.  
-Next step: Update only the pricing hero copy, then confirm pricing and billing behavior remain untouched.

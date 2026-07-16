@@ -1,9 +1,0 @@
-Choice: X2 — Regular
-Why: Bounded copy-only change with no auth, billing, or data-model impact.
-Thinking: medium — suggestion only.
-Plan:
-1. Add the onboarding email copy variant following the existing template pattern.
-2. Keep selection logic and changes scoped to onboarding messaging.
-Verify:
-1. Check the variant renders correctly with expected personalization.
-2. Run relevant email tests and confirm protected areas remain unchanged.

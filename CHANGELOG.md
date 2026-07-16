@@ -35,6 +35,13 @@ All notable changes to this repository will be documented here.
 - Blinded 180-case GPT-5.6 Sol A/B found a 13.33-16.67 percentage-point BMADX
   exact-scorer gain at each tested effort, with higher token and latency cost;
   external review classifies this as directional assigned-arm evidence only.
+- The preregistered three-arm decision-value study completed 162 Sol generation
+  calls and 325 blinded synthetic judgments. The final panel was unhealthy:
+  GLM 5.2 and Nemotron 3 Ultra missed the `0.70` order-stability threshold, so
+  unblinding and any BMADX value-added claim were blocked.
+- Added schema-only and transport-only retry accounting, exact checkpoint
+  migration after an Ollama Cloud outage, reviewer qualification canaries, and
+  a deterministic pre-unblinding panel gate.
 
 ## [0.3.1] - 2026-07-10
 

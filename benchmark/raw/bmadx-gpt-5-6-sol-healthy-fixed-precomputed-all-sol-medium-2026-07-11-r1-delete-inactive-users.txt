@@ -1,5 +1,0 @@
-Choice: X3 — BMAD-heavy  
-Thinking: high — suggestion only.  
-Why: Permanent data deletion intersects billing protection, retention/audit requirements, privacy, and rollback risk.  
-Gate: classification and execution allowed; BMAD status OK.  
-Next step: Define deletion eligibility, paid-account exclusions, audit-data retention, dry-run evidence, approval, rollback, and post-run verification before implementation.

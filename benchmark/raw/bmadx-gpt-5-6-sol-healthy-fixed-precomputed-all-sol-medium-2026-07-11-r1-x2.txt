@@ -1,9 +1,0 @@
-Choice: X2 — Regular
-Thinking: medium — suggestion only.
-Why: A bounded cross-file backend change with clear ownership and no red-zone risk.
-Plan:
-1. Trace the existing status model and update its definition and propagation across all 4 backend files.
-2. Follow established patterns for parsing, validation, persistence, and serialization.
-Verify:
-1. Run focused backend tests covering valid, invalid, missing, and persisted status values.
-2. Confirm the field survives the full request-to-response path without regressions.

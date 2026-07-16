@@ -1,4 +1,0 @@
-Choice: X4 — Rescue Mode
-Why: Authentication is a red zone, and two competing auth systems with unclear session ownership require architecture and ownership resolution before implementation.
-Thinking: high — suggestion only.
-Handoff: yes

@@ -1,4 +1,0 @@
-Choice: X4 — Rescue Mode  
-Thinking: high — suggestion only.  
-Why: Partial migration failure, unclear ownership, risky rollback, and recovery scaffolding make this rescue-shaped red-zone work.  
-Gate: classification and execution allowed; BMAD healthy; no cache or warnings.

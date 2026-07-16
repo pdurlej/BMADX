@@ -1,4 +1,0 @@
-Choice: X1 — One-shot
-Why: A typo-only change in one React component is tiny, local, and low-risk.
-Thinking: medium — suggestion only.
-Next step: Locate the error message, correct the typo, then run the focused component test or lint check.

@@ -130,6 +130,19 @@ turn BMADX into a runtime orchestrator. See
 Rule: no public model claim without the same BMADX benchmark gates for routing,
 compactness, red-zone escalation, degraded BMAD behavior, and `X4` rarity.
 
+### Evidence status
+
+The July 16 blinded decision-value study completed 162 Sol generation calls and
+325 synthetic panel judgments, but two of five reviewer families failed the
+preregistered candidate-order stability gate. The run remained blinded and is
+**inconclusive**: it does not support a claim that BMADX is better or worse than
+plain Sol, and it does not establish outcomes for novice builders.
+
+This failure is published because the benchmark is meant to block attractive
+claims when the evaluation panel is not reliable enough. See the
+[full result and trade-offs](docs/bmadx-value-study-results-2026-07-16.md) and
+[machine-readable gate](benchmark/value-study/results/panel-gate-v1.13.json).
+
 ## Help test BMADX
 
 The most useful feedback is not "nice project." It is where BMADX
