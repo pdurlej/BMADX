@@ -14,7 +14,6 @@ All notable changes to this repository will be documented here.
   blocks execution.
 - Removed automatic BMAD `check`/`sync` remediation from task startup and made
   installer verification exercise the read-only `X3` gate.
-
 ### Added
 
 - Criteria-based planning-effort advisor that reports `Y/8` signals and may

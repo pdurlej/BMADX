@@ -137,12 +137,12 @@ Do not create new planning files unless the decision no longer fits this plan.
 
 ## Post-release v0.3.2 Evidence
 
-Status: implementation in progress.
+Status: implementation complete; value-study result inconclusive before
+unblinding.
 
 - Dependency gate repaired: compact `X3/X4` now performs a local read-only
   capability check. Release/reference drift and cache-write failures warn but
   do not block; stateful BMAD sync is operator-requested maintenance only.
-
 - Sol `medium/high/xhigh` fixed-effort comparison completed across all groups,
   repeat `2`.
 - Decision quality: `29/30`, `30/30`, `30/30` respectively.
@@ -166,7 +166,9 @@ Status: implementation in progress.
   scorer. The revised 18-scenario manifest passed independent pre-run audit;
   generation v1 stopped at call 130 on malformed JSON. Protocol v1.1 restarts
   from zero with a frozen native output schema under operator-approved quota.
-- Its review stage is now a preregistered five-family Ollama Cloud panel run
-  entirely through Pi: 270 primary judgments and 55 order-stability judgments.
-  Synthetic evidence is sufficient for the first cross-model claim, but not for
-  claims about real novice learning or productivity.
+- Its review stage completed all 270 primary judgments and 55 order-stability
+  judgments through a five-family Ollama Cloud panel in Pi. GLM 5.2 and
+  Nemotron 3 Ultra missed the frozen `0.70` candidate-order stability gate, so
+  the run remained blinded and supports no BMADX value-added claim. Synthetic
+  evidence also remains insufficient for real novice learning or productivity
+  claims.

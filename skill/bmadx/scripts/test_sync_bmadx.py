@@ -496,8 +496,10 @@ class SyncBmadxTests(unittest.TestCase):
             bad_parent.write_text("not a directory\n", encoding="utf-8")
             state_path = bad_parent / "bmadx-state.json"
 
-            payload = self.run_sync(root, bmad, state_path=state_path)
+            payload = self.run_sync(root, bmad, gear="X3", state_path=state_path)
             self.assertEqual(payload["action"], "ok")
+            self.assertTrue(payload["execution_allowed"])
+            self.assertEqual(payload["remediation"], [])
             self.assertFalse(payload["state_persisted"])
             self.assertIn("Could not persist BMADX state", payload["state_write_warning"])
 
