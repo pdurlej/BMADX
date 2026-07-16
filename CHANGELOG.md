@@ -4,7 +4,16 @@ All notable changes to this repository will be documented here.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Fixed
+
+- Replaced the stateful BMAD dependency invocation in the compact gate with a
+  local read-only capability check, so sandboxed `X3/X4` tasks no longer fail
+  because BMAD tried to write under `~/.codex`.
+- BMAD release/reference drift and unwritable cache state are now nonblocking,
+  convergent warnings; only a missing or structurally unusable dependency
+  blocks execution.
+- Removed automatic BMAD `check`/`sync` remediation from task startup and made
+  installer verification exercise the read-only `X3` gate.
 
 ## [0.3.1] - 2026-07-10
 

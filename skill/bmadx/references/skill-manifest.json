@@ -10,7 +10,7 @@
   ],
   "minimum_codex_cli_for_gpt56": "0.144.0",
   "dependency_skill": "bmad-method-codex",
-  "dependency_check_command": "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py\" check --json",
+  "dependency_check_command": "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/bmadx/scripts/sync_bmadx.py\" check --gear X3 --compact",
   "required_bmad_references": [
     "docs_reference_workflow_map.md",
     "docs_reference_commands.md",

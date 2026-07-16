@@ -145,6 +145,10 @@ Feedback templates: [Community Feedback](docs/community-feedback.md)
 Prerequisite: BMAD must already be installed in your Codex skills. BMADX depends
 on `bmad-method-codex`.
 
+BMADX checks that dependency locally and read-only. It does not require BMAD
+synchronization before normal tasks; release drift is advisory, and only a
+missing or structurally unusable BMAD installation blocks `X3/X4`.
+
 ```bash
 git clone https://github.com/pdurlej/BMADX.git
 cd BMADX
