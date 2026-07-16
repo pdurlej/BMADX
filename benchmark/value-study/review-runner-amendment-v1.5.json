@@ -1,0 +1,19 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "pi-final-thinking-judgment-fallback-v1.5",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
+  "previous_amendment_sha256": "e0c5bc38454e37792f4de59152c2dc0f375b053d17adcb4824b59d21b0a2d495",
+  "amended_runner_sha256": "14aa66c66ea7b4f94da53285ad3039adaf0f1380eb3d4c7edec8cd4ae089ad81",
+  "reason": "Use a complete final thinking item only when final text is empty and the whole item parses as a judgment.",
+  "valid_votes_before_amendment": 78,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "bmadx_panel_schema_preflight.v1",
+  "panel_protocol_sha256": "c9071e179ad4fa858df0527b240723ff550c5a28dbb2e24c996ffe057794697a",
+  "execution_rule": "every_reviewer_must_pass_every_call",
+  "scores_must_not_influence_acceptance": true,
+  "canary_calls": [
+    {
+      "lane": "primary",
+      "block_id": "secret-exposure-incident-r2"
+    },
+    {
+      "lane": "stability",
+      "block_id": "secret-exposure-incident-r2"
+    },
+    {
+      "lane": "primary",
+      "block_id": "billing-invoice-r1"
+    },
+    {
+      "lane": "primary",
+      "block_id": "worker-retry-r3"
+    }
+  ]
+}

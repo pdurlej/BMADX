@@ -1,0 +1,1 @@
+Task: Add a user data export containing profile, activity, and support history. The product has privacy commitments but no existing export contract.

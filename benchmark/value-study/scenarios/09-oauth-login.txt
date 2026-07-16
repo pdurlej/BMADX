@@ -1,0 +1,1 @@
+Task: Add Google OAuth login to an application that currently supports email login. Account linking, callbacks, sessions, logout, and failure handling are not yet specified.

@@ -10,7 +10,11 @@ Current public version:
 - `v0.3.1`
 
 Current main development line:
-- `v0.3.x`
+- `v0.3.2-dev`
+
+What `v0.3.2-dev` explores:
+- criteria-based planning effort separate from execution effort
+- reproducible Sol `medium/high/xhigh` comparison artifacts
 
 What `v0.3.1` fixes:
 - deterministic benchmark tests no longer depend on an operator-installed

@@ -1,0 +1,32 @@
+{
+  "schema": "bmadx_panel_gate_result.v1",
+  "status": "blocked_unhealthy_panel",
+  "complete": true,
+  "eligible_for_unblinding": false,
+  "unblinding_performed": false,
+  "positive_value_claim_allowed": false,
+  "scientific_call_count": 325,
+  "provider_attempt_count": 329,
+  "retried_call_count": 3,
+  "healthy_reviewer_count": 3,
+  "required_healthy_reviewer_count": 5,
+  "failed_reviewers": [
+    {
+      "reviewer_id": "glm-52",
+      "preference_jaccard": 0.590909,
+      "minimum_preference_jaccard": 0.7,
+      "mean_absolute_score_delta": 0.467532,
+      "maximum_mean_absolute_score_delta": 1.0
+    },
+    {
+      "reviewer_id": "nemotron-3-ultra",
+      "preference_jaccard": 0.651515,
+      "minimum_preference_jaccard": 0.7,
+      "mean_absolute_score_delta": 0.709957,
+      "maximum_mean_absolute_score_delta": 1.0
+    }
+  ],
+  "claim_boundary": "Synthetic panel health is a prerequisite. This gate does not itself measure BMADX value and cannot support human novice outcomes.",
+  "panel_protocol_sha256": "6ca59a0b932dde4213bc5ae2ea18624982e386adfc9ca5f1386b9c29a32fc475",
+  "panel_summary_sha256": "ea73d6f624a951ef752a48760366a7e51d9f8eeda763ce08b284dca2679f9afb"
+}

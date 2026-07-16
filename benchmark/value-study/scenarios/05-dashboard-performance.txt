@@ -1,0 +1,1 @@
+Task: Reduce an internal dashboard list from roughly four seconds to under one second without changing its results. Server query traces and client render profiles exist, but the dominant bottleneck has not been established.

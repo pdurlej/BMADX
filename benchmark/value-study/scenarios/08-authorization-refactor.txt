@@ -1,0 +1,1 @@
+Task: Consolidate three diverging implementations of the same authorization decision across backend modules. Existing behavior must be understood first; tests cover the main path but not all role combinations, and ownership is split.

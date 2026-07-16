@@ -1,0 +1,1 @@
+Task: Recover a database migration that failed twice and left mixed schema state in staging. Rollback ownership is unclear and validation deltas are available.

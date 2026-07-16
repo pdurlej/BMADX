@@ -137,8 +137,38 @@ Do not create new planning files unless the decision no longer fits this plan.
 
 ## Post-release v0.3.2 Evidence
 
-Status: implementation in progress.
+Status: implementation complete; value-study result inconclusive before
+unblinding.
 
 - Dependency gate repaired: compact `X3/X4` now performs a local read-only
   capability check. Release/reference drift and cache-write failures warn but
   do not block; stateful BMAD sync is operator-requested maintenance only.
+- Sol `medium/high/xhigh` fixed-effort comparison completed across all groups,
+  repeat `2`.
+- Decision quality: `29/30`, `30/30`, `30/30` respectively.
+- `high` is the default recommendation for consequential Sol planning;
+  `xhigh` requires explicit complexity signals.
+- Planning `max/ultra` uses a visible eight-signal rubric and operator
+  confirmation; it remains provisional until planning-specific evidence.
+- The first neutral plain-Sol control produced directional assigned-arm gains,
+  but external review found fixture, activation, isolation, resume, and scorer
+  limits. Its v1 summary is historical evidence, not causal proof.
+- A/B runner v2 hardening is complete locally. The next live run must use an
+  opaque activation check, independently adjudicated held-out scenarios, and a
+  placebo/BMADX-only/BMADX+real-BMAD decomposition at `high` before effort work.
+- The three-arm causal canary v1.2 executed 16/18 calls with 16/16 activation,
+  zero protected-path mutations, and complete per-case evidence. It stopped on
+  the frozen `critical` risk label after a recovery/high answer with complete
+  safeguards. Independent label adjudication now blocks the larger live run.
+- The replacement decision-value study v1 is pre-registered at 18 scenario
+  clusters, three arms, three repeats, and 162 Sol/high calls. It uses blinded
+  preference plus frozen quality/cost/safety gates instead of the project exact
+  scorer. The revised 18-scenario manifest passed independent pre-run audit;
+  generation v1 stopped at call 130 on malformed JSON. Protocol v1.1 restarts
+  from zero with a frozen native output schema under operator-approved quota.
+- Its review stage completed all 270 primary judgments and 55 order-stability
+  judgments through a five-family Ollama Cloud panel in Pi. GLM 5.2 and
+  Nemotron 3 Ultra missed the frozen `0.70` candidate-order stability gate, so
+  the run remained blinded and supports no BMADX value-added claim. Synthetic
+  evidence also remains insufficient for real novice learning or productivity
+  claims.

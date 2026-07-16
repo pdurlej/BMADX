@@ -19,6 +19,8 @@ The benchmark does not prove:
 - that token counts equal user value
 - that BMADX should replace plain Codex for trivial work
 - that a single advisor-policy run proves public token savings
+- that the July 16, 2026 synthetic value panel established BMADX value; two of
+  five reviewers failed the frozen order-stability gate before unblinding
 
 ## Main benchmark surfaces
 
@@ -29,6 +31,9 @@ The benchmark does not prove:
 - BMADX GPT-5.5 performance canary from `2026-06-01`; full baseline was blocked by token-budget canary failures
 - BMADX GPT-5.5 performance baseline from `2026-06-02`; automated baseline verification passed, but claim verification failed
 - experimental Codex OSS-provider reruns for local models, if a local provider such as Ollama or LM Studio is installed
+- the blinded GPT-5.6 Sol decision-value study from 2026-07-16; generation and
+  all 325 panel judgments completed, but the result is inconclusive because the
+  reviewer panel was unhealthy
 
 Use these artifacts:
 - [`../benchmark/summary-2026-04-04.json`](../benchmark/summary-2026-04-04.json)
@@ -44,6 +49,8 @@ Use these artifacts:
 - [`../benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-healthy-advisor-precomputed-all-bmadx.json)
 - [`../benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-degraded-fixed-precomputed-all-bmadx.json)
 - [`../benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json`](../benchmark/summary-2026-06-02-gpt-5-5-degraded-advisor-precomputed-all-bmadx.json)
+- [`bmadx-value-study-results-2026-07-16.md`](bmadx-value-study-results-2026-07-16.md)
+- [`../benchmark/value-study/results/panel-gate-v1.13.json`](../benchmark/value-study/results/panel-gate-v1.13.json)
 
 Runner hardening after `v0.2.4`:
 - benchmark runs now fail if `codex exec` does not report a `tokens used` footer
@@ -117,8 +124,11 @@ runtime state, or a second plan store.
 | `advisor` | use the scenario's expected thinking budget: `X1=medium`, `X2=medium`, `X3=high`, `X4=xhigh` |
 
 The recommended performance path uses `--gate-mode precomputed`. The benchmark
-harness runs the compact gate and injects the compact report into the Codex
-session, avoiding extra in-session tool-call variance.
+harness now records the model's classification first and only then runs the
+compact gate against the model-selected route. No route-conditioned gate report
+is injected before classification. Historical precomputed artifacts generated
+before 2026-07-12 are contract-conformance evidence, not independently blinded
+routing evidence.
 
 Canary runs:
 

@@ -1,0 +1,65 @@
+{
+  "schema": "sol_bmadx_causal_canary.v1.2",
+  "protocol_id": "sol-bmadx-causal-canary-v1.2",
+  "model": "gpt-5.6-sol",
+  "effort": "high",
+  "seed": 560715,
+  "schedule": "scenario-stratified arm shuffle; safety-critical placebo last",
+  "repeat": 1,
+  "expected_call_count": 18,
+  "arms": {
+    "placebo": {"policy": "ordinary_reasoning_placebo", "dependency": "none"},
+    "bmadx_stub": {"policy": "bmadx", "dependency": "deterministic_healthy_noop_bmad"},
+    "bmadx_real": {"policy": "bmadx", "dependency": "pinned_real_bmad"}
+  },
+  "source_hashes": {
+    "bmadx_tree_sha256": "e0c37e17e1de3e2c0f08cdb677d7dbefb89f1052ea7a701f536cd8666514bf21",
+    "real_bmad_tree_sha256": "7243c07d60aff38f1879b966d5131e76cda10d39c72dd9e194f4a6bbc4c52e0a",
+    "real_bmad_release_tag": "v6.10.0"
+  },
+  "harness_hashes": {
+    "runner_sha256": "d7b3ff5a68f4e8c5ee152ac7c7c838ed3c5eafa7094b7a672a29cff6fb66a183",
+    "contract_sha256": "5db7160aaab165389c83ad26ac7bf6c6057be30e3593e35d0abfbd4bf8135374",
+    "ab_helpers_sha256": "f0aebeb15d8150a0380016d8d2bb3e47b85046767037128a8c13fa84afee3f1d",
+    "benchmark_helpers_sha256": "e49597518db2647922ec0ad88be1d1227d4e838c5fdfe5ef07ef8878ee745498",
+    "scenarios_sha256": "84e6fe952dd4b32ca514f86a459020a70b86357e23c32796863e7e1253128501",
+    "validation_sha256": "f7c479a37c2b6a3cb507a605d13287bccbe21baa865f127eab73228ba3593c10"
+  },
+  "filesystem_mutation_scope": ["workspace", "assigned_skill", "bmad_dependency"],
+  "runtime_home_bookkeeping": "reported_not_scored",
+  "scenarios": {
+    "x1": {"sha256": "e4d3762bf3426fcb0d2157107fb8c7a458ead5f56e19ea47ab3db97e4ee5a8d9", "safety_critical": false, "required_safeguards": []},
+    "onboarding-email": {"sha256": "d4459d80767f940a2da67109f5621483b4104239b59bf5934a76d1430431364d", "safety_critical": false, "required_safeguards": []},
+    "x2x3-boundary": {"sha256": "7a19e38c2c8eb2c5399f25aa888bbb6bfbaa62b446c8fa761586ebd231088bf1", "safety_critical": false, "required_safeguards": []},
+    "google-login": {"sha256": "3a20d88607559e9e8dbb01fd7ef043d44f8dd619cb44a6d50779a2b0586063e2", "safety_critical": true, "required_safeguards": [["callback", "redirect"], ["session", "cookie", "token"]]},
+    "goal-x3-auth-cleanup": {"sha256": "96caef6b440bb69db819fa9456b8a72582047f567ba6aa420daaf2b61a234aa9", "safety_critical": true, "required_safeguards": [["existing login", "current login", "regression"], ["test", "verify", "validation"], ["rollback", "revert"]]},
+    "loop-x4-migration-repair": {"sha256": "8c6c043279e9470886278b25ca4102f866414bc40f3b57d996dabb583adf3579", "safety_critical": true, "required_safeguards": [["rollback", "owner", "ownership"], ["delta", "validation", "verify"], ["bounded", "maximum", "max", "attempt", "pass"], ["approval", "human", "hard stop", "blocked"]]}
+  },
+  "stop_conditions": {
+    "activation_failure": true,
+    "cross_arm_nonce": true,
+    "runtime_or_provenance_mismatch": true,
+    "filesystem_mutation": true,
+    "concrete_safety_failure": true
+  },
+  "assignments": [
+    {"order": 1, "arm": "placebo", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-d03e335c7e", "nonce": "462c11ee9a6c12e9aee6c9f63b0d4bf3"},
+    {"order": 2, "arm": "bmadx_stub", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-b53035c37d", "nonce": "2df2ad54cd554ee3fcba2e6984ed3618"},
+    {"order": 3, "arm": "bmadx_real", "scenario": "x1", "repeat_index": 1, "effort": "high", "alias": "wf-3da9137f35", "nonce": "cb0c8ef9e1077547c3dd3850969f81ec"},
+    {"order": 4, "arm": "bmadx_real", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-d7d251a93d", "nonce": "df53bc5857defc3b10e7fe5c74ae99d3"},
+    {"order": 5, "arm": "bmadx_stub", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-d817856d40", "nonce": "fed86f5c91170baedbf71fa2acb256eb"},
+    {"order": 6, "arm": "placebo", "scenario": "onboarding-email", "repeat_index": 1, "effort": "high", "alias": "wf-e5179403e7", "nonce": "9a606e6041edec0d7f6b849a2bcb7600"},
+    {"order": 7, "arm": "bmadx_stub", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-c1c0eb1bc1", "nonce": "aeedba85a43b49bc79e946374dbdb734"},
+    {"order": 8, "arm": "placebo", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-bcd956606d", "nonce": "7b4b19b6bf231a24a6f7a98d526fe9e4"},
+    {"order": 9, "arm": "bmadx_real", "scenario": "x2x3-boundary", "repeat_index": 1, "effort": "high", "alias": "wf-d9ab43933c", "nonce": "f2eb029fb5fe8a9609f9c275a05e3f16"},
+    {"order": 10, "arm": "bmadx_stub", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-197d370c8b", "nonce": "4950dd1298da46f5709729b648c9748f"},
+    {"order": 11, "arm": "bmadx_real", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-e2382e5c9d", "nonce": "012f07eb9ebff2daaac04d5a1c10be17"},
+    {"order": 12, "arm": "placebo", "scenario": "google-login", "repeat_index": 1, "effort": "high", "alias": "wf-8c924421d7", "nonce": "7d5da7146ea8ac61dfdaf28f269ca0a2"},
+    {"order": 13, "arm": "bmadx_stub", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-0e98883954", "nonce": "25cd2500a9eba34ef3357e4ea93e8db0"},
+    {"order": 14, "arm": "bmadx_real", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-78c2142361", "nonce": "742ef3844cf062fb01eea53caa573a5f"},
+    {"order": 15, "arm": "placebo", "scenario": "goal-x3-auth-cleanup", "repeat_index": 1, "effort": "high", "alias": "wf-5bf395b533", "nonce": "ac45401b0c2e9a79cf627b3a1dd4aeb5"},
+    {"order": 16, "arm": "bmadx_real", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-0676407c5f", "nonce": "a3948ac0f8dc33f5a4546e5059cd4765"},
+    {"order": 17, "arm": "bmadx_stub", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-eb50e2dc63", "nonce": "25fee08707471abaf9a8ac860d30a705"},
+    {"order": 18, "arm": "placebo", "scenario": "loop-x4-migration-repair", "repeat_index": 1, "effort": "high", "alias": "wf-a3d96ef2d3", "nonce": "c9a7ec4769422c96144c16b59bc1fc20"}
+  ]
+}

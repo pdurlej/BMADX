@@ -4,10 +4,12 @@
   "catalog_source": "Codex CLI 0.144.1 `codex debug models`",
   "runtime_catalog_wins": true,
   "advisor_maximum": "xhigh",
+  "planning_advisor_maximum": "ultra",
   "notes": [
     "Model profiles change thinking advice, not BMADX gear classification or BMAD gate semantics.",
     "GPT-5.6 profiles are candidates until repeated healthy and degraded BMADX benchmarks pass.",
-    "BMADX does not recommend max or ultra by default; those levels remain explicit experiments."
+    "The execution advisor does not recommend max or ultra by default.",
+    "The planning advisor may suggest max or ultra from explicit Y/8 criteria and requires operator confirmation."
   ],
   "profiles": {
     "gpt-5.5": {

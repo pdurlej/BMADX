@@ -1,0 +1,1 @@
+Task: Fix a mobile overflow bug in one existing settings panel. The project already has responsive patterns and visual tests, but the affected content includes long translated labels.

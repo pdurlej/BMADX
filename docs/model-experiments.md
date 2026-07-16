@@ -29,6 +29,15 @@ Clean rule:
   healthy and degraded benchmark passes.
 
 Current read:
+- Neutral plain-Sol versus assigned-BMADX A/B on 2026-07-12: the treatment arm
+  had 13.33-16.67 percentage-point higher exact-scorer pass rates, with 14-21%
+  higher latency and 29-51% more all-token footer usage; external review treats
+  this as directional authored-suite evidence because per-call fixture and skill
+  activation were not demonstrated in v1,
+- Sol fixed-effort comparison on 2026-07-11: `medium` passed 29/30 quality
+  cases, while `high` and `xhigh` passed 30/30; this legacy precomputed-gate
+  run exposed the expected gear and is retained as contract-conformance rather
+  than blinded routing evidence,
 - best PMAX X experiment: `minimax-m2.7:cloud`,
 - useful cheap drafting/exploration probe: `minimax-m2.5:cloud`,
 - no PMAX X model is currently safe as the BMADX router.

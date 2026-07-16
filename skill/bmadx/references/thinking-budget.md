@@ -27,8 +27,9 @@ If the user says `extra_high`, `extra-high`, or `extra high`, normalize it to
 `xhigh`. Do not emit `extra_high` in public docs, benchmark summaries, or skill
 answers.
 
-BMADX does not recommend `max` or `ultra` by default. They remain explicit
-experiments. Luna does not currently expose `ultra`.
+BMADX does not recommend `max` or `ultra` as execution defaults. The separate
+planning-effort advisor may suggest them from a visible `Y/8` score with
+operator confirmation. Luna does not currently expose `ultra`.
 
 ## Defaults
 
@@ -72,6 +73,10 @@ pattern, and known verification path.
 
 For classification-only answers, cap effort at `medium` or `high` unless the
 task is a real Rescue Mode execution.
+
+For planning-only work, use [planning-effort.md](planning-effort.md). A plan may
+use `xhigh`, `max`, or `ultra` and then hand execution back to the normal gear
+mapping. Do not carry an expensive planning level into execution automatically.
 
 If the current session is already running above the recommendation, do not ask
 the user to restart mid-task. Say that the next run can use lower effort if the

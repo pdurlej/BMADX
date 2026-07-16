@@ -1,0 +1,27 @@
+{
+  "schema": "bmadx_reviewer_selection_canary.v1",
+  "reason": "Replace MiniMax only for schema instability after it returned the full blinded input instead of a judgment during a fail-closed full-panel run.",
+  "selection_rule": "first_reviewer_in_frozen_order_with_all_schema_valid_calls",
+  "scores_must_not_influence_selection": true,
+  "canary_block_ids": [
+    "billing-invoice-r1",
+    "secret-exposure-incident-r2",
+    "worker-retry-r3"
+  ],
+  "candidate_reviewers": [
+    {
+      "reviewer_id": "gemma-4-31b",
+      "family": "gemma",
+      "runtime": "pi",
+      "model": "ollama/gemma4:31b-cloud",
+      "variant": null
+    },
+    {
+      "reviewer_id": "nemotron-3-ultra",
+      "family": "nemotron",
+      "runtime": "pi",
+      "model": "ollama/nemotron-3-ultra:cloud",
+      "variant": null
+    }
+  ]
+}

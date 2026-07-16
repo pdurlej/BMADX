@@ -79,7 +79,8 @@ Advisory and model-aware; never changes routing, gate, or global Codex config.
 - GPT-5.5: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
 - GPT-5.6 Sol: `X1/X2=medium`, `X3/X4=high`.
 - GPT-5.6 Terra/Luna: `X1/X2=medium`, `X3=high`, `X4=xhigh`.
-- `max` and `ultra` are explicit experiments, not BMADX defaults.
+- `max` and `ultra` are not execution defaults. A separate planning advisor may
+  suggest them from explicit criteria and requires operator confirmation.
 
 Use only levels supported by the active Codex model. Normalize `extra high` /
 `extra_high` to `xhigh`. Model profile never overrides gear or BMAD gate.
@@ -88,6 +89,18 @@ Line when needed:
 
 ```text
 Thinking: high — suggestion only.
+```
+
+### Planning Effort
+
+When a task is entering a consequential planning phase, count the eight signals
+in [planning-effort.md](references/planning-effort.md): `0..1=high`,
+`2..3=xhigh`, `4..5=max`, and `6..8=ultra` only when broad decomposition is
+also useful. Cap to the active model. `max/ultra` need operator confirmation.
+Planning effort never changes gear, gate, execution effort, or Codex config.
+
+```text
+Planning effort: max — 5/8 signals: cross-system, long-horizon, ...; suggestion only.
 ```
 
 ## Goal and Loop Discipline
@@ -155,6 +168,7 @@ then render the bundle only when execution is allowed.
 - [trigger-matrix.md](references/trigger-matrix.md)
 - [architecture-guardrails.md](references/architecture-guardrails.md)
 - [thinking-budget.md](references/thinking-budget.md)
+- [planning-effort.md](references/planning-effort.md)
 - [model-compatibility.md](references/model-compatibility.md)
 - [goal-loop.md](references/goal-loop.md)
 - [execution-boundaries.md](references/execution-boundaries.md)

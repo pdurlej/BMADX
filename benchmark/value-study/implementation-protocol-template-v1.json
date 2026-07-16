@@ -1,0 +1,43 @@
+{
+  "schema": "bmadx_implementation_value_study.template.v1",
+  "status": "blocked_until_hidden_fixture_repositories_exist",
+  "purpose": "Measure whether planning with BMADX improves implemented code rather than only review preference.",
+  "model": "gpt-5.6-sol",
+  "effort": "high",
+  "arms": ["placebo", "bmadx_stub", "bmadx_real"],
+  "minimum_hidden_task_clusters": 6,
+  "minimum_repeats": 2,
+  "required_fixture_properties": [
+    "fresh repository clone per call",
+    "identical visible task and repository state across arms",
+    "hidden deterministic acceptance tests unavailable to the model",
+    "at least two safety-critical tasks",
+    "at least two bounded ordinary tasks",
+    "no task authored from an existing BMADX benchmark scenario",
+    "independent pre-run review of task representativeness",
+    "no network or external writes during implementation"
+  ],
+  "primary_outcomes": [
+    "hidden acceptance test pass rate",
+    "regression test pass rate",
+    "safety policy violation rate"
+  ],
+  "tradeoff_outcomes": [
+    "total tokens",
+    "wall-clock duration",
+    "operator clarification count",
+    "changed lines and files",
+    "review-repair attempts",
+    "unnecessary process artifacts"
+  ],
+  "integrity_stops": [
+    "activation failure",
+    "cross-arm contamination",
+    "fixture hash mismatch",
+    "hidden test disclosure",
+    "unexpected external side effect",
+    "transport failure"
+  ],
+  "quality_failures_are_outcomes": true,
+  "claim_boundary": "Decision-study evidence alone cannot be converted into an implementation-quality claim."
+}

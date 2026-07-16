@@ -1,0 +1,1 @@
+Task: Add bounded retries with jitter to a background job that intermittently fails. The queue library is configured, but retry behavior, idempotency guarantees, and duplicate-delivery handling are not documented.

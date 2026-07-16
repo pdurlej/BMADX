@@ -1,0 +1,79 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "resume-after-ollama-transport-outage-v1.13",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "6ca59a0b932dde4213bc5ae2ea18624982e386adfc9ca5f1386b9c29a32fc475",
+  "previous_amendment_sha256": "a5a254ae21547514aa882fb861a1e0b3723e56f81d42b288bdf2aa82c47537ed",
+  "amended_runner_sha256": "c2986e690fdc93f5c29cbd95e96af4e18a07166e3aa17adc33cce8bcb60abe02",
+  "amended_analyzer_sha256": "04ac9833b50133b9ece4a97b48e66ea7cbb3f6a8d08a3d82718c5999c0eb7fd2",
+  "arm_map_builder_sha256": "ddb7c5cf261a8e8a73eeb53293600118ee96f0a5d69aa949f70425a96f36f875",
+  "reviewer_canary_runner_sha256": "79ee33f4e6ef7d61818975969aa1538f4483c2d4a593868db45e1e71e7f10da9",
+  "reviewer_selection_protocol_sha256": "10782ecfaede78fde85cd180b76a16da2bf795d1ced2efab5d42318e44246575",
+  "selected_reviewer_canary_sha256": "cebf2ee631308086c294ec545d2c97f4d470fa4f357a03d9bc149c3d8fd56ba3",
+  "panel_schema_preflight_sha256": "f9b2d9ea4a009693eb5afc1ecb5046121205552e8bd66bda0cff7238d34592e3",
+  "panel_preflight_summary_sha256s": [
+    "ff047056d8669615398a293ca3d7fd183c3d3f0230d87678a3798a8ac18654ac",
+    "ce8b59c743d5a66888885da24310a889739b89282b2804063e70180791d118fa",
+    "adda6845e90bea2c9d56bf1f4d46a9e96ecd5a3f8f34871a0dcfd5bf1420b5b6",
+    "588afaffea5182909e49849907c9ab06b1551ca78f6ba583d61f68ea8ba27fcb",
+    "6e00bc83e7655d2917fbe033f7369a7439fb4a89e5a9f134610645b795e37332"
+  ],
+  "reason": "Resume the exact stopped v1.12 checkpoint after two scoreless transport failures: one 240-second timeout and one Pi event reporting an Ollama Cloud 502 DNS timeout. Preserve all 138 valid calls and both failed attempt records. Transport failures do not consume the two-attempt schema budget; provider attempts remain capped at four per scientific call.",
+  "trigger_call_id": "primary--glm-52--worker-retry-r3",
+  "valid_votes_before_amendment": 138,
+  "invalid_calls_before_amendment": 1,
+  "restart_panel_from_zero": false,
+  "resume_stopped_checkpoint": true,
+  "resume_from_panel_sha256": "176586ea8fa2ef910d36ad3b6a7264b3e6bfcf4da930f617caacc4de3f81afbb",
+  "resume_from_amendment_sha256": "a5a254ae21547514aa882fb861a1e0b3723e56f81d42b288bdf2aa82c47537ed",
+  "resume_failed_call_id": "primary--glm-52--worker-retry-r3",
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false,
+  "changes_provider_attempt_count_policy": true,
+  "generation_outputs_unchanged": true,
+  "retained_prior_replacements": [
+    {
+      "from_reviewer_id": "deepseek-v4-pro",
+      "from_family": "deepseek",
+      "to_reviewer_id": "mistral-large-3",
+      "to_family": "mistral"
+    },
+    {
+      "from_reviewer_id": "minimax-m3",
+      "from_family": "minimax",
+      "to_reviewer_id": "gemma-4-31b",
+      "to_family": "gemma"
+    },
+    {
+      "from_reviewer_id": "kimi-k27-code",
+      "from_family": "kimi",
+      "to_reviewer_id": "nemotron-3-ultra",
+      "to_family": "nemotron"
+    }
+  ],
+  "required_reviewer_ids": [
+    "gemma-4-31b",
+    "mistral-large-3",
+    "qwen-35",
+    "glm-52",
+    "nemotron-3-ultra"
+  ],
+  "maximum_provider_attempts_per_scientific_call": 4,
+  "maximum_schema_attempts_per_scientific_call": 2,
+  "transport_failures_do_not_consume_schema_attempts": true,
+  "retries_only_without_valid_judgment": true,
+  "retry_preserves_prompt_order_and_model": true,
+  "failed_attempts_remain_auditable": true,
+  "normalizes_only_one_unambiguous_numeric_dimension_key": true,
+  "normalizes_only_unique_distance_one_boolean_flag_keys": true,
+  "canonicalizes_only_frozen_generic_rubric_suffixes": true,
+  "normalizes_only_unique_distance_one_candidate_ids": true,
+  "uses_complete_final_thinking_only_when_text_is_empty": true,
+  "normalizes_only_unique_nearest_distance_two_candidate_ids": true,
+  "reorders_only_complete_expected_candidate_sets": true,
+  "presents_only_position_bound_candidate_aliases": true,
+  "maps_only_complete_exact_candidate_alias_sets": true,
+  "unblinding_method": "exact_redacted_review_payload_sha256_arm_map",
+  "missing_original_blinding_key_disclosed": true
+}

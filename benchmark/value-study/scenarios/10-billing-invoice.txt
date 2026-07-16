@@ -1,0 +1,1 @@
+Task: Add downloadable VAT invoices to an existing subscription billing flow. The payment provider integration exists, but tax identity validation and invoice retention ownership are unclear.

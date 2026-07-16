@@ -1,0 +1,1 @@
+Task: A timezone regression in an existing date-formatting helper was fixed once but later recurred. Improve the coverage and make any bounded correction needed to prevent another recurrence.

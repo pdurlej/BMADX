@@ -1,0 +1,15 @@
+{
+  "schema": "bmadx_review_runner_amendment.v1",
+  "amendment_id": "pi-json-fence-normalization-v1.1",
+  "value_protocol_sha256": "7a6876c4fda57ba0682f232c07bbf2d0149c407d2c35ea06305ab55a98483670",
+  "panel_protocol_sha256": "a7effafdd0bc86a69dfd11371da8e8acd9eb58cfaa8eb1c663fda62debc3a161",
+  "original_runner_sha256": "df704825a558bb89b2deeeccb4e7a7cb1a9cc3e7afb6f77e5228b9bee308d698",
+  "amended_runner_sha256": "c94b2054c11e193d1db3e2dc3663af8420c3ae7a8c02fdda228226457e603c1d",
+  "reason": "Accept one outer JSON markdown fence in the final Pi assistant message.",
+  "valid_votes_before_amendment": 0,
+  "invalid_canary_calls_before_amendment": 1,
+  "restart_panel_from_zero": true,
+  "changes_candidate_order": false,
+  "changes_rubric_or_scoring": false,
+  "changes_models_or_call_counts": false
+}

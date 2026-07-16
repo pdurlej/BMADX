@@ -120,11 +120,21 @@ tokens used
                     "remediation": [],
                 },
             )
-            self.assertIn("use precomputed compact gate", prompt)
+            self.assertIn("route-independent precomputed BMAD health", prompt)
             self.assertIn("do not run tools", prompt)
-            self.assertIn("gear=X1", prompt)
-            self.assertIn("class=true", prompt)
+            self.assertNotIn("gear=X1", prompt)
+            self.assertNotIn("class=true", prompt)
+            self.assertNotIn("exec=true", prompt)
             self.assertIn("Task: Fix a typo.", prompt)
+
+    def test_build_prompt_can_defer_gate_until_after_classification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            scenario = Path(tmpdir) / "scenario.txt"
+            scenario.write_text("Task: Fix a typo.\n", encoding="utf-8")
+            prompt = build_prompt(scenario, post_classification_gate=True)
+            self.assertIn("commit the classification first", prompt)
+            self.assertIn("compact gate afterward", prompt)
+            self.assertNotIn("class=true", prompt)
 
     def test_compact_gate_hint_falls_back_to_in_session_gate(self) -> None:
         self.assertEqual(compact_gate_hint(None), "run compact gate.")
@@ -364,6 +374,7 @@ tokens used
         self.assertEqual(args.gate_mode, DEFAULT_GATE_MODE)
         self.assertEqual(args.gate_mode, "precomputed")
         self.assertEqual(args.groups, ["core", "boundary", "non_technical", "handoff", "goal_loop"])
+        self.assertEqual(args.run_label, "")
         self.assertEqual(args.repeat, 1)
 
     def test_parse_args_supports_reasoning_policy_gate_mode_groups_and_repeat(self) -> None:
@@ -379,11 +390,14 @@ tokens used
                 "core,boundary",
                 "--repeat",
                 "3",
+                "--run-label",
+                "Sol High 2026-07-11",
             ]
         )
         self.assertEqual(args.reasoning_policy, "advisor")
         self.assertEqual(args.gate_mode, "in-session")
         self.assertEqual(args.groups, ["core", "boundary"])
+        self.assertEqual(args.run_label, "sol-high-2026-07-11")
         self.assertEqual(args.repeat, 3)
 
     def test_parse_groups_rejects_unknown_groups(self) -> None:
@@ -487,6 +501,18 @@ tokens used
                 "core-boundary",
             ).name,
             "summary-2026-05-05-gpt-5-5-healthy-advisor-in-session-core-boundary-bmadx.json",
+        )
+        self.assertEqual(
+            summary_path_for(
+                "2026-07-11",
+                "gpt-5-6-sol",
+                "healthy",
+                "fixed",
+                "precomputed",
+                "all",
+                "sol-xhigh-2026-07-11",
+            ).name,
+            "summary-2026-07-11-gpt-5-6-sol-healthy-fixed-precomputed-all-sol-xhigh-2026-07-11-bmadx.json",
         )
 
     def test_write_config_uses_model_and_reasoning(self) -> None:
