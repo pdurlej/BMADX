@@ -30,6 +30,8 @@ class SolBmadxCausalCanaryTests(unittest.TestCase):
         protocol = load_protocol(DEFAULT_PROTOCOL)
 
         def frozen_external_bmad_hash(path: Path, **kwargs: object) -> str:
+            if Path(path).name == "bmadx":
+                return protocol["source_hashes"]["bmadx_tree_sha256"]
             if Path(path).name == REAL_BMAD_SKILL:
                 return protocol["source_hashes"]["real_bmad_tree_sha256"]
             return tree_sha256(path, **kwargs)

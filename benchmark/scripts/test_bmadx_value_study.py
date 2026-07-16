@@ -241,6 +241,8 @@ class BmadxValueStudyTests(unittest.TestCase):
         ).sha256_file
 
         def frozen_external_bmad_hash(path: Path, **kwargs: object) -> str:
+            if Path(path).name == "bmadx":
+                return self.protocol["source_hashes"]["bmadx_tree_sha256"]
             if Path(path).name == REAL_BMAD_SKILL:
                 return self.protocol["source_hashes"]["real_bmad_tree_sha256"]
             return tree_sha256(path, **kwargs)

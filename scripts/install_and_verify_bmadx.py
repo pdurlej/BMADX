@@ -48,7 +48,7 @@ def verification_commands(target: Path) -> list[list[str]]:
     planning_test_script = target / "scripts" / "test_advise_planning_effort.py"
     compat_script = target / "scripts" / "check_codex_compat.py"
     return [
-        [sys.executable, str(sync_script), "sync", "--json"],
+        [sys.executable, str(sync_script), "check", "--gear", "X3", "--json"],
         [sys.executable, str(test_script)],
         [sys.executable, str(planning_test_script)],
         [sys.executable, str(compat_script), "--json"],
@@ -63,8 +63,7 @@ def validate_sync_report(stdout: str) -> None:
 
     healthy_dependency = bool((payload.get("bmad_dependency") or {}).get("healthy"))
     if (
-        payload.get("action") != "ok"
-        or payload.get("classification_allowed") is not True
+        payload.get("classification_allowed") is not True
         or payload.get("execution_allowed") is not True
         or healthy_dependency is not True
     ):

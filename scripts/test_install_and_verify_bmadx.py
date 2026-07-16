@@ -93,6 +93,7 @@ class InstallAndVerifyTests(unittest.TestCase):
 
             self.assertEqual(len(runner.calls), 4)
             self.assertEqual(runner.calls[0][0], sys.executable)
+            self.assertEqual(runner.calls[0][-4:], ["check", "--gear", "X3", "--json"])
             self.assertEqual(runner.calls[1][0], sys.executable)
             self.assertEqual(runner.last_timeout, VERIFY_TIMEOUT_SECONDS)
             self.assertTrue(target.joinpath("SKILL.md").exists())
@@ -135,13 +136,15 @@ class InstallAndVerifyTests(unittest.TestCase):
                         '"bmad_dependency":{"healthy":false}}'
                     ),
                     "tests ok\n",
+                    "planning tests ok\n",
+                    "{}\n",
                 ]
             )
 
             with self.assertRaisesRegex(RuntimeError, "semantic verification failed"):
                 install_and_verify(source, dependency, target, force=False, dry_run=False, runner=runner)
 
-    def test_verification_rejects_warning_json_for_install_success(self) -> None:
+    def test_verification_accepts_nonblocking_warning_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             source = build_source(root)
@@ -155,11 +158,20 @@ class InstallAndVerifyTests(unittest.TestCase):
                         '"bmad_dependency":{"healthy":true}}'
                     ),
                     "tests ok\n",
+                    "planning tests ok\n",
+                    "{}\n",
                 ]
             )
 
-            with self.assertRaisesRegex(RuntimeError, "semantic verification failed"):
-                install_and_verify(source, dependency, target, force=False, dry_run=False, runner=runner)
+            message = install_and_verify(
+                source,
+                dependency,
+                target,
+                force=False,
+                dry_run=False,
+                runner=runner,
+            )
+            self.assertIn("verification completed", message)
 
     def test_verification_timeout_raises_runtime_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

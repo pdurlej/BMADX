@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,7 +21,15 @@ FAST_PATH_WARNING = (
     "No fresh healthy BMAD snapshot is available; the `X1/X2` decision is using local BMADX state."
 )
 FAST_PATH_HARD_BLOCKER = "No fresh BMAD check is available for `X3/X4`."
-DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS = 60
+HARD_BLOCK_REMEDIATION = (
+    "Restore a complete local bmad-method-codex skill, then rerun the BMADX compact gate."
+)
+BMAD_REQUIRED_FILES = (
+    "SKILL.md",
+    "references/skill-manifest.json",
+    "scripts/sync_bmad_method.py",
+)
+ADVISORY_BMAD_REFERENCES = {"latest-release-summary.md"}
 
 ROOT = Path(os.environ.get("BMADX_ROOT", Path(__file__).resolve().parents[1]))
 MANIFEST_FILE = Path(
@@ -39,20 +46,8 @@ def codex_home() -> Path:
     return Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
 
 
-def codex_home_shell() -> str:
-    return "${CODEX_HOME:-$HOME/.codex}"
-
-
-def dependency_script_shell() -> str:
-    return f'"{codex_home_shell()}/skills/{DEPENDENCY_SKILL}/scripts/sync_bmad_method.py"'
-
-
 def remediation_steps() -> list[str]:
-    script = dependency_script_shell()
-    return [
-        f"python3 {script} check --json",
-        f"python3 {script} sync",
-    ]
+    return [HARD_BLOCK_REMEDIATION]
 
 
 def normalize_gear(value: str | None) -> str | None:
@@ -120,75 +115,29 @@ def run_bmad_check(bmad_path: Path) -> dict:
             "warnings": [f"BMAD dependency is missing at {bmad_path}."],
             "checked_live": True,
             "cache_used": False,
-            "status_source": "live",
+            "status_source": "local-read-only",
         }
 
-    command = [
-        sys.executable,
-        str(bmad_path / "scripts" / "sync_bmad_method.py"),
-        "check",
-        "--json",
-    ]
-    try:
-        timeout_seconds = int(
-            os.environ.get(
-                "BMADX_BMAD_CHECK_TIMEOUT_SECONDS",
-                os.environ.get("BMADX_BMAD_CHECK_TIMEOUT_SEC", DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS),
-            )
+    missing = [rel for rel in BMAD_REQUIRED_FILES if not (bmad_path / rel).is_file()]
+    manifest = read_json(bmad_path / "references" / "skill-manifest.json", {})
+    state = read_json(bmad_path / "state" / "bmad-release-state.json", {})
+    skill_version = str(manifest.get("skill_version") or "") if isinstance(manifest, dict) else ""
+    warnings: list[str] = []
+    if missing:
+        warnings.append("BMAD is missing required local files: " + ", ".join(missing))
+    if not skill_version:
+        warnings.append("BMAD has no readable local skill version.")
+
+    release = state.get("release") if isinstance(state, dict) else {}
+    release_tag = str((release or {}).get("tag_name") or "")
+    agent_health = state.get("agent_health") if isinstance(state, dict) else {}
+    if isinstance(agent_health, dict) and agent_health.get("versions_match") is False:
+        warnings.append(
+            "BMAD recorded a local skill-version mismatch; review the installation when convenient."
         )
-    except ValueError:
-        timeout_seconds = DEFAULT_BMAD_CHECK_TIMEOUT_SECONDS
-    try:
-        result = subprocess.run(
-            command,
-            check=False,
-            capture_output=True,
-            text=True,
-            env=os.environ.copy(),
-            timeout=timeout_seconds,
-        )
-    except subprocess.TimeoutExpired:
-        return {
-            "available": True,
-            "path": str(bmad_path),
-            "action": "needs_attention",
-            "warnings": [f"The BMAD health check timed out after {timeout_seconds} seconds."],
-            "checked_live": True,
-            "cache_used": False,
-            "status_source": "live",
-        }
-    except OSError as exc:
-        return {
-            "available": False,
-            "path": str(bmad_path),
-            "action": "needs_attention",
-            "warnings": [f"Could not run the BMAD health check: {exc}"],
-            "checked_live": True,
-            "cache_used": False,
-            "status_source": "live",
-        }
 
-    try:
-        payload = json.loads(result.stdout or "{}")
-    except json.JSONDecodeError:
-        payload = {
-            "error": "invalid-json",
-            "stdout": result.stdout.strip(),
-            "stderr": result.stderr.strip(),
-        }
-
-    warnings = []
-    if result.returncode != 0:
-        warnings.append("The BMAD health check returned a non-zero exit code.")
-    warnings.extend(payload.get("warnings", []) if isinstance(payload, dict) else [])
-
-    action = payload.get("action", "needs_attention") if isinstance(payload, dict) else "needs_attention"
-    healthy = result.returncode == 0 and action == "ok"
-    release_tag = ""
-    if isinstance(payload, dict):
-        latest = payload.get("latest_release") or {}
-        if isinstance(latest, dict):
-            release_tag = str(latest.get("tag") or "")
+    healthy = not missing and bool(skill_version)
+    action = "ok" if healthy and not warnings else "warning" if healthy else "needs_attention"
 
     return {
         "available": True,
@@ -197,10 +146,13 @@ def run_bmad_check(bmad_path: Path) -> dict:
         "action": action,
         "warnings": warnings,
         "release_tag": release_tag,
-        "payload": payload if isinstance(payload, dict) else {},
+        "payload": {
+            "local_skill_version": skill_version,
+            "state_available": bool(state),
+        },
         "checked_live": True,
         "cache_used": False,
-        "status_source": "live",
+        "status_source": "local-read-only",
     }
 
 
@@ -318,14 +270,18 @@ def build_warnings(
 ) -> List[str]:
     warnings: List[str] = []
 
-    if not bmad.get("available") or not bmad.get("healthy"):
-        warnings.extend(bmad.get("warnings", []))
+    warnings.extend(bmad.get("warnings", []))
 
     if missing_local:
         warnings.append("Missing required BMADX files: " + ", ".join(sorted(missing_local)))
 
-    if missing_bmad_refs:
-        warnings.append("Missing required BMAD references: " + ", ".join(sorted(missing_bmad_refs)))
+    hard_missing_refs = [
+        name for name in missing_bmad_refs if name not in ADVISORY_BMAD_REFERENCES
+    ]
+    if hard_missing_refs:
+        warnings.append(
+            "Missing required BMAD references: " + ", ".join(sorted(hard_missing_refs))
+        )
 
     warnings.extend(template_failures)
 
@@ -333,7 +289,7 @@ def build_warnings(
     if release_changed and mode in {"check", "report"}:
         warnings.append(
             f"Detected a BMAD release change ({previous_release} -> {current_release}). "
-            "Run BMADX sync and review the overlay."
+            "The local BMAD capability remains usable; review the update when convenient."
         )
 
     if bmad_delta and mode in {"check", "report"} and not first_bmad_run:
@@ -376,10 +332,6 @@ def build_dependency_blockers(
     *,
     bmad: dict,
     missing_bmad_refs: List[str],
-    release_changed: bool,
-    bmad_delta: List[str],
-    mode: str,
-    first_bmad_run: bool,
 ) -> List[str]:
     blockers: List[str] = []
     if not bmad.get("checked_live", True):
@@ -391,14 +343,11 @@ def build_dependency_blockers(
         blockers.append("The current BMAD check is not healthy.")
         blockers.extend(str(warning) for warning in bmad.get("warnings", []) if warning)
 
-    if missing_bmad_refs:
+    hard_missing_refs = [
+        name for name in missing_bmad_refs if name not in ADVISORY_BMAD_REFERENCES
+    ]
+    if hard_missing_refs:
         blockers.append("Required BMAD references are missing.")
-
-    if mode in {"check", "report"} and not first_bmad_run:
-        if release_changed:
-            blockers.append("Detected a BMAD release change since the last saved state.")
-        if bmad_delta:
-            blockers.append("Detected a BMAD reference change since the last saved state.")
 
     return blockers
 
@@ -450,7 +399,7 @@ def summarize_warning(
             )
         return (
             f"Classification is still allowed, but execution for `{requested_gear}` "
-            "is blocked until the BMAD dependency is synced and healthy."
+            "is blocked until the local BMAD dependency is repaired and usable."
         )
 
     if requested_gear in SOFT_GATE_GEARS and not bmad.get("checked_live", True):
@@ -484,7 +433,7 @@ def determine_bmad_status(*, bmad: dict, requested_gear: str | None, execution_a
         return "needs_attention"
 
     if bmad.get("healthy"):
-        return "ok"
+        return "warning" if bmad.get("warnings") else "ok"
 
     if requested_gear in SOFT_GATE_GEARS and execution_allowed:
         return "warning"
@@ -557,7 +506,7 @@ def build_gate_decision(
         "bmad_status": bmad_status,
         "remediation": remediation,
         "action": action,
-        "current_bmad_ready": bool(bmad.get("checked_live", True) and not dependency_blockers),
+        "current_bmad_ready": bool(bmad.get("healthy") and not dependency_blockers),
     }
 
 
@@ -651,10 +600,6 @@ def main(argv: List[str] | None = None) -> int:
     dependency_blockers = build_dependency_blockers(
         bmad=bmad,
         missing_bmad_refs=missing_bmad_refs,
-        release_changed=release_changed,
-        bmad_delta=bmad_delta,
-        mode=args.mode,
-        first_bmad_run=first_bmad_run,
     )
     gate_decision = build_gate_decision(
         requested_gear=args.gear,
@@ -680,6 +625,7 @@ def main(argv: List[str] | None = None) -> int:
             "checked_at": current_checked_at,
             "path": str(bmad_root),
             "release_tag": current_release,
+            "freshness_known": bool(current_release),
             "action": bmad.get("action", "ok"),
         }
 
@@ -690,11 +636,10 @@ def main(argv: List[str] | None = None) -> int:
         and not missing_bmad_refs
     )
 
-    # `check` and `report` may refresh the soft X1/X2 cache, but they must not
-    # accept BMAD release/reference drift. A local-only fast path can create a
-    # local baseline without poisoning the first later live BMAD baseline.
-    accepts_local_baseline = args.mode == "sync" or first_local_run
-    accepts_dependency_baseline = (args.mode == "sync" or first_bmad_run) and dependency_baseline_ready
+    # Healthy read-only checks accept the observed baseline. This makes drift a
+    # one-run notice instead of a sticky synchronization requirement.
+    accepts_local_baseline = not local_blockers
+    accepts_dependency_baseline = dependency_baseline_ready
     state_payload = {
         "skill_version": manifest.get("skill_version", "0.0.0"),
         "bmad_release_tag": current_release if accepts_dependency_baseline else previous_release,
@@ -728,6 +673,7 @@ def main(argv: List[str] | None = None) -> int:
             "healthy": bmad.get("healthy", False),
             "action": bmad.get("action", "needs_attention"),
             "release_tag": current_release,
+            "freshness_known": bool(current_release),
             "checked_live": bmad.get("checked_live", True),
             "status_source": bmad.get("status_source", "live"),
             "cache_used": bool(bmad.get("cache_used")),

@@ -122,7 +122,7 @@ def install_skill(source: Path, dependency_path: Path, target: Path, force: bool
         f"- source: {source}\n"
         f"- target: {target}\n"
         f"- dependency: {dependency_path}\n"
-        f'- next: run `python3 "{codex_home_shell()}/skills/bmadx/scripts/sync_bmadx.py" sync --json`'
+        f'- next: run `python3 "{codex_home_shell()}/skills/bmadx/scripts/sync_bmadx.py" check --gear X3 --compact`'
     )
 
 

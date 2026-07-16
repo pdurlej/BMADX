@@ -139,6 +139,10 @@ Do not create new planning files unless the decision no longer fits this plan.
 
 Status: implementation in progress.
 
+- Dependency gate repaired: compact `X3/X4` now performs a local read-only
+  capability check. Release/reference drift and cache-write failures warn but
+  do not block; stateful BMAD sync is operator-requested maintenance only.
+
 - Sol `medium/high/xhigh` fixed-effort comparison completed across all groups,
   repeat `2`.
 - Decision quality: `29/30`, `30/30`, `30/30` respectively.
