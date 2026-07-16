@@ -25,11 +25,11 @@ flowchart TD
     AC --> G["Compact gear gate via sync_bmadx.py"]
     G -->|X1 or X2 green / warning| E["Execute with lightweight verify"]
     G -->|X3 or X4 green| B["Enter BMAD-driven workflow"]
-    G -->|X3 or X4 blocked| R["Remediate BMAD dependency"]
+    G -->|BMAD missing or unusable| R["Repair BMAD installation"]
     B --> P["_bmad-output/project-context.md"]
     C -->|X4 only| F["Render FUBAR scaffold bundle"]
     F --> A["AGENTS.md, matrices, rollout checklist, failure patterns, snippets"]
-    R --> D["sync_bmad_method.py check/sync"]
+    R --> D["Operator-directed repair or reinstall"]
 ```
 
 ## Component boundaries
@@ -73,7 +73,10 @@ After classification, BMADX runs a gear-aware compact gate.
 Important behavior:
 - `X1/X2` use the fast path
 - `X1/X2` can continue with a soft warning if BMAD is not freshly healthy
-- `X3/X4` keep a hard execution gate
+- `X3/X4` use a read-only local BMAD capability check
+- release/reference drift and unwritable caches are nonblocking warnings
+- only a missing or structurally unusable BMAD dependency blocks `X3/X4`
+- BMADX never runs stateful BMAD synchronization during task startup
 - classification is separate from execution permission
 
 This split is one of the key design decisions in `v0.2+`.

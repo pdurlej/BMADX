@@ -24,9 +24,13 @@ python3 scripts/install_and_verify_bmadx.py --force
 What this does:
 - verifies that `bmad-method-codex` exists,
 - installs `skill/bmadx` into your Codex skills directory,
-- runs `sync_bmadx.py sync --json`,
+- runs a read-only local `X3` dependency preflight,
 - runs BMADX skill tests,
 - prints the next prompt to paste into Codex.
+
+The preflight does not run BMAD synchronization. A newer release or changed
+reference snapshot is a warning that does not block work; repair is required
+only when the local BMAD skill is missing or structurally unusable.
 
 ## First use
 

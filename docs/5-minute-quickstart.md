@@ -38,14 +38,14 @@ If that succeeds, BMADX is installed and verified.
 ## What the installer changes
 
 - copies `skill/bmadx` into `${CODEX_HOME:-$HOME/.codex}/skills/bmadx`
-- checks that `bmad-method-codex` is available
-- runs BMADX sync/check verification
+- checks `bmad-method-codex` locally without invoking its stateful sync script
+- runs a read-only BMADX `X3` gate verification
 - runs the local installer verification path
 - checks the local Codex model catalog without reading credential values
 - prints the next prompt to paste into Codex
 
 It does not edit your global Codex model config, install hooks, create a runtime
-state platform, or replace BMAD.
+state platform, replace BMAD, or force BMAD synchronization before a task.
 
 Inspect model compatibility at any time:
 

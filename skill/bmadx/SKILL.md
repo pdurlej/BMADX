@@ -34,15 +34,16 @@ Replace `X1` with the chosen gear.
 Gate semantics:
 - `classification_allowed=false`: stop and report the BMADX blocker.
 - `X1/X2`: warnings are soft unless BMADX itself is blocked.
-- `X3/X4`: `execution_allowed=false` is a hard execution stop.
+- `X3/X4`: `execution_allowed=false` is a hard execution stop only when BMAD
+  is missing or structurally unusable.
+- BMAD release/reference drift and an unwritable state cache are warnings, not
+  execution blockers. Continue with the installed local BMAD capability.
 - If `X3/X4` are blocked, keep the classification and report execution block separately.
 
-Blocked `X3/X4` remediation must be exactly:
-
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" check --json
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/bmad-method-codex/scripts/sync_bmad_method.py" sync
-```
+The compact gate is a read-only local preflight. Never run BMAD synchronization
+as task-startup remediation and never block waiting for sync. If BMAD is truly
+missing or structurally unusable, report that installation blocker. Run the
+stateful BMAD sync command only when the operator explicitly requests an update.
 
 ## Gearbox
 
